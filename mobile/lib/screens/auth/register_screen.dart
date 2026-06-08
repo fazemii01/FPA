@@ -16,6 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final _fullNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  String _selectedRole = 'staff';
 
   @override
   void dispose() {
@@ -28,12 +29,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final isAuthenticated = authProvider.isAuthenticated;
+    final user = authProvider.user;
+
+    if (!isAuthenticated || user?.role != 'admin') {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Akses Ditolak'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go(isAuthenticated ? '/home' : '/login'),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.lock_outline,
+                  size: 64,
+                  color: Colors.red,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Akses Ditolak. Hanya Administrator yang dapat mendaftarkan akun baru.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                if (!isAuthenticated) ...[
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () => context.go('/login'),
+                    child: const Text('Kembali ke Login'),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Account'),
+        title: const Text('Daftarkan Akun Baru'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/login'),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
         ),
       ),
       body: SafeArea(
@@ -112,6 +163,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, _) {
+                    if (authProvider.isAuthenticated) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<String>(
+                            value: _selectedRole,
+                            decoration: const InputDecoration(
+                              labelText: 'Role',
+                              prefixIcon: Icon(Icons.security),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'staff',
+                                child: Text('Staf Pemindaian (Staff)'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'admin',
+                                child: Text('Administrator (Admin)'),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedRole = value ?? 'staff';
+                              });
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
                 const SizedBox(height: 24),
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, _) {
@@ -134,26 +220,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account? ',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    GestureDetector(
-                      onTap: () => context.go('/login'),
-                      child: Text(
-                        'Login',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+
                 const SizedBox(height: 24),
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, _) {
@@ -187,10 +254,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: _emailController.text,
         password: _passwordController.text,
         fullName: _fullNameController.text,
+        role: _selectedRole,
       );
 
       if (success && mounted) {
-        context.go('/login');
+        if (authProvider.isAuthenticated) {
+          final roleText = _selectedRole == 'admin' ? 'administrator' : 'staf';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Akun $roleText berhasil dibuat'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go('/home');
+          }
+        } else {
+          context.go('/login');
+        }
       }
     }
   }

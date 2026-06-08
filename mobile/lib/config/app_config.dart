@@ -1,19 +1,19 @@
 class ApiConfig {
-  static const String baseUrl = 'http://192.168.0.101:8000';
+  static const String baseUrl = 'http://192.168.100.145:8000';
   static const String apiVersion = '/api/v1';
-  
+
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
-  
+
   // Endpoints
   static const String authRegister = '$baseUrl/auth/register';
   static const String authLogin = '$baseUrl/auth/login';
-  
+
   static const String scanSessions = '$baseUrl/scans/sessions';
   static const String scanFingerprints = '$baseUrl/scans/sessions';
-  
+
   static const String reports = '$baseUrl/reports';
-  
+
   static const String health = '$baseUrl/health';
 }
 
@@ -29,7 +29,7 @@ class AppConstants {
   static const int maxFingerprints = 10;
   static const double minQualityScore = 50.0;
   static const double goodQualityScore = 70.0;
-  
+
   static const List<String> fingerPositions = [
     'left_thumb',
     'left_index',
@@ -42,7 +42,7 @@ class AppConstants {
     'right_ring',
     'right_pinky',
   ];
-  
+
   static const Map<String, String> fingerLabels = {
     'left_thumb': 'Ibu Jari Kiri',
     'left_index': 'Telunjuk Kiri',

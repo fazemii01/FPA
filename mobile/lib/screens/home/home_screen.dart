@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/scan_provider.dart';
+
+import 'tabs/dashboard_tab.dart';
+import 'tabs/session_tab.dart';
+import 'tabs/review_tab.dart';
+import 'tabs/report_history_tab.dart';
+import 'tabs/profile_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,146 +17,111 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ScanProvider>().loadSessions();
+      _refreshData();
     });
+  }
+
+  Future<void> _refreshData() async {
+    final scanProvider = context.read<ScanProvider>();
+    final authProvider = context.read<AuthProvider>();
+
+    await scanProvider.loadSessions();
+    if (authProvider.user?.role == 'admin') {
+      await scanProvider.loadReviewQueue();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
+    final isAdmin = user?.role == 'admin';
+
+    final List<Widget> tabs = [];
+    final List<BottomNavigationBarItem> navItems = [];
+
+    // Dashboard Tab
+    tabs.add(const DashboardTab());
+    navItems.add(const BottomNavigationBarItem(
+        icon: Icon(Icons.dashboard), label: 'Beranda'));
+
+    // Session Tab
+    tabs.add(const SessionTab());
+    navItems.add(const BottomNavigationBarItem(
+        icon: Icon(Icons.list_alt), label: 'Sesi'));
+
+    // Review Tab (Admin Only)
+    if (isAdmin) {
+      tabs.add(const ReviewTab());
+      navItems.add(const BottomNavigationBarItem(
+          icon: Icon(Icons.assignment_turned_in), label: 'Tinjauan'));
+    }
+
+    // Report History Tab
+    tabs.add(const ReportHistoryTab());
+    navItems.add(const BottomNavigationBarItem(
+        icon: Icon(Icons.history), label: 'Riwayat'));
+
+    // Profile Tab
+    tabs.add(const ProfileTab());
+    navItems.add(const BottomNavigationBarItem(
+        icon: Icon(Icons.person), label: 'Profil'));
+
+    // Guard against index out of bounds if role changes dynamically
+    if (_currentIndex >= tabs.length) {
+      _currentIndex = 0;
+    }
+
+    String getTitle() {
+      // Provide dynamic titles based on the selected tab and role
+      if (_currentIndex == 0)
+        return isAdmin ? 'FPA Portal - Admin' : '10-Finger Scanner';
+      if (_currentIndex == 1) return 'Daftar Sesi Pemindaian';
+
+      if (isAdmin) {
+        if (_currentIndex == 2) return 'Antrean Tinjauan';
+        if (_currentIndex == 3) return 'Riwayat Laporan';
+        if (_currentIndex == 4) return 'Profil Akun';
+      } else {
+        if (_currentIndex == 2) return 'Riwayat Laporan';
+        if (_currentIndex == 3) return 'Profil Akun';
+      }
+      return 'FPA - Fingerprint Scanner';
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('10-Finger Scanner'),
+        title: Text(getTitle()),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _handleLogout(context),
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Segarkan data',
+            onPressed: _refreshData,
           ),
         ],
       ),
-      body: Consumer<ScanProvider>(
-        builder: (context, scanProvider, _) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Mulai Pemindaian Baru',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Buat sesi pemindaian sidik jari baru',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: () => _handleNewScan(context, scanProvider),
-                          icon: const Icon(Icons.add),
-                          label: const Text('Sesi Pemindaian Baru'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Sesi Terbaru',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 12),
-                if (scanProvider.isLoading)
-                  const Center(child: CircularProgressIndicator())
-                else if (scanProvider.sessions.isEmpty)
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Text(
-                        'Belum ada sesi pemindaian',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: scanProvider.sessions.length,
-                    itemBuilder: (context, index) {
-                      final session = scanProvider.sessions[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          title: Text('Sesi #${session.id}'),
-                          subtitle: Text(
-                            '${session.completedCount}/10 jari',
-                          ),
-                          trailing: Chip(
-                            label: Text(session.status == 'completed' ? 'Selesai' : 'Aktif'),
-                            backgroundColor: session.status == 'completed'
-                                ? Colors.green[100]
-                                : Colors.blue[100],
-                          ),
-                          onTap: () => context.go('/scan'),
-                        ),
-                      );
-                    },
-                  ),
-              ],
-            ),
-          );
+      body: IndexedStack(
+        index: _currentIndex,
+        children: tabs,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
         },
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey,
+        items: navItems,
       ),
     );
-  }
-
-  Future<void> _handleNewScan(BuildContext context, ScanProvider scanProvider) async {
-    final success = await scanProvider.createSession();
-    if (success && mounted) {
-      context.go('/scan');
-    }
-  }
-
-  Future<void> _handleLogout(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Keluar'),
-        content: const Text('Apakah Anda yakin ingin keluar?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Keluar'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed ?? false) {
-      if (mounted) {
-        await context.read<AuthProvider>().logout();
-        if (mounted) {
-          context.go('/login');
-        }
-      }
-    }
   }
 }

@@ -2,8 +2,27 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 
+class ScanValidationException implements Exception {
+  final String message;
+  final Map<String, dynamic>? debugImages;
+
+  ScanValidationException(this.message, this.debugImages);
+
+  @override
+  String toString() => message;
+}
+
+class ApiException implements Exception {
+  final String message;
+  ApiException(this.message);
+  @override
+  String toString() => message;
+}
+
 class ApiService {
   late Dio _dio;
+
+  static void Function()? onUnauthorized;
 
   ApiService() {
     _dio = Dio(
@@ -29,7 +48,7 @@ class ApiService {
         },
         onError: (error, handler) {
           if (error.response?.statusCode == 401) {
-            // Handle unauthorized
+            onUnauthorized?.call();
           }
           return handler.next(error);
         },
@@ -50,6 +69,28 @@ class ApiService {
     try {
       final response = await _dio.post(endpoint, data: data);
       return response.data;
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<dynamic> delete(String endpoint) async {
+    try {
+      final response = await _dio.delete(endpoint);
+      return response.data;
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  /// Fetches raw bytes from an endpoint (e.g. image proxy).
+  Future<List<int>> getBytes(String endpoint) async {
+    try {
+      final response = await _dio.get<List<int>>(
+        endpoint,
+        options: Options(responseType: ResponseType.bytes),
+      );
+      return response.data ?? [];
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -76,16 +117,27 @@ class ApiService {
     }
   }
 
-  String _handleError(DioException error) {
+  Exception _handleError(DioException error) {
     if (error.response != null) {
-      final message = error.response?.data['detail'] ?? 'An error occurred';
-      return message.toString();
+      final detail = error.response?.data['detail'];
+      if (detail is Map<String, dynamic> && detail.containsKey('message')) {
+        return ScanValidationException(
+          detail['message'].toString(),
+          detail['debug_images'] as Map<String, dynamic>?,
+        );
+      } else if (detail is String) {
+        return ApiException(detail);
+      } else if (detail != null) {
+        return ApiException(detail.toString());
+      } else {
+        return ApiException('An error occurred');
+      }
     } else if (error.type == DioExceptionType.connectionTimeout) {
-      return 'Connection timeout';
+      return ApiException('Connection timeout');
     } else if (error.type == DioExceptionType.receiveTimeout) {
-      return 'Receive timeout';
+      return ApiException('Receive timeout');
     } else {
-      return error.message ?? 'An error occurred';
+      return ApiException(error.message ?? 'An error occurred');
     }
   }
 }

@@ -8,9 +8,9 @@ import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await Hive.initFlutter();
-  
+
   runApp(const MyApp());
 }
 
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ScanProvider()),
       ],
       child: MaterialApp.router(
-        title: '10-Finger Scanner',
+        title: 'FPA - Fingerprint Scanner',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,

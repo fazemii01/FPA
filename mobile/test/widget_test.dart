@@ -1,30 +1,62 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:fingerprint_scanner/main.dart';
+import 'package:fingerprint_scanner/models/user_model.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('User Model Tests', () {
+    test('User fromJson parses correctly', () {
+      final json = {
+        'id': 1,
+        'email': 'test@example.com',
+        'full_name': 'Test User',
+        'role': 'admin',
+        'is_active': true,
+        'created_at': '2026-06-05T12:00:00.000Z',
+      };
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      final user = User.fromJson(json);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      expect(user.id, 1);
+      expect(user.email, 'test@example.com');
+      expect(user.fullName, 'Test User');
+      expect(user.role, 'admin');
+      expect(user.isActive, true);
+      expect(user.createdAt, DateTime.parse('2026-06-05T12:00:00.000Z'));
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('User toJson works correctly', () {
+      final user = User(
+        id: 1,
+        email: 'test@example.com',
+        fullName: 'Test User',
+        role: 'admin',
+        isActive: true,
+        createdAt: DateTime.parse('2026-06-05T12:00:00.000Z'),
+      );
+
+      final json = user.toJson();
+
+      expect(json['id'], 1);
+      expect(json['email'], 'test@example.com');
+      expect(json['full_name'], 'Test User');
+      expect(json['role'], 'admin');
+      expect(json['is_active'], true);
+      expect(json['created_at'], '2026-06-05T12:00:00.000Z');
+    });
+  });
+
+  group('AuthResponse Model Tests', () {
+    test('AuthResponse fromJson parses correctly', () {
+      final json = {
+        'access_token': 'mock_token_123',
+        'token_type': 'bearer',
+        'role': 'staff',
+      };
+
+      final authResponse = AuthResponse.fromJson(json);
+
+      expect(authResponse.accessToken, 'mock_token_123');
+      expect(authResponse.tokenType, 'bearer');
+      expect(authResponse.role, 'staff');
+    });
   });
 }

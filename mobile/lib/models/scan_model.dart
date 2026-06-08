@@ -1,7 +1,16 @@
 class ScanSession {
   final int id;
   final int userId;
+  final String participantName;
+  final int participantAge;
+  final String? participantGender;
+  final String? notes;
   final String status;
+  final DateTime? submittedAt;
+  final int? reviewedById;
+  final DateTime? reviewedAt;
+  final DateTime? approvedAt;
+  final String? rejectionReason;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? completedAt;
@@ -10,7 +19,16 @@ class ScanSession {
   ScanSession({
     required this.id,
     required this.userId,
+    required this.participantName,
+    required this.participantAge,
+    this.participantGender,
+    this.notes,
     required this.status,
+    this.submittedAt,
+    this.reviewedById,
+    this.reviewedAt,
+    this.approvedAt,
+    this.rejectionReason,
     required this.createdAt,
     required this.updatedAt,
     this.completedAt,
@@ -21,7 +39,16 @@ class ScanSession {
     return ScanSession(
       id: json['id'] as int,
       userId: json['user_id'] as int,
+      participantName: json['participant_name'] as String? ?? '',
+      participantAge: json['participant_age'] as int? ?? 0,
+      participantGender: json['participant_gender'] as String?,
+      notes: json['notes'] as String?,
       status: json['status'] as String,
+      submittedAt: json['submitted_at'] != null ? DateTime.parse(json['submitted_at'] as String) : null,
+      reviewedById: json['reviewed_by_id'] as int?,
+      reviewedAt: json['reviewed_at'] != null ? DateTime.parse(json['reviewed_at'] as String) : null,
+      approvedAt: json['approved_at'] != null ? DateTime.parse(json['approved_at'] as String) : null,
+      rejectionReason: json['rejection_reason'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       completedAt: json['completed_at'] != null 
@@ -37,12 +64,59 @@ class ScanSession {
     return {
       'id': id,
       'user_id': userId,
+      'participant_name': participantName,
+      'participant_age': participantAge,
+      'participant_gender': participantGender,
+      'notes': notes,
       'status': status,
+      'submitted_at': submittedAt?.toIso8601String(),
+      'reviewed_by_id': reviewedById,
+      'reviewed_at': reviewedAt?.toIso8601String(),
+      'approved_at': approvedAt?.toIso8601String(),
+      'rejection_reason': rejectionReason,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'completed_at': completedAt?.toIso8601String(),
       'fingerprints': fingerprints.map((e) => e.toJson()).toList(),
     };
+  }
+
+  ScanSession copyWith({
+    int? id,
+    int? userId,
+    String? participantName,
+    int? participantAge,
+    String? participantGender,
+    String? notes,
+    String? status,
+    DateTime? submittedAt,
+    int? reviewedById,
+    DateTime? reviewedAt,
+    DateTime? approvedAt,
+    String? rejectionReason,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    DateTime? completedAt,
+    List<Fingerprint>? fingerprints,
+  }) {
+    return ScanSession(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      participantName: participantName ?? this.participantName,
+      participantAge: participantAge ?? this.participantAge,
+      participantGender: participantGender ?? this.participantGender,
+      notes: notes ?? this.notes,
+      status: status ?? this.status,
+      submittedAt: submittedAt ?? this.submittedAt,
+      reviewedById: reviewedById ?? this.reviewedById,
+      reviewedAt: reviewedAt ?? this.reviewedAt,
+      approvedAt: approvedAt ?? this.approvedAt,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      completedAt: completedAt ?? this.completedAt,
+      fingerprints: fingerprints ?? this.fingerprints,
+    );
   }
 
   int get completedCount => fingerprints.length;

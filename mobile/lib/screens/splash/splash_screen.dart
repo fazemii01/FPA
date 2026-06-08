@@ -19,12 +19,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkAuth() async {
     await Future.delayed(const Duration(seconds: 2));
-    
+
     if (!mounted) return;
-    
+
     final authProvider = context.read<AuthProvider>();
     final isAuthenticated = await authProvider.checkToken();
-    
+
     if (mounted) {
       if (isAuthenticated) {
         context.go('/home');
@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              '10-Finger Scanner',
+              'FPA - Fingerprint Scanner',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 48),

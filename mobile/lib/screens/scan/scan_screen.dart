@@ -16,7 +16,7 @@ class _ScanScreenState extends State<ScanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Session'),
+        title: const Text('Sesi Pemindaian'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/home'),
@@ -28,7 +28,7 @@ class _ScanScreenState extends State<ScanScreen> {
           
           if (session == null) {
             return const Center(
-              child: Text('No active session'),
+              child: Text('Tidak ada sesi aktif'),
             );
           }
 
@@ -44,7 +44,7 @@ class _ScanScreenState extends State<ScanScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Session Progress',
+                          'Kemajuan Pemindaian',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 16),
@@ -57,7 +57,7 @@ class _ScanScreenState extends State<ScanScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          '${session.completedCount}/10 fingerprints scanned',
+                          '${session.completedCount}/10 sidik jari terpindai',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -66,7 +66,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Capture Fingerprints',
+                  'Ambil Sidik Jari',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 12),
@@ -138,9 +138,9 @@ class _ScanScreenState extends State<ScanScreen> {
                 const SizedBox(height: 24),
                 if (session.isComplete)
                   ElevatedButton.icon(
-                    onPressed: () => _handleGenerateReport(context, scanProvider),
-                    icon: const Icon(Icons.description),
-                    label: const Text('Generate Report'),
+                    onPressed: () => context.go('/scan/review/${session.id}'),
+                    icon: const Icon(Icons.rate_review),
+                    label: const Text('Tinjau Hasil Pemindaian'),
                   ),
               ],
             ),
@@ -148,18 +148,5 @@ class _ScanScreenState extends State<ScanScreen> {
         },
       ),
     );
-  }
-
-  Future<void> _handleGenerateReport(
-    BuildContext context,
-    ScanProvider scanProvider,
-  ) async {
-    final session = scanProvider.currentSession;
-    if (session != null) {
-      final success = await scanProvider.generateReport(session.id);
-      if (success && mounted) {
-        context.go('/report/${session.id}');
-      }
-    }
   }
 }

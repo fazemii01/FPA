@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'navigator_key.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
@@ -17,6 +18,7 @@ import '../screens/report/report_view_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: '/splash',
     routes: [
       GoRoute(
