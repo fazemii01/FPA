@@ -44,9 +44,10 @@ def test_register_user(client):
             "full_name": "Test User"
         }
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = response.json()
     assert data["email"] == "test@example.com"
+    assert data["role"] == "admin"
     assert "id" in data
 
 
@@ -93,9 +94,15 @@ def test_create_scan_session(client):
     
     response = client.post(
         "/scans/sessions",
-        headers={"Authorization": f"Bearer {token}"}
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "participant_name": "Test Participant",
+            "participant_age": 12,
+            "participant_gender": "male"
+        }
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = response.json()
     assert "id" in data
-    assert data["status"] == "in_progress"
+    assert data["participant_name"] == "Test Participant"
+    assert data["status"] == "registered"

@@ -29,3 +29,4 @@ class Fingerprint(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     scan_session = relationship("ScanSession", back_populates="fingerprints")
+    features = relationship("FingerprintFeature", back_populates="fingerprint", uselist=False, cascade="all, delete-orphan")

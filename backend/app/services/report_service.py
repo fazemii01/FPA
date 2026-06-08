@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from app.models.report import Report
 from app.models.scan_session import ScanSession
-from app.repositories.scan import FingerprintRepository
-from app.report_engine.generator import ReportGenerator
+from app.repositories.scan import FingerprintRepository, FingerprintFeatureRepository
+from app.report_engine.html_generator import HTMLReportGenerator
 from app.storage.minio_service import MinIOService
 
 
@@ -13,14 +13,13 @@ class ReportService:
         if not session:
             raise Exception("Session not found")
         
+        # 1. Fetch fingerprints for basic quality metrics
         fingerprints = FingerprintRepository.get_session_fingerprints(db, scan_session_id)
-        
         quality_scores = {}
         total_quality = 0
         for fp in fingerprints:
             quality_scores[fp.finger_position.value] = fp.quality_score or 0
             total_quality += fp.quality_score or 0
-        
         average_quality = total_quality / len(fingerprints) if fingerprints else 0
         
         metrics = {
@@ -29,15 +28,19 @@ class ReportService:
             "average_quality": average_quality
         }
         
-        fingerprint_data = [
+        # 2. Fetch all fingerprint features (containing pattern types & ridge counts)
+        db_features = FingerprintFeatureRepository.get_session_features(db, scan_session_id)
+        features_list = [
             {
-                "finger_position": fp.finger_position.value,
-                "quality_score": fp.quality_score or 0
+                "finger_position": feat.fingerprint.finger_position.value if feat.fingerprint else "unknown",
+                "pattern_type": feat.pattern_type,
+                "ridge_count": feat.ridge_count
             }
-            for fp in fingerprints
+            for feat in db_features
         ]
         
-        pdf_bytes = ReportGenerator.generate_pdf(scan_session_id, metrics, fingerprint_data)
+        # 3. Generate high-fidelity PDF from HTML + CSS
+        pdf_bytes = HTMLReportGenerator.generate_pdf_report(session.participant_name, features_list)
         
         minio_service = MinIOService()
         pdf_path = f"reports/{session.user_id}/{scan_session_id}/report.pdf"
