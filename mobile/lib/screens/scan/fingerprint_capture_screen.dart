@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:camera/camera.dart';
@@ -9,6 +10,7 @@ import 'dart:convert';
 import '../../config/app_config.dart';
 import '../../providers/scan_provider.dart';
 import '../../shared/widgets/circular_guide_overlay.dart';
+import 'package:screen_brightness/screen_brightness.dart';
 
 class FingerprintCaptureScreen extends StatefulWidget {
   final int sessionId;
@@ -75,10 +77,41 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
           await _cameraController!.setFocusMode(FocusMode.auto);
           await _cameraController!.setExposureMode(ExposureMode.auto);
           await _cameraController!.setFlashMode(FlashMode.torch);
+          
+          // Set focus and exposure points to the center (finger area)
+          try {
+            if (_cameraController!.value.focusPointSupported) {
+              await _cameraController!.setFocusPoint(const Offset(0.5, 0.5));
+            }
+          } catch (e) {
+            print('Error setting focus point: $e');
+          }
+          try {
+            if (_cameraController!.value.exposurePointSupported) {
+              await _cameraController!.setExposurePoint(const Offset(0.5, 0.5));
+            }
+          } catch (e) {
+            print('Error setting exposure point: $e');
+          }
+          
           // Under-expose more strongly to prevent overexposure under the torch
-          await _cameraController!.setExposureOffset(-1.5);
+          try {
+            double minExposure = await _cameraController!.getMinExposureOffset();
+            // Decrease exposure significantly because torch up close blows out the highlights
+            double targetExposure = minExposure < -6.0 ? -6.0 : minExposure; 
+            await _cameraController!.setExposureOffset(targetExposure);
+          } catch (e) {
+            print('Error setting exposure offset: $e');
+          }
         } catch (e) {
           print('Error configuring camera: $e');
+        }
+        
+        // Increase screen brightness to 50% while capturing
+        try {
+          await ScreenBrightness().setScreenBrightness(0.5);
+        } catch (e) {
+          print('Error setting screen brightness: $e');
         }
       }
     } catch (e) {
@@ -88,10 +121,12 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
 
   @override
   void dispose() {
-    try {
-      _cameraController?.setFlashMode(FlashMode.off);
-    } catch (_) {}
     _cameraController?.dispose();
+    try {
+      ScreenBrightness().resetScreenBrightness();
+    } catch (e) {
+      print('Error resetting screen brightness: $e');
+    }
     super.dispose();
   }
 
@@ -136,13 +171,39 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
               children: [
                 Positioned.fill(
                   child: GestureDetector(
-                    onTapDown: (details) {
+                    onTapDown: (details) async {
                       if (_cameraController != null && _cameraController!.value.isInitialized) {
                         final size = MediaQuery.of(context).size;
                         final x = details.localPosition.dx / size.width;
                         final y = details.localPosition.dy / size.height;
-                        _cameraController!.setFocusPoint(Offset(x, y)).catchError((_) {});
-                        _cameraController!.setFocusMode(FocusMode.auto).catchError((_) {});
+                        
+                        try {
+                          await _cameraController!.setFocusPoint(Offset(x, y));
+                          await _cameraController!.setFocusMode(FocusMode.auto);
+                          
+                          // Set exposure point dynamically to where the user tapped
+                          if (_cameraController!.value.exposurePointSupported) {
+                            await _cameraController!.setExposurePoint(Offset(x, y));
+                          }
+                          
+                          // Reset focus and exposure points back to center after 3 seconds
+                          Future.delayed(const Duration(seconds: 3), () {
+                            if (mounted && _cameraController != null && _cameraController!.value.isInitialized) {
+                              if (_cameraController!.value.focusPointSupported) {
+                                _cameraController!.setFocusPoint(const Offset(0.5, 0.5)).catchError((e) {
+                                  print('Failed to reset focus point: $e');
+                                });
+                              }
+                              if (_cameraController!.value.exposurePointSupported) {
+                                _cameraController!.setExposurePoint(const Offset(0.5, 0.5)).catchError((e) {
+                                  print('Failed to reset exposure point: $e');
+                                });
+                              }
+                            }
+                          });
+                        } catch (e) {
+                          print('Error setting focus/exposure point: $e');
+                        }
                       }
                     },
                     child: CameraPreview(_cameraController!),
@@ -346,6 +407,10 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
 
     try {
       setState(() => _isCapturing = true);
+      
+      // Lock focus before capturing to bypass the slow Camera2 autofocus lock wait
+      await _cameraController!.setFocusMode(FocusMode.locked);
+      
       final image = await _cameraController!.takePicture();
       // Crop to the oval guide before uploading
       final croppedPath = await _cropToGuide(image.path);
@@ -353,6 +418,9 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
     } catch (e) {
       print('Error capturing image: $e');
       setState(() => _isCapturing = false);
+      try {
+        await _cameraController?.setFocusMode(FocusMode.auto);
+      } catch (_) {}
     }
   }
 
@@ -393,61 +461,16 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
   /// wrong part of the sensor image.
   Future<String> _cropToGuide(String imagePath) async {
     try {
-      final bytes = await File(imagePath).readAsBytes();
-      final raw = img_lib.decodeImage(bytes);
-      if (raw == null) return imagePath;
-
-      // Apply EXIF orientation so width/height match CameraPreview display
-      final srcImage = img_lib.bakeOrientation(raw);
-
       final screenSize = MediaQuery.of(context).size;
-      final screenW = screenSize.width;
-      final screenH = screenSize.height;
-
-      final sensorW = srcImage.width.toDouble();
-      final sensorH = srcImage.height.toDouble();
-
-      // BoxFit.cover: scale so preview FILLS the screen.
-      final scaleX = screenW / sensorW;
-      final scaleY = screenH / sensorH;
-      final scale = scaleX > scaleY ? scaleX : scaleY; // max
-
-      // How much the scaled sensor image overflows each screen edge
-      final virtualW = sensorW * scale;
-      final virtualH = sensorH * scale;
-      final overflowX = (virtualW - screenW) / 2.0;
-      final overflowY = (virtualH - screenH) / 2.0;
-
-      // Guide centre on screen:
-      //   X = screenW / 2  (overlay fills full width)
-      //   Y = (screenH - 170) / 2  (overlay has bottom: 170 offset for the shutter bar,
-      //                              so it only spans 0..screenH-170 and centres within that)
-      const double overlayBottomOffset = 170.0;
-      final guideCenterScreenX = screenW / 2.0;
-      final guideCenterScreenY = (screenH - overlayBottomOffset) / 2.0;
-
-      // Convert to sensor (file) coords using cover-scale offset
-      final cx = (guideCenterScreenX + overflowX) / scale;
-      final cy = (guideCenterScreenY + overflowY) / scale;
-
-      // Guide is 200 logical px on screen; convert exactly to sensor pixels.
-      // takePicture() saves the already-zoomed content at full output resolution,
-      // so the file IS the zoomed view — no zoom correction needed here.
-      const double guideSize = 200.0;
-      final halfSensor = ((guideSize / 2.0) / scale).round();
-
-      final x = (cx - halfSensor).round().clamp(0, srcImage.width - 1);
-      final y = (cy - halfSensor).round().clamp(0, srcImage.height - 1);
-      final w = (halfSensor * 2).clamp(1, srcImage.width - x);
-      final h = (halfSensor * 2).clamp(1, srcImage.height - y);
-
-      // Crop on the orientation-baked image; backend resizes to 512×512.
-      final cropped = img_lib.copyCrop(srcImage, x: x, y: y, width: w, height: h);
-      final croppedBytes = img_lib.encodeJpg(cropped, quality: 95);
-      await File(imagePath).writeAsBytes(croppedBytes);
+      final params = CaptureCropParams(
+        imagePath: imagePath,
+        screenW: screenSize.width,
+        screenH: screenSize.height,
+      );
+      await compute(_isolateCaptureCrop, params);
       return imagePath;
     } catch (e) {
-      print('_cropToGuide failed (using original): $e');
+      print('_cropToGuide failed: $e');
       return imagePath;
     }
   }
@@ -467,6 +490,9 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
       context.go('/scan');
     } else {
       setState(() => _isCapturing = false);
+      try {
+        await _cameraController?.setFocusMode(FocusMode.auto);
+      } catch (_) {}
       if (mounted) {
         final debugImages = scanProvider.lastDebugImages;
         if (debugImages != null && debugImages.isNotEmpty) {
@@ -536,4 +562,55 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
       ],
     );
   }
+}
+
+class CaptureCropParams {
+  final String imagePath;
+  final double screenW;
+  final double screenH;
+
+  CaptureCropParams({
+    required this.imagePath,
+    required this.screenW,
+    required this.screenH,
+  });
+}
+
+Future<void> _isolateCaptureCrop(CaptureCropParams params) async {
+  final bytes = await File(params.imagePath).readAsBytes();
+  final raw = img_lib.decodeImage(bytes);
+  if (raw == null) return;
+
+  final srcImage = img_lib.bakeOrientation(raw);
+
+  final sensorW = srcImage.width.toDouble();
+  final sensorH = srcImage.height.toDouble();
+
+  final scaleX = params.screenW / sensorW;
+  final scaleY = params.screenH / sensorH;
+  final scale = scaleX > scaleY ? scaleX : scaleY;
+
+  final virtualW = sensorW * scale;
+  final virtualH = sensorH * scale;
+  final overflowX = (virtualW - params.screenW) / 2.0;
+  final overflowY = (virtualH - params.screenH) / 2.0;
+
+  const double overlayBottomOffset = 170.0;
+  final guideCenterScreenX = params.screenW / 2.0;
+  final guideCenterScreenY = (params.screenH - overlayBottomOffset) / 2.0;
+
+  final cx = (guideCenterScreenX + overflowX) / scale;
+  final cy = (guideCenterScreenY + overflowY) / scale;
+
+  const double guideSize = 200.0;
+  final halfSensor = ((guideSize / 2.0) / scale).round();
+
+  final x = (cx - halfSensor).round().clamp(0, srcImage.width - 1);
+  final y = (cy - halfSensor).round().clamp(0, srcImage.height - 1);
+  final w = (halfSensor * 2).clamp(1, srcImage.width - x);
+  final h = (halfSensor * 2).clamp(1, srcImage.height - y);
+
+  final cropped = img_lib.copyCrop(srcImage, x: x, y: y, width: w, height: h);
+  final croppedBytes = img_lib.encodeJpg(cropped, quality: 95);
+  await File(params.imagePath).writeAsBytes(croppedBytes);
 }

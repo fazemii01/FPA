@@ -37,6 +37,19 @@ def test_report_compilation():
             "afektif": 50.0,
             "reflektif": 0.0,
             "kritis": 0.0
+        },
+        "disc": {
+            "Dominan": 15.0,
+            "Influential": 15.0,
+            "Steady": 40.0,
+            "Compliant": 30.0
+        },
+        "love_languages": {
+            "Acts of Service": 40.0,
+            "Words of Affirmation": 15.0,
+            "Quality Time": 15.0,
+            "Receiving Gifts": 15.0,
+            "Physical Touch": 15.0
         }
     }
     

@@ -30,9 +30,19 @@ def generate_report(
     admin: User = Depends(require_admin),
 ):
     """Admin-only: Generate report for an approved session."""
+    from datetime import datetime, timedelta
+
     session = ScanSessionRepository.get_session(db, session_id)
     _ensure_session_visible(session, admin)
-    if session.status != SessionStatus.APPROVED:
+    
+    if session.status == SessionStatus.GENERATING_REPORT:
+        stuck_cutoff = datetime.utcnow() - timedelta(minutes=2)
+        if session.updated_at and session.updated_at > stuck_cutoff:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Laporan sedang diproses. Harap tunggu beberapa saat.",
+            )
+    elif session.status not in (SessionStatus.APPROVED, SessionStatus.REPORT_GENERATED):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Report generation requires APPROVED status (current: {session.status.value})",

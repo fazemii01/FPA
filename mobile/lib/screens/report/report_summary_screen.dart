@@ -3,13 +3,26 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/scan_provider.dart';
 
-class ReportSummaryScreen extends StatelessWidget {
+class ReportSummaryScreen extends StatefulWidget {
   final int sessionId;
 
   const ReportSummaryScreen({
     Key? key,
     required this.sessionId,
   }) : super(key: key);
+
+  @override
+  State<ReportSummaryScreen> createState() => _ReportSummaryScreenState();
+}
+
+class _ReportSummaryScreenState extends State<ReportSummaryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ScanProvider>().loadReport(widget.sessionId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +35,10 @@ class ReportSummaryScreen extends StatelessWidget {
         builder: (context, scanProvider, _) {
           final report = scanProvider.currentReport;
           
+          if (scanProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           if (report == null) {
             return const Center(child: Text('Laporan tidak ditemukan'));
           }
@@ -90,7 +107,7 @@ class ReportSummaryScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
-                  onPressed: () => context.go('/report/view/${report.id}'),
+                  onPressed: () => context.go('/report/view/${report.scanSessionId}'),
                   icon: const Icon(Icons.picture_as_pdf),
                   label: const Text('Lihat Laporan PDF'),
                   style: ElevatedButton.styleFrom(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../providers/scan_provider.dart';
 import '../../../models/scan_model.dart';
 
@@ -58,11 +59,43 @@ class ReportHistoryTab extends StatelessWidget {
             barrierDismissible: false,
             builder: (context) => const Center(child: CircularProgressIndicator()),
           );
-          final success = await scanProvider.loadSession(session.id);
+          final success = await scanProvider.loadReport(session.id);
           if (context.mounted) {
             Navigator.pop(context);
-            if (success) {
-              context.push('/report/${session.id}');
+            if (success && scanProvider.currentReport?.pdfUrl != null) {
+              final url = Uri.parse(scanProvider.currentReport!.pdfUrl!);
+              try {
+                final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+                if (!launched) {
+                  final launchedDefault = await launchUrl(url, mode: LaunchMode.platformDefault);
+                  if (!launchedDefault && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Tidak dapat membuka link laporan')),
+                    );
+                  }
+                }
+              } catch (e) {
+                try {
+                  final launchedDefault = await launchUrl(url, mode: LaunchMode.platformDefault);
+                  if (!launchedDefault && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Gagal membuka link: $e')),
+                    );
+                  }
+                } catch (err) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $err')),
+                    );
+                  }
+                }
+              }
+            } else {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Laporan tidak ditemukan atau belum selesai')),
+                );
+              }
             }
           }
         },

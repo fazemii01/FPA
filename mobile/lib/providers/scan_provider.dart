@@ -86,6 +86,7 @@ class ScanProvider extends ChangeNotifier {
     required int sessionId,
     required String fingerPosition,
     required String imagePath,
+    String? enhancedImagePath,
   }) async {
     _isLoading = true;
     _error = null;
@@ -96,6 +97,7 @@ class ScanProvider extends ChangeNotifier {
       final response = await _apiService.uploadFile(
         '/scans/sessions/$sessionId/fingerprints',
         imagePath: imagePath,
+        enhancedImagePath: enhancedImagePath,
         fingerPosition: fingerPosition,
       );
 
@@ -123,6 +125,14 @@ class ScanProvider extends ChangeNotifier {
           fingerprints: updatedFingerprints,
           status: newStatus,
         );
+
+        // Update session in local sessions list in-place
+        final index = _sessions.indexWhere((s) => s.id == sessionId);
+        if (index != -1) {
+          _sessions[index] = _currentSession!;
+        } else {
+          _sessions.add(_currentSession!);
+        }
       }
 
       _isLoading = false;
@@ -135,6 +145,59 @@ class ScanProvider extends ChangeNotifier {
       } else {
         _error = e.toString();
       }
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> updateFingerprintFeatures({
+    required int fingerprintId,
+    required String patternType,
+    required int ridgeCount,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final response = await _apiService.put(
+        '/scans/fingerprints/$fingerprintId/features',
+        data: {
+          'pattern_type': patternType,
+          'ridge_count': ridgeCount,
+        },
+      );
+
+      final updatedFp = Fingerprint.fromJson(response);
+
+      if (_currentSession != null) {
+        final List<Fingerprint> updatedFingerprints = List.from(_currentSession!.fingerprints);
+        final index = updatedFingerprints.indexWhere((f) => f.id == fingerprintId);
+        if (index != -1) {
+          updatedFingerprints[index] = updatedFp;
+          _currentSession = _currentSession!.copyWith(fingerprints: updatedFingerprints);
+        }
+      }
+
+      // Update in local sessions list if present
+      for (int i = 0; i < _sessions.length; i++) {
+        if (_sessions[i].id == _currentSession?.id) {
+          final List<Fingerprint> fps = List.from(_sessions[i].fingerprints);
+          final idx = fps.indexWhere((f) => f.id == fingerprintId);
+          if (idx != -1) {
+            fps[idx] = updatedFp;
+            _sessions[i] = _sessions[i].copyWith(fingerprints: fps);
+          }
+          break;
+        }
+      }
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
       _isLoading = false;
       notifyListeners();
       return false;
@@ -329,6 +392,25 @@ class ScanProvider extends ChangeNotifier {
       if (_currentSession?.id == sessionId) {
         _currentSession = null;
       }
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> loadReport(int sessionId) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final response = await _apiService.get('/reports/sessions/$sessionId');
+      _currentReport = Report.fromJson(response);
       _isLoading = false;
       notifyListeners();
       return true;

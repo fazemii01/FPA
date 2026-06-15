@@ -12,6 +12,7 @@ from app.schemas.scan import (
     FingerPositionEnum,
     SessionRejectRequest,
     SessionRescanRequest,
+    FingerprintFeaturesUpdate,
 )
 from app.repositories.scan import (
     ScanSessionRepository,
@@ -95,6 +96,7 @@ async def upload_fingerprint(
     session_id: int,
     finger_position: FingerPositionEnum,
     file: UploadFile = File(...),
+    enhanced_file: UploadFile = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_staff_or_admin),
 ):
@@ -106,6 +108,7 @@ async def upload_fingerprint(
         SessionStatus.REGISTERED,
         SessionStatus.SCANNING,
         SessionStatus.NEED_RESCAN,
+        SessionStatus.SCAN_COMPLETED,
     ):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -120,17 +123,22 @@ async def upload_fingerprint(
     processing_result = image_processor.process_fingerprint(file_data)
     quality_score = processing_result["quality_score"]
 
-    if quality_score < 70.0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={
-                "message": processing_result.get("reject_reason", "Kualitas sidik jari terlalu rendah."),
-                "debug_images": processing_result.get("debug_images", {})
-            }
-        )
+    # Bypass quality threshold validation to allow continuous scanning workflow
+    # if quality_score < 70.0:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail={
+    #             "message": processing_result.get("reject_reason", "Kualitas sidik jari terlalu rendah."),
+    #             "debug_images": processing_result.get("debug_images", {})
+    #         }
+    #     )
 
     features = processing_result["features"]
-    normalized_data = image_processor.normalize_fingerprint(file_data)
+    
+    if enhanced_file:
+        normalized_data = await enhanced_file.read()
+    else:
+        normalized_data = image_processor.normalize_fingerprint(file_data)
 
     object_name = (
         f"fingerprints/{current_user.id}/{session_id}/"
@@ -298,3 +306,49 @@ def delete_scan_session(
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.put(
+    "/fingerprints/{fingerprint_id}/features",
+    response_model=FingerprintResponse,
+)
+def update_fingerprint_features(
+    fingerprint_id: int,
+    payload: FingerprintFeaturesUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_staff_or_admin),
+):
+    fingerprint = FingerprintRepository.get_fingerprint(db, fingerprint_id)
+    if fingerprint is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fingerprint not found")
+
+    session = ScanSessionRepository.get_session(db, fingerprint.scan_session_id)
+    _ensure_session_visible(session, current_user)
+
+    if session.status not in (
+        SessionStatus.DRAFT,
+        SessionStatus.REGISTERED,
+        SessionStatus.SCANNING,
+        SessionStatus.SCAN_COMPLETED,
+        SessionStatus.WAITING_FOR_REVIEW,
+        SessionStatus.NEED_RESCAN,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Cannot edit features when session status is {session.status.value}",
+        )
+
+    res = FingerprintFeatureRepository.update_features(
+        db, fingerprint_id, payload.pattern_type, payload.ridge_count
+    )
+    if res is None:
+        # Fallback if no feature record exists
+        FingerprintFeatureRepository.upsert_features(
+            db, fingerprint_id, session.id, {
+                "pattern_type": payload.pattern_type,
+                "ridge_count": payload.ridge_count
+            }
+        )
+
+    db.refresh(fingerprint)
+    return fingerprint

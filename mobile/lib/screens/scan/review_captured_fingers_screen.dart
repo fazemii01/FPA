@@ -68,43 +68,141 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
   // which fetches from the authenticated backend proxy endpoint.
 
   void _showFingerDetail(BuildContext context, Fingerprint fp, String label) {
+    String selectedPattern = fp.patternType ?? 'unknown';
+    final ridgeController = TextEditingController(text: fp.ridgeCount?.toString() ?? '0');
+    bool isSaving = false;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(label),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                color: Colors.grey[100],
-                width: double.infinity,
-                height: 200,
-                child: FingerprintImage(
-                  fingerprintId: fp.id,
-                  height: 200,
-                  fit: BoxFit.cover,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(label),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        color: Colors.grey[100],
+                        width: double.infinity,
+                        height: 200,
+                        child: FingerprintImage(
+                          fingerprintId: fp.id,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Kualitas: ${fp.qualityScore?.toStringAsFixed(1) ?? "N/A"}%',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    Text('Tanggal Pengambilan: ${_formatDate(fp.createdAt)}'),
+                    const Divider(height: 24),
+                    const Text(
+                      'Hasil Analisis Jari',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: selectedPattern,
+                      decoration: const InputDecoration(
+                        labelText: 'Tipe Pola Jari',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'loop', child: Text('Loop (Sangkutan)')),
+                        DropdownMenuItem(value: 'whorl', child: Text('Whorl (Pusaran)')),
+                        DropdownMenuItem(value: 'arch', child: Text('Arch (Busur)')),
+                        DropdownMenuItem(value: 'tented_arch', child: Text('Tented Arch (Tenda)')),
+                        DropdownMenuItem(value: 'composite', child: Text('Composite (Campuran)')),
+                        DropdownMenuItem(value: 'unknown', child: Text('Tidak Diketahui')),
+                      ],
+                      onChanged: isSaving
+                          ? null
+                          : (val) {
+                              if (val != null) {
+                                setState(() {
+                                  selectedPattern = val;
+                                });
+                              }
+                            },
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: ridgeController,
+                      keyboardType: TextInputType.number,
+                      enabled: !isSaving,
+                      decoration: const InputDecoration(
+                        labelText: 'Jumlah Garis (Ridge Count)',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Kualitas: ${fp.qualityScore?.toStringAsFixed(1) ?? "N/A"}%',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text('Tanggal Pengambilan: ${_formatDate(fp.createdAt)}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
-      ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.pop(context),
+                  child: const Text('Batal'),
+                ),
+                ElevatedButton(
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          final count = int.tryParse(ridgeController.text) ?? 0;
+                          setState(() {
+                            isSaving = true;
+                          });
+                          final scanProvider = context.read<ScanProvider>();
+                          final success = await scanProvider.updateFingerprintFeatures(
+                            fingerprintId: fp.id,
+                            patternType: selectedPattern,
+                            ridgeCount: count,
+                          );
+                          if (context.mounted) {
+                            setState(() {
+                              isSaving = false;
+                            });
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Hasil analisis jari berhasil disimpan'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                              Navigator.pop(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(scanProvider.error ?? 'Gagal menyimpan hasil analisis'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        },
+                  child: isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Simpan'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -113,6 +211,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
   }
 
   Future<void> _handleSubmitForReview(BuildContext context, ScanProvider scanProvider) async {
+    if (_isActionLoading) return;
     setState(() {
       _isActionLoading = true;
     });
@@ -142,6 +241,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
   }
 
   Future<void> _handleApprove(BuildContext context, ScanProvider scanProvider) async {
+    if (_isActionLoading) return;
     setState(() => _isActionLoading = true);
 
     final success = await scanProvider.approveSession(widget.sessionId);
@@ -167,6 +267,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
   }
 
   Future<void> _handleGenerateReport(BuildContext context, ScanProvider scanProvider) async {
+    if (_isActionLoading) return;
     setState(() => _isActionLoading = true);
 
     final success = await scanProvider.generateReport(widget.sessionId);
@@ -414,7 +515,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
           children: [
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () => _showRejectDialog(context, scanProvider),
+                onPressed: _isActionLoading ? null : () => _showRejectDialog(context, scanProvider),
                 icon: const Icon(Icons.close_rounded, color: Colors.redAccent),
                 label: const Text('Tolak', style: TextStyle(color: Colors.redAccent)),
                 style: OutlinedButton.styleFrom(
@@ -427,7 +528,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
             const SizedBox(width: 8),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () => _showRescanDialog(context, session, scanProvider),
+                onPressed: _isActionLoading ? null : () => _showRescanDialog(context, session, scanProvider),
                 icon: const Icon(Icons.replay_rounded, color: Colors.orange),
                 label: const Text('Scan Ulang', style: TextStyle(color: Colors.orange)),
                 style: OutlinedButton.styleFrom(
@@ -440,8 +541,14 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
             const SizedBox(width: 8),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () => _handleApprove(context, scanProvider),
-                icon: const Icon(Icons.check_rounded),
+                onPressed: _isActionLoading ? null : () => _handleApprove(context, scanProvider),
+                icon: _isActionLoading
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.check_rounded),
                 label: const Text('Setujui'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -481,9 +588,15 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
               ),
             ),
             ElevatedButton.icon(
-              onPressed: () => _handleGenerateReport(context, scanProvider),
-              icon: const Icon(Icons.picture_as_pdf_rounded),
-              label: const Text('Buat Laporan'),
+              onPressed: _isActionLoading ? null : () => _handleGenerateReport(context, scanProvider),
+              icon: _isActionLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Icon(Icons.picture_as_pdf_rounded),
+              label: Text(_isActionLoading ? 'Membuat Laporan...' : 'Buat Laporan'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6C63FF),
                 foregroundColor: Colors.white,
@@ -499,7 +612,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
       } else if (session.status == 'generating_report' ||
                  session.status == 'report_generated') {
         return ElevatedButton.icon(
-          onPressed: () => context.go('/report/${session.id}'),
+          onPressed: _isActionLoading ? null : () => context.go('/report/${session.id}'),
           icon: const Icon(Icons.description),
           label: const Text('Lihat Laporan'),
           style: ElevatedButton.styleFrom(
@@ -511,7 +624,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
         );
       } else {
         return ElevatedButton.icon(
-          onPressed: () => context.go('/home'),
+          onPressed: _isActionLoading ? null : () => context.go('/home'),
           icon: const Icon(Icons.home),
           label: const Text('Kembali ke Beranda'),
           style: ElevatedButton.styleFrom(

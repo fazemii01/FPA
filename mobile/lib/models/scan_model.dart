@@ -130,6 +130,8 @@ class Fingerprint {
   final String fingerPosition;
   final String imagePath;
   final double? qualityScore;
+  final String? patternType;
+  final int? ridgeCount;
   final DateTime createdAt;
 
   Fingerprint({
@@ -138,6 +140,8 @@ class Fingerprint {
     required this.fingerPosition,
     required this.imagePath,
     this.qualityScore,
+    this.patternType,
+    this.ridgeCount,
     required this.createdAt,
   });
 
@@ -148,6 +152,8 @@ class Fingerprint {
       fingerPosition: json['finger_position'] as String,
       imagePath: json['image_path'] as String,
       qualityScore: (json['quality_score'] as num?)?.toDouble(),
+      patternType: json['pattern_type'] as String?,
+      ridgeCount: json['ridge_count'] as int?,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
@@ -159,8 +165,32 @@ class Fingerprint {
       'finger_position': fingerPosition,
       'image_path': imagePath,
       'quality_score': qualityScore,
+      'pattern_type': patternType,
+      'ridge_count': ridgeCount,
       'created_at': createdAt.toIso8601String(),
     };
+  }
+
+  Fingerprint copyWith({
+    int? id,
+    int? scanSessionId,
+    String? fingerPosition,
+    String? imagePath,
+    double? qualityScore,
+    String? patternType,
+    int? ridgeCount,
+    DateTime? createdAt,
+  }) {
+    return Fingerprint(
+      id: id ?? this.id,
+      scanSessionId: scanSessionId ?? this.scanSessionId,
+      fingerPosition: fingerPosition ?? this.fingerPosition,
+      imagePath: imagePath ?? this.imagePath,
+      qualityScore: qualityScore ?? this.qualityScore,
+      patternType: patternType ?? this.patternType,
+      ridgeCount: ridgeCount ?? this.ridgeCount,
+      createdAt: createdAt ?? this.createdAt,
+    );
   }
 
   bool get isGoodQuality => qualityScore != null && qualityScore! >= 70;
@@ -172,6 +202,7 @@ class Report {
   final int scanSessionId;
   final double overallScore;
   final String? pdfPath;
+  final String? pdfUrl;
   final Map<String, dynamic>? metrics;
   final DateTime createdAt;
 
@@ -180,6 +211,7 @@ class Report {
     required this.scanSessionId,
     required this.overallScore,
     this.pdfPath,
+    this.pdfUrl,
     this.metrics,
     required this.createdAt,
   });
@@ -190,6 +222,7 @@ class Report {
       scanSessionId: json['scan_session_id'] as int,
       overallScore: (json['overall_score'] as num).toDouble(),
       pdfPath: json['pdf_path'] as String?,
+      pdfUrl: json['pdf_url'] as String?,
       metrics: json['metrics'] as Map<String, dynamic>?,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
@@ -201,6 +234,7 @@ class Report {
       'scan_session_id': scanSessionId,
       'overall_score': overallScore,
       'pdf_path': pdfPath,
+      'pdf_url': pdfUrl,
       'metrics': metrics,
       'created_at': createdAt.toIso8601String(),
     };

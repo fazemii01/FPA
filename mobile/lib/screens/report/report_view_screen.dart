@@ -3,13 +3,26 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/scan_provider.dart';
 
-class ReportViewScreen extends StatelessWidget {
-  final int reportId;
+class ReportViewScreen extends StatefulWidget {
+  final int sessionId;
 
   const ReportViewScreen({
     Key? key,
-    required this.reportId,
+    required this.sessionId,
   }) : super(key: key);
+
+  @override
+  State<ReportViewScreen> createState() => _ReportViewScreenState();
+}
+
+class _ReportViewScreenState extends State<ReportViewScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ScanProvider>().loadReport(widget.sessionId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +44,10 @@ class ReportViewScreen extends StatelessWidget {
         builder: (context, scanProvider, _) {
           final report = scanProvider.currentReport;
           
+          if (scanProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           if (report == null) {
             return const Center(child: Text('Laporan tidak ditemukan'));
           }
@@ -45,7 +62,7 @@ class ReportViewScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.picture_as_pdf,
                           size: 64,
                           color: Colors.red,

@@ -43,16 +43,33 @@ class ReportService:
         pdf_bytes = HTMLReportGenerator.generate_pdf_report(session.participant_name, features_list)
         
         minio_service = MinIOService()
-        pdf_path = f"reports/{session.user_id}/{scan_session_id}/report.pdf"
+        
+        # Sanitize participant name to be filename-safe (spaces replaced by underscores)
+        safe_name = "".join(c for c in session.participant_name if c.isalnum() or c in "._- ").strip()
+        safe_name = safe_name.replace(" ", "_")
+        if not safe_name:
+            safe_name = "report"
+            
+        pdf_path = f"reports/{session.user_id}/{scan_session_id}/{safe_name}.pdf"
         minio_service.upload_fingerprint(pdf_bytes, pdf_path)
         
-        report = Report(
-            scan_session_id=scan_session_id,
-            overall_score=average_quality,
-            pdf_path=pdf_path,
-            metrics=metrics
-        )
-        db.add(report)
+        from datetime import datetime
+
+        report = db.query(Report).filter(Report.scan_session_id == scan_session_id).first()
+        if report:
+            report.overall_score = average_quality
+            report.pdf_path = pdf_path
+            report.metrics = metrics
+            report.created_at = datetime.utcnow()
+        else:
+            report = Report(
+                scan_session_id=scan_session_id,
+                overall_score=average_quality,
+                pdf_path=pdf_path,
+                metrics=metrics
+            )
+            db.add(report)
+            
         db.commit()
         db.refresh(report)
         

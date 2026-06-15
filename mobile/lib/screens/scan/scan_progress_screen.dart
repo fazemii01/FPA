@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_config.dart';
 import '../../providers/scan_provider.dart';
+import '../../widgets/fingerprint_image.dart';
 
 class ScanProgressScreen extends StatelessWidget {
   final int sessionId;
@@ -72,7 +73,7 @@ class ScanProgressScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
-                _buildScannedFingersList(session),
+                _buildScannedFingersList(context, session),
                 const SizedBox(height: 24),
                 if (nextFingerIndex < 10) ...[
                   Text(
@@ -154,7 +155,7 @@ class ScanProgressScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildScannedFingersList(dynamic session) {
+  Widget _buildScannedFingersList(BuildContext context, dynamic session) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -163,15 +164,61 @@ class ScanProgressScreen extends StatelessWidget {
         (index) {
           final fp = session.fingerprints[index];
           final label = AppConstants.fingerLabels[fp.fingerPosition]!;
-          return Chip(
+          return ActionChip(
             label: Text(label),
             avatar: const CircleAvatar(
-              child: Icon(Icons.check, size: 16),
+              child: Icon(Icons.check, size: 16, color: Colors.green),
             ),
             backgroundColor: Colors.green[100],
+            onPressed: () => _showFingerDetail(context, fp, label),
           );
         },
       ),
     );
+  }
+
+  void _showFingerDetail(BuildContext context, dynamic fp, String label) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(label),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                color: Colors.grey[100],
+                width: double.infinity,
+                height: 200,
+                child: FingerprintImage(
+                  fingerprintId: fp.id,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Kualitas: ${fp.qualityScore?.toStringAsFixed(1) ?? "N/A"}%',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            Text('Tanggal Pengambilan: ${_formatDate(fp.createdAt)}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }

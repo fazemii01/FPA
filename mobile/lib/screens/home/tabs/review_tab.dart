@@ -257,6 +257,7 @@ class _ReviewCardState extends State<_ReviewCard> {
   // Navigate to the review screen (loads session first)
   Future<void> _navigate(
       BuildContext context, ScanProvider scanProvider) async {
+    if (_isLoading) return;
     setState(() => _isLoading = true);
     final success = await scanProvider.loadSession(widget.session.id);
     if (mounted) {
@@ -270,6 +271,7 @@ class _ReviewCardState extends State<_ReviewCard> {
   // Quick "Buat Laporan" directly from the card (approved sessions)
   Future<void> _quickGenerateReport(
       BuildContext context, ScanProvider scanProvider) async {
+    if (_isLoading) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(

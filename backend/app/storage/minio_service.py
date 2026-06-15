@@ -23,14 +23,19 @@ class MinIOService:
         except S3Error as e:
             print(f"Error ensuring bucket exists: {e}")
     
-    def upload_fingerprint(self, file_data: bytes, object_name: str) -> str:
+    def upload_fingerprint(self, file_data: bytes, object_name: str, content_type: str = None) -> str:
+        if content_type is None:
+            if object_name.lower().endswith(".pdf"):
+                content_type = "application/pdf"
+            else:
+                content_type = "image/png"
         try:
             self.client.put_object(
                 self.bucket_name,
                 object_name,
                 io.BytesIO(file_data),
                 length=len(file_data),
-                content_type="image/png"
+                content_type=content_type
             )
             return object_name
         except S3Error as e:

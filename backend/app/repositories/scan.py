@@ -1,5 +1,5 @@
 from typing import Optional, List
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 from app.models.scan_session import ScanSession, SessionStatus
 from app.models.fingerprint import Fingerprint, FingerPosition
 from app.models.fingerprint_feature import FingerprintFeature
@@ -26,12 +26,22 @@ class ScanSessionRepository:
 
     @staticmethod
     def get_session(db: Session, session_id: int) -> Optional[ScanSession]:
-        return db.query(ScanSession).filter(ScanSession.id == session_id).first()
+        return (
+            db.query(ScanSession)
+            .options(
+                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+            )
+            .filter(ScanSession.id == session_id)
+            .first()
+        )
 
     @staticmethod
     def get_user_sessions(db: Session, user_id: int) -> List[ScanSession]:
         return (
             db.query(ScanSession)
+            .options(
+                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+            )
             .filter(ScanSession.user_id == user_id)
             .order_by(ScanSession.created_at.desc())
             .all()
@@ -39,7 +49,9 @@ class ScanSessionRepository:
 
     @staticmethod
     def get_all_sessions(db: Session, status: Optional[SessionStatus] = None) -> List[ScanSession]:
-        q = db.query(ScanSession)
+        q = db.query(ScanSession).options(
+            selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+        )
         if status is not None:
             q = q.filter(ScanSession.status == status)
         return q.order_by(ScanSession.created_at.desc()).all()
@@ -127,11 +139,21 @@ class FingerprintRepository:
 
     @staticmethod
     def get_fingerprint(db: Session, fingerprint_id: int) -> Optional[Fingerprint]:
-        return db.query(Fingerprint).filter(Fingerprint.id == fingerprint_id).first()
+        return (
+            db.query(Fingerprint)
+            .options(joinedload(Fingerprint.features))
+            .filter(Fingerprint.id == fingerprint_id)
+            .first()
+        )
 
     @staticmethod
     def get_session_fingerprints(db: Session, session_id: int) -> List[Fingerprint]:
-        return db.query(Fingerprint).filter(Fingerprint.scan_session_id == session_id).all()
+        return (
+            db.query(Fingerprint)
+            .options(joinedload(Fingerprint.features))
+            .filter(Fingerprint.scan_session_id == session_id)
+            .all()
+        )
 
     @staticmethod
     def update_quality_score(db: Session, fingerprint_id: int, quality_score: float) -> Optional[Fingerprint]:
@@ -144,16 +166,27 @@ class FingerprintRepository:
 
     @staticmethod
     def delete_by_position(db: Session, session_id: int, position: FingerPosition) -> int:
-        deleted = (
+        fps_to_delete = (
             db.query(Fingerprint)
             .filter(
                 Fingerprint.scan_session_id == session_id,
                 Fingerprint.finger_position == position,
             )
-            .delete(synchronize_session=False)
+            .all()
         )
-        db.commit()
-        return int(deleted)
+        if fps_to_delete:
+            fp_ids = [fp.id for fp in fps_to_delete]
+            # Delete associated features first to avoid foreign key violations
+            db.query(FingerprintFeature).filter(FingerprintFeature.fingerprint_id.in_(fp_ids)).delete(synchronize_session=False)
+            
+            deleted = (
+                db.query(Fingerprint)
+                .filter(Fingerprint.id.in_(fp_ids))
+                .delete(synchronize_session=False)
+            )
+            db.commit()
+            return int(deleted)
+        return 0
 
 
 class FingerprintFeatureRepository:
@@ -192,6 +225,34 @@ class FingerprintFeatureRepository:
     def get_session_features(db: Session, session_id: int) -> List[FingerprintFeature]:
         return (
             db.query(FingerprintFeature)
+            .options(joinedload(FingerprintFeature.fingerprint))
             .filter(FingerprintFeature.scan_session_id == session_id)
             .all()
         )
+
+    @staticmethod
+    def update_features(
+        db: Session,
+        fingerprint_id: int,
+        pattern_type: str,
+        ridge_count: int,
+    ) -> Optional[FingerprintFeature]:
+        row = (
+            db.query(FingerprintFeature)
+            .filter(FingerprintFeature.fingerprint_id == fingerprint_id)
+            .first()
+        )
+        if row is None:
+            return None
+        row.pattern_type = pattern_type
+        row.ridge_count = ridge_count
+        
+        if row.features_json:
+            features = dict(row.features_json)
+            features["pattern_type"] = pattern_type
+            features["ridge_count"] = ridge_count
+            row.features_json = features
+            
+        db.commit()
+        db.refresh(row)
+        return row

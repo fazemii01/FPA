@@ -50,7 +50,10 @@ class FingerprintPreprocessor:
             return image
         if image.shape[2] == 4:
             image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
-        return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # Extract Red channel (channel 2 in BGR) to suppress red blood spots / stains (noise).
+        # Since blood/red spots appear bright in the Red channel, they merge with
+        # the bright background skin, leaving only the neutral ridges as dark details.
+        return image[:, :, 2]
 
     @staticmethod
     def resize_to_target(image: np.ndarray, size: int = TARGET_SIZE) -> np.ndarray:

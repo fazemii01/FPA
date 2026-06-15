@@ -106,10 +106,10 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: '/report/view/:reportId',
+        path: '/report/view/:sessionId',
         builder: (context, state) {
-          final reportId = int.parse(state.pathParameters['reportId']!);
-          return ReportViewScreen(reportId: reportId);
+          final sessionId = int.parse(state.pathParameters['sessionId']!);
+          return ReportViewScreen(sessionId: sessionId);
         },
       ),
       GoRoute(

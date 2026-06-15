@@ -74,6 +74,15 @@ class ApiService {
     }
   }
 
+  Future<dynamic> put(String endpoint, {Map<String, dynamic>? data}) async {
+    try {
+      final response = await _dio.put(endpoint, data: data);
+      return response.data;
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   Future<dynamic> delete(String endpoint) async {
     try {
       final response = await _dio.delete(endpoint);
@@ -99,11 +108,14 @@ class ApiService {
   Future<dynamic> uploadFile(
     String endpoint, {
     required String imagePath,
+    String? enhancedImagePath,
     required String fingerPosition,
   }) async {
     try {
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(imagePath),
+        'file': await MultipartFile.fromFile(imagePath, filename: 'raw.jpg'),
+        if (enhancedImagePath != null)
+          'enhanced_file': await MultipartFile.fromFile(enhancedImagePath, filename: 'enhanced.png'),
       });
 
       final response = await _dio.post(

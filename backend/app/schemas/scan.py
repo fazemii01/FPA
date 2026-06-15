@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
@@ -28,9 +28,30 @@ class FingerprintResponse(BaseModel):
     image_path: str
     quality_score: Optional[float]
     created_at: datetime
+    pattern_type: Optional[str] = None
+    ridge_count: Optional[int] = None
 
     class Config:
         from_attributes = True
+
+    @model_validator(mode="before")
+    @classmethod
+    def extract_features(cls, data: Any) -> Any:
+        if hasattr(data, "features") and data.features is not None:
+            # Check if features is a SQLAlchemy object
+            data.pattern_type = getattr(data.features, "pattern_type", None)
+            data.ridge_count = getattr(data.features, "ridge_count", None)
+        elif isinstance(data, dict):
+            feat = data.get("features")
+            if feat:
+                data["pattern_type"] = feat.get("pattern_type") if isinstance(feat, dict) else getattr(feat, "pattern_type", None)
+                data["ridge_count"] = feat.get("ridge_count") if isinstance(feat, dict) else getattr(feat, "ridge_count", None)
+        return data
+
+
+class FingerprintFeaturesUpdate(BaseModel):
+    pattern_type: str = Field(..., min_length=1, max_length=32)
+    ridge_count: int = Field(..., ge=0, le=100)
 
 
 class SessionStatusEnum(str, Enum):
@@ -95,8 +116,35 @@ class ReportResponse(BaseModel):
     scan_session_id: int
     overall_score: float
     pdf_path: Optional[str]
+    pdf_url: Optional[str] = None
     metrics: Optional[Dict[str, Any]]
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_pdf_url(cls, data: Any) -> Any:
+        from app.core.config import settings
+        
+        pdf_path = None
+        if hasattr(data, "pdf_path"):
+            pdf_path = data.pdf_path
+        elif isinstance(data, dict):
+            pdf_path = data.get("pdf_path")
+
+        if pdf_path:
+            schema = "https" if settings.MINIO_SECURE else "http"
+            pdf_url = f"{schema}://{settings.MINIO_ENDPOINT}/{settings.MINIO_BUCKET_NAME}/{pdf_path}"
+            
+            if hasattr(data, "pdf_url"):
+                data.pdf_url = pdf_url
+            elif isinstance(data, dict):
+                data["pdf_url"] = pdf_url
+            else:
+                try:
+                    setattr(data, "pdf_url", pdf_url)
+                except Exception:
+                    pass
+        return data
