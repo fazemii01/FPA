@@ -1,4 +1,4 @@
-# 10-Finger Fingerprint Scanner
+# Allia Tap Finger
 
 A complete full-stack fingerprint scanning application with FastAPI backend and Flutter mobile app.
 
