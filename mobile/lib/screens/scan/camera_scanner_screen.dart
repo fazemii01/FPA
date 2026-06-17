@@ -11,6 +11,7 @@ import '../../config/app_config.dart';
 import '../../providers/scan_provider.dart';
 import '../../shared/widgets/circular_guide_overlay.dart';
 import '../../services/opencv_service.dart';
+import '../../widgets/app_toast.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
 class CameraScannerScreen extends StatefulWidget {
@@ -161,9 +162,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
           await _cameraController?.setFocusMode(FocusMode.auto);
         } catch (_) {}
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(scanProvider.error ?? 'Unggah gagal')),
-          );
+          AppToast.showError(context, scanProvider.error ?? 'Unggah gagal');
         }
       }
     } catch (e) {
@@ -227,9 +226,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
         } else {
           setState(() => _isCapturing = false);
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(scanProvider.error ?? 'Unggah gagal')),
-            );
+            AppToast.showError(context, scanProvider.error ?? 'Unggah gagal');
           }
         }
       } else {
@@ -281,9 +278,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
         if (debugImages != null && debugImages.isNotEmpty) {
           _showRejectionDialog(context, scanProvider.error ?? 'Upload failed', debugImages);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(scanProvider.error ?? 'Upload failed')),
-          );
+          AppToast.showError(context, scanProvider.error ?? 'Upload failed');
         }
       }
     }

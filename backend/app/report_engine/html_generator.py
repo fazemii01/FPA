@@ -849,13 +849,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
     <!-- Page 3: TIPS STIMULASI KECERDASAN -->
     <div class="report-page">
-        <div class="page-inner" style="padding: 20px 35px 45px;">
-            <table width="100%" style="table-layout: fixed; margin-bottom: 8px;"><tr>
-                <td bgcolor="#1B365D" style="padding: 6px 12px; color: #FFFFFF; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Tips Stimulasi Kecerdasan Genetik Majemuk</td>
+        <div class="page-inner" style="padding: 30px 35px 50px;">
+            <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
+                <td bgcolor="#1B365D" style="padding: 10px 16px; color: #FFFFFF; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Tips Stimulasi Kecerdasan Genetik Majemuk</td>
             </tr></table>
-            <div class="participant-highlight" style="margin-bottom: 8px; font-size: 11pt;">Saran Pengembangan Potensi: <span>{participant_name}</span></div>
+            <div class="participant-highlight" style="margin-bottom: 16px; font-size: 13pt;">Saran Pengembangan Potensi: <span>{participant_name}</span></div>
             
-            <div style="margin-top: 0px; margin-bottom: 0px;">
+            <div style="margin-top: 10px; margin-bottom: 10px;">
                 {stimulation_tips_html}
             </div>
             
@@ -1286,92 +1286,92 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </tr></table>
             <div class="participant-highlight">Pola Adaptabilitas Kepribadian: <span>{participant_name}</span></div>
             
-            <table width="100%" style="table-layout: fixed; border-collapse: collapse; margin-top: 15px; margin-bottom: 10px;">
+            <table width="100%" style="table-layout: fixed; border-collapse: collapse; margin-top: 18px; margin-bottom: 15px;">
                 <tr>
-                    <td width="150" style="font-size: 10pt; font-weight: 600; color: #333; padding: 6px 8px;">SELF KOGNITIF</td>
-                    <td style="padding: 6px 5px; vertical-align: middle;">
+                    <td width="160" style="font-size: 11.5pt; font-weight: 600; color: #333; padding: 8px 10px;">SELF KOGNITIF</td>
+                    <td style="padding: 8px 5px; vertical-align: middle;">
                         <table width="100%" cellspacing="0" cellpadding="0" style="table-layout: fixed; border-collapse: collapse; line-height: 0; font-size: 0;">
                              <tr>
-                                 <td style="width: {adaptability_kognitif}%; background-color: #1B365D; height: 14px; line-height: 14px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
-                                 <td style="width: {adaptability_kognitif_rem}%; background-color: #F4F6F9; height: 14px; line-height: 14px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
+                                 <td style="width: {adaptability_kognitif}%; background-color: #1B365D; height: 18px; line-height: 18px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
+                                 <td style="width: {adaptability_kognitif_rem}%; background-color: #F4F6F9; height: 18px; line-height: 18px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
                              </tr>
                         </table>
                     </td>
-                    <td width="70" style="font-size: 11pt; font-weight: 700; color: #1B365D; text-align: right; padding: 6px 8px;">{adaptability_kognitif}%</td>
+                    <td width="80" style="font-size: 13pt; font-weight: 700; color: #1B365D; text-align: right; padding: 8px 10px;">{adaptability_kognitif}%</td>
                 </tr>
                 <tr>
-                    <td width="150" style="font-size: 10pt; font-weight: 600; color: #333; padding: 6px 8px;">AFEKTIF</td>
-                    <td style="padding: 6px 5px; vertical-align: middle;">
+                    <td width="160" style="font-size: 11.5pt; font-weight: 600; color: #333; padding: 8px 10px;">AFEKTIF</td>
+                    <td style="padding: 8px 5px; vertical-align: middle;">
                         <table width="100%" cellspacing="0" cellpadding="0" style="table-layout: fixed; border-collapse: collapse; line-height: 0; font-size: 0;">
                              <tr>
-                                 <td style="width: {adaptability_afektif}%; background-color: #F15A24; height: 14px; line-height: 14px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
-                                 <td style="width: {adaptability_afektif_rem}%; background-color: #F4F6F9; height: 14px; line-height: 14px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
+                                 <td style="width: {adaptability_afektif}%; background-color: #F15A24; height: 18px; line-height: 18px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
+                                 <td style="width: {adaptability_afektif_rem}%; background-color: #F4F6F9; height: 18px; line-height: 18px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
                              </tr>
                         </table>
                     </td>
-                    <td width="70" style="font-size: 11pt; font-weight: 700; color: #1B365D; text-align: right; padding: 6px 8px;">{adaptability_afektif}%</td>
+                    <td width="80" style="font-size: 13pt; font-weight: 700; color: #1B365D; text-align: right; padding: 8px 10px;">{adaptability_afektif}%</td>
                 </tr>
                 <tr>
-                    <td width="150" style="font-size: 10pt; font-weight: 600; color: #333; padding: 6px 8px;">REFLEKTIF</td>
-                    <td style="padding: 6px 5px; vertical-align: middle;">
+                    <td width="160" style="font-size: 11.5pt; font-weight: 600; color: #333; padding: 8px 10px;">REFLEKTIF</td>
+                    <td style="padding: 8px 5px; vertical-align: middle;">
                         <table width="100%" cellspacing="0" cellpadding="0" style="table-layout: fixed; border-collapse: collapse; line-height: 0; font-size: 0;">
                              <tr>
-                                 <td style="width: {adaptability_reflektif}%; background-color: #1B365D; height: 14px; line-height: 14px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
-                                 <td style="width: {adaptability_reflektif_rem}%; background-color: #F4F6F9; height: 14px; line-height: 14px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
+                                 <td style="width: {adaptability_reflektif}%; background-color: #1B365D; height: 18px; line-height: 18px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
+                                 <td style="width: {adaptability_reflektif_rem}%; background-color: #F4F6F9; height: 18px; line-height: 18px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
                              </tr>
                         </table>
                     </td>
-                    <td width="70" style="font-size: 11pt; font-weight: 700; color: #1B365D; text-align: right; padding: 6px 8px;">{adaptability_reflektif}%</td>
+                    <td width="80" style="font-size: 13pt; font-weight: 700; color: #1B365D; text-align: right; padding: 8px 10px;">{adaptability_reflektif}%</td>
                 </tr>
                 <tr>
-                    <td width="150" style="font-size: 10pt; font-weight: 600; color: #333; padding: 6px 8px;">KRITIS</td>
-                    <td style="padding: 6px 5px; vertical-align: middle;">
+                    <td width="160" style="font-size: 11.5pt; font-weight: 600; color: #333; padding: 8px 10px;">KRITIS</td>
+                    <td style="padding: 8px 5px; vertical-align: middle;">
                         <table width="100%" cellspacing="0" cellpadding="0" style="table-layout: fixed; border-collapse: collapse; line-height: 0; font-size: 0;">
                              <tr>
-                                 <td style="width: {adaptability_kritis}%; background-color: #F15A24; height: 14px; line-height: 14px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
-                                 <td style="width: {adaptability_kritis_rem}%; background-color: #F4F6F9; height: 14px; line-height: 14px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
+                                 <td style="width: {adaptability_kritis}%; background-color: #F15A24; height: 18px; line-height: 18px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
+                                 <td style="width: {adaptability_kritis_rem}%; background-color: #F4F6F9; height: 18px; line-height: 18px; font-size: 1px; padding: 0; border: none;">&nbsp;</td>
                              </tr>
                         </table>
                     </td>
-                    <td width="70" style="font-size: 11pt; font-weight: 700; color: #1B365D; text-align: right; padding: 6px 8px;">{adaptability_kritis}%</td>
+                    <td width="80" style="font-size: 13pt; font-weight: 700; color: #1B365D; text-align: right; padding: 8px 10px;">{adaptability_kritis}%</td>
                 </tr>
             </table>
             
-            <table width="100%" style="table-layout: fixed; margin-top: 5px;"><tr>
-                <td bgcolor="#F4F6F9" style="padding: 10px 12px; font-size: 9pt; line-height: 1.4; color: #444; border-left: 4px solid #1B365D;"><strong>Gaya Penyesuaian Diri Utama:</strong><br>
+            <table width="100%" style="table-layout: fixed; margin-top: 10px; margin-bottom: 12px;"><tr>
+                <td bgcolor="#F4F6F9" style="padding: 14px 16px; font-size: 10.5pt; line-height: 1.5; color: #333333; border-left: 4px solid #1B365D;"><strong>Gaya Penyesuaian Diri Utama:</strong><br>
                 {adaptability_desc}
-                <br style="margin-bottom: 4px;"/>
-                <em>Catatan: Nilai Reflektif dan Kritis yang rendah merupakan hal wajar dan bukan masalah, karena fungsi adaptabilitas dipengaruhi oleh karakter dan kematangan kepribadian yang telah terbentuk.</em></td>
+                <br style="margin-bottom: 6px;"/>
+                <em style="color: #666666;">Catatan: Nilai Reflektif dan Kritis yang rendah merupakan hal wajar dan bukan masalah, karena fungsi adaptabilitas dipengaruhi oleh karakter dan kematangan kepribadian yang telah terbentuk.</em></td>
             </tr></table>
 
             <!-- 2x2 Grid defining 4 Adaptability Modes -->
-            <table width="100%" style="table-layout: fixed; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px;">
+            <table width="100%" style="table-layout: fixed; border-collapse: collapse; margin-top: 15px; margin-bottom: 15px;">
                 <tr>
-                    <td width="48%" style="vertical-align: top; background-color: #F4F6F9; border-left: 3px solid #1B365D; padding: 8px 10px; border-bottom: 8px solid white;">
-                        <div style="font-weight: bold; color: #1B365D; font-size: 8.5pt; margin-bottom: 4px;">SELF KOGNITIF</div>
-                        <div style="font-size: 7.5pt; line-height: 1.35; color: #555;">
+                    <td width="48%" style="vertical-align: top; background-color: #F4F6F9; border-left: 4px solid #1B365D; padding: 12px 14px; border-bottom: 12px solid white;">
+                        <div style="font-weight: bold; color: #1B365D; font-size: 11pt; margin-bottom: 6px;">SELF KOGNITIF</div>
+                        <div style="font-size: 9.5pt; line-height: 1.5; color: #333333;">
                             Menyesuaikan diri melalui pemahaman rasional, analisis logika, dan penalaran fakta objektif. Cepat menguasai aturan dan skema kerja yang baru.
                         </div>
                     </td>
                     <td width="4%"></td>
-                    <td width="48%" style="vertical-align: top; background-color: #FFF2ED; border-left: 3px solid #F15A24; padding: 8px 10px; border-bottom: 8px solid white;">
-                        <div style="font-weight: bold; color: #F15A24; font-size: 8.5pt; margin-bottom: 4px;">AFEKTIF (EMOSIONAL)</div>
-                        <div style="font-size: 7.5pt; line-height: 1.35; color: #555;">
+                    <td width="48%" style="vertical-align: top; background-color: #FFF2ED; border-left: 4px solid #F15A24; padding: 12px 14px; border-bottom: 12px solid white;">
+                        <div style="font-weight: bold; color: #F15A24; font-size: 11pt; margin-bottom: 6px;">AFEKTIF (EMOSIONAL)</div>
+                        <div style="font-size: 9.5pt; line-height: 1.5; color: #333333;">
                             Menyesuaikan diri lewat keselarasan emosi, empati sosial, dan menjaga kehangatan hubungan. Peka terhadap kenyamanan perasaan kelompok.
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td width="48%" style="vertical-align: top; background-color: #FFF2ED; border-left: 3px solid #F15A24; padding: 8px 10px;">
-                        <div style="font-weight: bold; color: #F15A24; font-size: 8.5pt; margin-bottom: 4px;">REFLEKTIF</div>
-                        <div style="font-size: 7.5pt; line-height: 1.35; color: #555;">
+                    <td width="48%" style="vertical-align: top; background-color: #FFF2ED; border-left: 4px solid #F15A24; padding: 12px 14px;">
+                        <div style="font-weight: bold; color: #F15A24; font-size: 11pt; margin-bottom: 6px;">REFLEKTIF</div>
+                        <div style="font-size: 9.5pt; line-height: 1.5; color: #333333;">
                             Menyesuaikan diri dengan mengamati keadaan, berkaca pada pengalaman masa lalu, dan merenungkan respons terbaik secara tenang.
                         </div>
                     </td>
                     <td width="4%"></td>
-                    <td width="48%" style="vertical-align: top; background-color: #F4F6F9; border-left: 3px solid #1B365D; padding: 8px 10px;">
-                        <div style="font-weight: bold; color: #1B365D; font-size: 8.5pt; margin-bottom: 4px;">KRITIS</div>
-                        <div style="font-size: 7.5pt; line-height: 1.35; color: #555;">
+                    <td width="48%" style="vertical-align: top; background-color: #F4F6F9; border-left: 4px solid #1B365D; padding: 12px 14px;">
+                        <div style="font-weight: bold; color: #1B365D; font-size: 11pt; margin-bottom: 6px;">KRITIS</div>
+                        <div style="font-size: 9.5pt; line-height: 1.5; color: #333333;">
                             Menyesuaikan diri dengan mengevaluasi secara kritis, mempertanyakan asumsi dasar, dan mencari tahu kebenaran sistemik di balik perubahan.
                         </div>
                     </td>
@@ -1379,13 +1379,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </table>
 
             <!-- Adaptability Advice Box -->
-            <table width="100%" style="table-layout: fixed; margin-top: 5px; border-collapse: collapse;">
+            <table width="100%" style="table-layout: fixed; margin-top: 10px; border-collapse: collapse;">
                 <tr>
-                    <td bgcolor="#FFF2ED" style="padding: 10px 12px; font-size: 8.5pt; line-height: 1.4; color: #444; border-left: 4px solid #F15A24; border-top: 1px solid #FFE0B2; border-right: 1px solid #FFE0B2; border-bottom: 1px solid #FFE0B2;">
-                        <span style="color: #F15A24; font-weight: bold; font-size: 9.5pt; text-transform: uppercase;">💡 Area Pengembangan Adaptabilitas</span><br/>
-                        <div style="font-size: 7.5pt; line-height: 1.35; color: #555; margin-top: 4px;">
+                    <td bgcolor="#FFF2ED" style="padding: 14px 16px; font-size: 10.5pt; line-height: 1.5; color: #333333; border-left: 4px solid #F15A24; border-top: 1px solid #FFE0B2; border-right: 1px solid #FFE0B2; border-bottom: 1px solid #FFE0B2;">
+                        <span style="color: #F15A24; font-weight: bold; font-size: 12pt; text-transform: uppercase;">💡 Area Pengembangan Adaptabilitas</span><br/>
+                        <div style="font-size: 9.5pt; line-height: 1.5; color: #333333; margin-top: 6px;">
                             Untuk mengoptimalkan cara Anda menyesuaikan diri terhadap tantangan baru, latihlah aspek-aspek berikut secara bertahap:
-                            <ul style="margin: 3px 0 0 0; padding-left: 12px;">
+                            <ul style="margin: 6px 0 0 0; padding-left: 14px; line-height: 1.6;">
                                 <li><strong>Keluwesan Emosi (Afektif):</strong> Latihlah ketenangan emosi ketika menghadapi perubahan mendadak yang tidak sejalan dengan rencana.</li>
                                 <li><strong>Membuka Diri:</strong> Cobalah mendengarkan sudut pandang alternatif dengan sikap terbuka sebelum memberikan penolakan kognitif.</li>
                                 <li><strong>Refleksi & Aksi:</strong> Gabungkan pemikiran mendalam (Reflektif) dengan aksi nyata agar tidak terjebak dalam lingkaran overthinking.</li>
@@ -1415,26 +1415,26 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             
             <!-- Extracurriculars Table -->
             <div>
-                <table width="100%" style="table-layout: fixed; margin-bottom: 8px;"><tr>
-                    <td bgcolor="#F4F6F9" style="padding: 5px 10px; font-size: 10pt; font-weight: bold; color: #1B365D; text-transform: uppercase; border-left: 4px solid #F15A24;">1. Pilihan Ekstrakurikuler</td>
+                <table width="100%" style="table-layout: fixed; margin-bottom: 12px;"><tr>
+                    <td bgcolor="#F4F6F9" style="padding: 6px 12px; font-size: 11pt; font-weight: bold; color: #1B365D; text-transform: uppercase; border-left: 4px solid #F15A24;">1. Pilihan Ekstrakurikuler</td>
                 </tr></table>
                 {extracurriculars_table}
-                <div style="font-size: 8pt; color: #666; margin-top: 4px; text-align: center;">
+                <div style="font-size: 9.5pt; color: #666; margin-top: 8px; text-align: center;">
                     Urutan 1-6: Sangat Direkomendasikan | 7-11: Cukup Direkomendasikan | 12-16: Kurang Direkomendasikan
                 </div>
             </div>
             
             <!-- Love Language Section -->
-            <div style="margin-top: 10px;">
-                <table width="100%" style="table-layout: fixed; margin-bottom: 8px;"><tr>
-                    <td bgcolor="#F4F6F9" style="padding: 5px 10px; font-size: 10pt; font-weight: bold; color: #1B365D; text-transform: uppercase; border-left: 4px solid #F15A24;">2. Love Language (Bahasa Cinta)</td>
+            <div style="margin-top: 15px;">
+                <table width="100%" style="table-layout: fixed; margin-bottom: 12px;"><tr>
+                    <td bgcolor="#F4F6F9" style="padding: 6px 12px; font-size: 11pt; font-weight: bold; color: #1B365D; text-transform: uppercase; border-left: 4px solid #F15A24;">2. Love Language (Bahasa Cinta)</td>
                 </tr></table>
                 
-                <table width="100%" style="table-layout: fixed; margin-top: 10px;"><tr>
-                    <td bgcolor="#F4F6F9" style="padding: 10px 12px; font-size: 9pt; line-height: 1.4; color: #444; border-left: 4px solid #1B365D;"><strong>Bahasa Cinta Dominan ({love_language_primary}):</strong><br>
+                <table width="100%" style="table-layout: fixed; margin-top: 15px;"><tr>
+                    <td bgcolor="#F4F6F9" style="padding: 14px 16px; font-size: 10.5pt; line-height: 1.5; color: #333333; border-left: 4px solid #1B365D;"><strong>Bahasa Cinta Dominan ({love_language_primary}):</strong><br>
                     {love_language_desc}
-                    <br style="margin-bottom: 2px;"/>
-                    <em>Tips: Cinta = Usaha Kecil Tapi Konsisten. Tenang dan teliti. Merasa disayang bila dibantu dengan tertib dan diperhatikan kebutuhannya. 👉 Tidak perlu berlebihan, yang penting konsisten.</em></td>
+                    <br style="margin-bottom: 6px;"/>
+                    <em style="color: #666666;">Tips: Cinta = Usaha Kecil Tapi Konsisten. Tenang dan teliti. Merasa disayang bila dibantu dengan tertib dan diperhatikan kebutuhannya. 👉 Tidak perlu berlebihan, yang penting konsisten.</em></td>
                 </tr></table>
             </div>
             
@@ -1456,9 +1456,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </tr></table>
             <div class="participant-highlight">Bidang Studi & Profesi Pilihan: <span>{participant_name}</span></div>
             
-            <div style="margin-top: 5px;">
+            <div style="margin-top: 10px;">
                 {careers_table}
-                <div style="font-size: 8pt; color: #666; margin-top: 8px; text-align: center;">
+                <div style="font-size: 9.5pt; color: #666; margin-top: 12px; text-align: center;">
                     Urutan 1-20: Sangat Direkomendasikan | 21-40: Cukup Direkomendasikan | 41-60: Kurang Direkomendasikan
                 </div>
             </div>
@@ -1481,24 +1481,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </tr></table>
             <div class="participant-highlight">Kesimpulan Hasil Evaluasi: <span>{participant_name}</span></div>
             
-            <div style="font-size: 7.4pt; line-height: 1.25; color: #444; overflow: hidden; display: block; margin-top: 6px;">
-                <div style="margin-bottom: 6px; padding-bottom: 2px;">
+            <div style="font-size: 10pt; line-height: 1.55; color: #333333; overflow: hidden; display: block; margin-top: 12px;">
+                <div style="margin-bottom: 12px; padding-bottom: 4px;">
                     <strong>Multiple Intelligence:</strong> {conclusion_intelligence}
                 </div>
-                <hr style="border: none; height: 1px; background-color: #F15A24; margin: 4px 0;">
-                <div style="margin-bottom: 6px; padding-bottom: 2px;">
+                <hr style="border: none; height: 1px; background-color: #F15A24; margin: 10px 0;">
+                <div style="margin-bottom: 12px; padding-bottom: 4px;">
                     <strong>Tipe Kepribadian DISC:</strong> {conclusion_personality}
                 </div>
-                <hr style="border: none; height: 1px; background-color: #F15A24; margin: 4px 0;">
-                <div style="margin-bottom: 6px; padding-bottom: 2px;">
+                <hr style="border: none; height: 1px; background-color: #F15A24; margin: 10px 0;">
+                <div style="margin-bottom: 12px; padding-bottom: 4px;">
                     <strong>Bahasa Cinta (Love Language):</strong> {love_language_desc}
                 </div>
-                <hr style="border: none; height: 1px; background-color: #F15A24; margin: 4px 0;">
-                <div style="margin-bottom: 6px; padding-bottom: 2px;">
+                <hr style="border: none; height: 1px; background-color: #F15A24; margin: 10px 0;">
+                <div style="margin-bottom: 12px; padding-bottom: 4px;">
                     <strong>Brain Dominance & Gaya Belajar:</strong> Dominasi {dominant_brain} Brain ({left_brain_pct}% kiri vs {right_brain_pct}% kanan) menunjukkan kecenderungan cara berpikir {dominant_brain}. {conclusion_vak}
                 </div>
-                <hr style="border: none; height: 1px; background-color: #F15A24; margin: 4px 0;">
-                <div style="margin-bottom: 6px; padding-bottom: 2px;">
+                <hr style="border: none; height: 1px; background-color: #F15A24; margin: 10px 0;">
+                <div style="margin-bottom: 12px; padding-bottom: 4px;">
                     <strong>Adaptabilitas & Kecerdasan Psikologis:</strong> {conclusion_adaptability} {conclusion_quotient}
                 </div>
             </div>
@@ -1861,21 +1861,11 @@ class HTMLReportGenerator:
 
         # 7. Adaptability (Kognitif, Afektif, Reflektif, Kritis)
         adaptability_pcts = {
-            "kognitif": 0.0,
-            "afektif": 0.0,
-            "reflektif": 0.0,
-            "kritis": 0.0
+            "kognitif": disc_pcts["Compliant"],
+            "afektif": disc_pcts["Influential"],
+            "reflektif": disc_pcts["Steady"],
+            "kritis": disc_pcts["Dominan"]
         }
-        sorted_disc = sorted(disc_pcts.items(), key=lambda x: x[1], reverse=True)
-        primary_disc = sorted_disc[0][0]
-        if primary_disc == "Compliant":
-            adaptability_pcts["kognitif"] = 100.0
-        elif primary_disc == "Influential":
-            adaptability_pcts["afektif"] = 100.0
-        elif primary_disc == "Steady":
-            adaptability_pcts["reflektif"] = 100.0
-        elif primary_disc == "Dominan":
-            adaptability_pcts["kritis"] = 100.0
         
         return {
             "intelligences": intel_pcts,
@@ -1927,7 +1917,7 @@ class HTMLReportGenerator:
         intel_rows_html += "</table>"
             
         # Build stimulation tips for Page 3 (using a 2-column table to fit comfortably on 1 page)
-        stimulation_tips_html = '<table width="100%" style="table-layout: fixed; border-collapse: separate; border-spacing: 8px 0px;">\n'
+        stimulation_tips_html = '<table width="100%" style="table-layout: fixed; border-collapse: separate; border-spacing: 16px 20px;">\n'
         for r in range(4):
             idx1 = r
             idx2 = r + 4
@@ -1947,16 +1937,16 @@ class HTMLReportGenerator:
             label_color2 = "#F15A24" if idx2 % 2 == 0 else "#1B365D"
             
             stimulation_tips_html += f"""  <tr>
-    <td width="50%" style="vertical-align: top; padding-bottom: 3px;">
-      <div style="border-left: 3px solid {border_color1}; padding-left: 5px;">
-        <div style="font-size: 7.5pt; font-weight: bold; color: {label_color1}; margin-bottom: 1px;">{display_name1}</div>
-        <div style="font-size: 7pt; line-height: 1.25; color: #444;">{tips1}</div>
+    <td width="50%" style="vertical-align: top; padding-bottom: 18px;">
+      <div style="border-left: 4px solid {border_color1}; padding-left: 12px;">
+        <div style="font-size: 12pt; font-weight: bold; color: {label_color1}; margin-bottom: 6px;">{display_name1}</div>
+        <div style="font-size: 10.5pt; line-height: 1.5; color: #333333;">{tips1}</div>
       </div>
     </td>
-    <td width="50%" style="vertical-align: top; padding-bottom: 3px;">
-      <div style="border-left: 3px solid {border_color2}; padding-left: 5px;">
-        <div style="font-size: 7.5pt; font-weight: bold; color: {label_color2}; margin-bottom: 1px;">{display_name2}</div>
-        <div style="font-size: 7pt; line-height: 1.25; color: #444;">{tips2}</div>
+    <td width="50%" style="vertical-align: top; padding-bottom: 18px;">
+      <div style="border-left: 4px solid {border_color2}; padding-left: 12px;">
+        <div style="font-size: 12pt; font-weight: bold; color: {label_color2}; margin-bottom: 6px;">{display_name2}</div>
+        <div style="font-size: 10.5pt; line-height: 1.5; color: #333333;">{tips2}</div>
       </div>
     </td>
   </tr>\n"""
@@ -2151,8 +2141,8 @@ class HTMLReportGenerator:
             rank_class2 = get_ex_class(i + 8)
             
             extracurriculars_table += f"""  <tr>
-    <td class="{rank_class1}" width="50%">{i+1}. {ex1["name"]}</td>
-    <td class="{rank_class2}" width="50%">{i+9}. {ex2["name"]}</td>
+    <td class="{rank_class1}" width="50%" style="padding: 8px 12px; font-size: 10.5pt;">{i+1}. {ex1["name"]}</td>
+    <td class="{rank_class2}" width="50%" style="padding: 8px 12px; font-size: 10.5pt;">{i+9}. {ex2["name"]}</td>
   </tr>\n"""
         extracurriculars_table += "</table>"
         
@@ -2165,7 +2155,7 @@ class HTMLReportGenerator:
                 idx = r * 5 + c
                 cr = sorted_cr[idx]
                 rank_class = get_career_class(idx)
-                careers_table += f'    <td class="{rank_class}" width="20%" style="padding: 4px 6px; font-size: 7.5pt;">{idx+1}. {cr["name"]}</td>\n'
+                careers_table += f'    <td class="{rank_class}" width="20%" style="padding: 6px 8px; font-size: 9.5pt;">{idx+1}. {cr["name"]}</td>\n'
             careers_table += "  </tr>\n"
         careers_table += "</table>"
         

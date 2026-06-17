@@ -14,10 +14,18 @@ class AppTheme {
       brightness: Brightness.light,
       primaryColor: primaryColor,
       scaffoldBackgroundColor: const Color(0xFFFAFAFA),
+      fontFamily: 'Inter',
+      textTheme: const TextTheme(
+        headlineLarge: TextStyle(fontFamily: 'Noto Serif', fontWeight: FontWeight.bold),
+        headlineMedium: TextStyle(fontFamily: 'Noto Serif', fontWeight: FontWeight.bold),
+        headlineSmall: TextStyle(fontFamily: 'Noto Serif', fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(fontFamily: 'Noto Serif', fontWeight: FontWeight.bold),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
+        titleTextStyle: TextStyle(fontFamily: 'Noto Serif', fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -59,10 +67,18 @@ class AppTheme {
       brightness: Brightness.dark,
       primaryColor: primaryColor,
       scaffoldBackgroundColor: const Color(0xFF121212),
+      fontFamily: 'Inter',
+      textTheme: const TextTheme(
+        headlineLarge: TextStyle(fontFamily: 'Noto Serif', fontWeight: FontWeight.bold),
+        headlineMedium: TextStyle(fontFamily: 'Noto Serif', fontWeight: FontWeight.bold),
+        headlineSmall: TextStyle(fontFamily: 'Noto Serif', fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(fontFamily: 'Noto Serif', fontWeight: FontWeight.bold),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
+        titleTextStyle: TextStyle(fontFamily: 'Noto Serif', fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
       ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,

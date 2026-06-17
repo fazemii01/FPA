@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/scan_provider.dart';
 import '../../../models/scan_model.dart';
+import '../../../theme/app_theme.dart';
+import '../../../widgets/app_toast.dart';
 
 class SessionTab extends StatefulWidget {
   const SessionTab({Key? key}) : super(key: key);
@@ -28,18 +30,15 @@ class _SessionTabState extends State<SessionTab> {
     }).toList();
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Cari nama peserta...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                prefixIcon: Icon(Icons.search_rounded, color: Colors.grey),
               ),
               onChanged: (value) {
                 setState(() {
@@ -55,7 +54,7 @@ class _SessionTabState extends State<SessionTab> {
                   ? const Center(child: Text('Tidak ada sesi yang ditemukan.'))
                   : ListView.builder(
                       itemCount: filteredSessions.length,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       itemBuilder: (context, index) {
                         final session = filteredSessions[index];
                         return _buildSessionCard(
@@ -68,8 +67,17 @@ class _SessionTabState extends State<SessionTab> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/clients/create'),
-        icon: const Icon(Icons.add),
-        label: const Text('Registrasi Sesi'),
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 2,
+        icon: const Icon(Icons.add_rounded),
+        label: const Text(
+          'Registrasi Sesi',
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }
@@ -83,11 +91,11 @@ class _SessionTabState extends State<SessionTab> {
       case 'scanning':
         return {'label': 'Memindai', 'color': Colors.orange};
       case 'waiting_for_review':
-        return {'label': 'Menunggu Tinjauan', 'color': Colors.amber};
+        return {'label': 'Menunggu Tinjauan', 'color': AppTheme.warningColor};
       case 'approved':
-        return {'label': 'Disetujui', 'color': Colors.green};
+        return {'label': 'Disetujui', 'color': AppTheme.successColor};
       case 'rejected':
-        return {'label': 'Ditolak', 'color': Colors.red};
+        return {'label': 'Ditolak', 'color': AppTheme.errorColor};
       case 'need_rescan':
         return {'label': 'Perlu Scan Ulang', 'color': Colors.deepOrange};
       case 'generating_report':
@@ -114,31 +122,34 @@ class _SessionTabState extends State<SessionTab> {
     final String statusLabel = meta['label'] as String;
     final bool isScanCompleted = session.status == 'scan_completed';
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 1,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         onTap: () => _onCardTap(context, session, scanProvider, isAdmin),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Top row: avatar + info + actions ──
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Avatar
-                  CircleAvatar(
-                    backgroundColor:
-                        Theme.of(context).primaryColor.withOpacity(0.1),
-                    child: Icon(Icons.fingerprint,
-                        color: Theme.of(context).primaryColor),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryColor.withOpacity(0.05),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.fingerprint_rounded,
+                        color: AppTheme.primaryColor, size: 24),
                   ),
                   const SizedBox(width: 12),
-                  // Name + details
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +159,7 @@ class _SessionTabState extends State<SessionTab> {
                               ? session.participantName
                               : 'Sesi #${session.id}',
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
+                              fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.primaryColor),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -156,55 +167,53 @@ class _SessionTabState extends State<SessionTab> {
                           style: TextStyle(
                               color: Colors.grey[600], fontSize: 12),
                         ),
-                        const SizedBox(height: 6),
-                        // Status badge
+                        const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
+                              horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(20),
+                            color: statusColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             statusLabel,
                             style: TextStyle(
                               color: statusColor,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // Admin delete button
                   if (isAdmin)
                     IconButton(
                       icon:
-                          const Icon(Icons.delete_outline, color: Colors.red),
+                          const Icon(Icons.delete_outline_rounded, color: AppTheme.errorColor),
                       tooltip: 'Hapus Sesi',
                       onPressed: () =>
                           _confirmDelete(context, session, scanProvider),
                     ),
                 ],
               ),
-
-              // ── "Kirim Scan" button — visible when scan_completed ──
               if (isScanCompleted) ...[
-                const SizedBox(height: 10),
-                const Divider(height: 1),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
+                const Divider(height: 1, color: Color(0xFFF0F0F0)),
+                const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () =>
                         _confirmSubmit(context, session, scanProvider),
-                    icon: const Icon(Icons.send_rounded, size: 18),
+                    icon: const Icon(Icons.send_rounded, size: 16),
                     label: const Text('Kirim Scan'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
+                      backgroundColor: AppTheme.primaryColor,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                       textStyle: const TextStyle(fontWeight: FontWeight.bold),
@@ -286,14 +295,11 @@ class _SessionTabState extends State<SessionTab> {
     if (confirmed == true && mounted) {
       final success = await scanProvider.submitForReview(session.id);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(success
-                ? 'Sesi "$name" berhasil dikirim untuk ditinjau!'
-                : scanProvider.error ?? 'Gagal mengirim sesi'),
-            backgroundColor: success ? Colors.green : Colors.red,
-          ),
-        );
+        if (success) {
+          AppToast.showSuccess(context, 'Sesi "$name" berhasil dikirim untuk ditinjau!');
+        } else {
+          AppToast.showError(context, scanProvider.error ?? 'Gagal mengirim sesi');
+        }
         if (success) {
           scanProvider.loadSessions(); // refresh list
         }
@@ -353,14 +359,11 @@ class _SessionTabState extends State<SessionTab> {
     if (confirmed == true && mounted) {
       final success = await scanProvider.deleteSession(session.id);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(success
-                ? 'Sesi berhasil dihapus'
-                : scanProvider.error ?? 'Gagal menghapus sesi'),
-            backgroundColor: success ? Colors.green : Colors.red,
-          ),
-        );
+        if (success) {
+          AppToast.showSuccess(context, 'Sesi berhasil dihapus');
+        } else {
+          AppToast.showError(context, scanProvider.error ?? 'Gagal menghapus sesi');
+        }
       }
     }
   }

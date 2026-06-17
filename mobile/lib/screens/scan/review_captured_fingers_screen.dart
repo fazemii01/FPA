@@ -6,6 +6,8 @@ import '../../providers/auth_provider.dart';
 import '../../providers/scan_provider.dart';
 import '../../models/scan_model.dart';
 import '../../widgets/fingerprint_image.dart';
+import '../../widgets/app_toast.dart';
+import '../../theme/app_theme.dart';
 
 class ReviewCapturedFingersScreen extends StatefulWidget {
   final int sessionId;
@@ -173,20 +175,10 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                               isSaving = false;
                             });
                             if (success) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Hasil analisis jari berhasil disimpan'),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
+                              AppToast.showSuccess(context, 'Hasil analisis jari berhasil disimpan');
                               Navigator.pop(context);
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(scanProvider.error ?? 'Gagal menyimpan hasil analisis'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
+                              AppToast.showError(context, scanProvider.error ?? 'Gagal menyimpan hasil analisis');
                             }
                           }
                         },
@@ -222,20 +214,10 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
         _isActionLoading = false;
       });
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sesi pemindaian berhasil dikirim untuk ditinjau'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        AppToast.showSuccess(context, 'Sesi pemindaian berhasil dikirim untuk ditinjau');
         context.go('/home');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(scanProvider.error ?? 'Gagal mengirim untuk ditinjau'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        AppToast.showError(context, scanProvider.error ?? 'Gagal mengirim untuk ditinjau');
       }
     }
   }
@@ -248,20 +230,10 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
     if (mounted) {
       setState(() => _isActionLoading = false);
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sesi disetujui. Admin dapat membuat laporan sekarang.'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        AppToast.showSuccess(context, 'Sesi disetujui. Admin dapat membuat laporan sekarang.');
         context.go('/home');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(scanProvider.error ?? 'Gagal menyetujui sesi pemindaian'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        AppToast.showError(context, scanProvider.error ?? 'Gagal menyetujui sesi pemindaian');
       }
     }
   }
@@ -274,20 +246,10 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
     if (mounted) {
       setState(() => _isActionLoading = false);
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Laporan berhasil dibuat!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        AppToast.showSuccess(context, 'Laporan berhasil dibuat!');
         context.go('/report/${widget.sessionId}');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(scanProvider.error ?? 'Gagal membuat laporan'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        AppToast.showError(context, scanProvider.error ?? 'Gagal membuat laporan');
       }
     }
   }
@@ -326,7 +288,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: AppTheme.errorColor,
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
@@ -349,20 +311,10 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
             _isActionLoading = false;
           });
           if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Sesi pemindaian telah ditolak'),
-                backgroundColor: Colors.orange,
-              ),
-            );
+            AppToast.showWarning(context, 'Sesi pemindaian telah ditolak');
             context.go('/home');
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(scanProvider.error ?? 'Gagal menolak sesi pemindaian'),
-                backgroundColor: Colors.red,
-              ),
-            );
+            AppToast.showError(context, scanProvider.error ?? 'Gagal menolak sesi pemindaian');
           }
         }
       }
@@ -445,12 +397,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                   onPressed: () {
                     if (!formKey.currentState!.validate()) return;
                     if (selectedFingers.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Pilih minimal satu jari untuk dipindai ulang'),
-                          backgroundColor: Colors.orange,
-                        ),
-                      );
+                      AppToast.showWarning(context, 'Pilih minimal satu jari untuk dipindai ulang');
                       return;
                     }
                     Navigator.pop(context, {
@@ -478,20 +425,10 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
             _isActionLoading = false;
           });
           if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Permintaan scan ulang berhasil dikirim'),
-                backgroundColor: Colors.green,
-              ),
-            );
+            AppToast.showSuccess(context, 'Permintaan scan ulang berhasil dikirim');
             context.go('/home');
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(scanProvider.error ?? 'Gagal meminta scan ulang'),
-                backgroundColor: Colors.red,
-              ),
-            );
+            AppToast.showError(context, scanProvider.error ?? 'Gagal meminta scan ulang');
           }
         }
       }
@@ -505,7 +442,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
     bool isAdmin,
   ) {
     const btnShape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
+      borderRadius: BorderRadius.all(Radius.circular(8)),
     );
     const btnPadding = EdgeInsets.symmetric(vertical: 14);
 
@@ -516,10 +453,10 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: _isActionLoading ? null : () => _showRejectDialog(context, scanProvider),
-                icon: const Icon(Icons.close_rounded, color: Colors.redAccent),
-                label: const Text('Tolak', style: TextStyle(color: Colors.redAccent)),
+                icon: const Icon(Icons.close_rounded, color: AppTheme.errorColor),
+                label: const Text('Tolak', style: TextStyle(color: AppTheme.errorColor)),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.redAccent),
+                  side: const BorderSide(color: AppTheme.errorColor),
                   padding: btnPadding,
                   shape: btnShape,
                 ),
@@ -529,10 +466,10 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: _isActionLoading ? null : () => _showRescanDialog(context, session, scanProvider),
-                icon: const Icon(Icons.replay_rounded, color: Colors.orange),
-                label: const Text('Scan Ulang', style: TextStyle(color: Colors.orange)),
+                icon: const Icon(Icons.replay_rounded, color: AppTheme.warningColor),
+                label: const Text('Scan Ulang', style: TextStyle(color: AppTheme.warningColor)),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.orange),
+                  side: const BorderSide(color: AppTheme.warningColor),
                   padding: btnPadding,
                   shape: btnShape,
                 ),
@@ -551,7 +488,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                     : const Icon(Icons.check_rounded),
                 label: const Text('Setujui'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppTheme.successColor,
                   foregroundColor: Colors.white,
                   padding: btnPadding,
                   shape: btnShape,
@@ -570,18 +507,18 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: AppTheme.successColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.green.withOpacity(0.3)),
+                border: Border.all(color: AppTheme.successColor.withOpacity(0.3)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.check_circle_outline, color: Colors.green, size: 18),
+                  const Icon(Icons.check_circle_outline, color: AppTheme.successColor, size: 18),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
                       'Sesi telah disetujui. Klik di bawah untuk membuat laporan analisis.',
-                      style: TextStyle(color: Colors.green, fontSize: 12),
+                      style: TextStyle(color: AppTheme.successColor, fontSize: 12),
                     ),
                   ),
                 ],
@@ -598,11 +535,11 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                   : const Icon(Icons.picture_as_pdf_rounded),
               label: Text(_isActionLoading ? 'Membuat Laporan...' : 'Buat Laporan'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6C63FF),
+                backgroundColor: AppTheme.primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
                 ),
                 textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
@@ -618,7 +555,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12)),
+              borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
           ),
         );
@@ -652,7 +589,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                 child: Text(
                   'Harap selesaikan pemindaian 10 jari sebelum mengirim (${session.completedCount}/10).',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.w500),
+                  style: const TextStyle(color: AppTheme.errorColor, fontSize: 12, fontWeight: FontWeight.w500),
                 ),
               ),
             ],
@@ -667,7 +604,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                       ),
                     ),
@@ -681,7 +618,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                       ),
                     ),
@@ -695,7 +632,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                       ),
                     ),
@@ -709,12 +646,12 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.hourglass_top_rounded, color: Colors.amber),
+            const Icon(Icons.hourglass_top_rounded, color: AppTheme.warningColor),
             const SizedBox(width: 8),
             const Text(
               'Menunggu Tinjauan Admin',
               style: TextStyle(
-                color: Colors.amber,
+                color: AppTheme.warningColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -733,7 +670,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
+                borderRadius: BorderRadius.all(Radius.circular(8)),
               ),
             ),
           ),
@@ -748,7 +685,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
+                borderRadius: BorderRadius.all(Radius.circular(8)),
               ),
             ),
           ),
@@ -759,259 +696,276 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
     final isAdmin = user?.role == 'admin';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isAdmin ? 'Tinjauan Sidik Jari (Admin)' : 'Review Sidik Jari'),
+        backgroundColor: const Color(0xFFFAFAFA),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          isAdmin ? 'Tinjauan Sidik Jari' : 'Review Sidik Jari',
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: AppTheme.primaryColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.primaryColor, size: 20),
           onPressed: () => context.go('/home'),
         ),
       ),
-      body: Consumer<ScanProvider>(
-        builder: (context, scanProvider, _) {
-          final session = scanProvider.currentSession;
-          
-          if (scanProvider.isLoading && session == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: SafeArea(
+        child: Consumer<ScanProvider>(
+          builder: (context, scanProvider, _) {
+            final session = scanProvider.currentSession;
+            
+            if (scanProvider.isLoading && session == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (session == null) {
-            return const Center(child: Text('Data sesi pemindaian tidak ditemukan'));
-          }
+            if (session == null) {
+              return const Center(child: Text('Data sesi pemindaian tidak ditemukan'));
+            }
 
-          final statusMeta = _getStatusMetadata(session.status);
-          final avgQuality = _calculateAverageQuality(session);
+            final statusMeta = _getStatusMetadata(session.status);
+            final avgQuality = _calculateAverageQuality(session);
 
-          return Stack(
-            children: [
-              SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Participant Info Card
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    session.participantName.isNotEmpty
-                                        ? session.participantName
-                                        : 'Sesi #${session.id}',
-                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: (statusMeta['color'] as Color).withOpacity(0.12),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    statusMeta['label'],
-                                    style: TextStyle(
-                                      color: statusMeta['color'] as Color,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ],
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Participant Info Card
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFE0E0E0)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.01),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
-                            const Divider(height: 24),
-                            Row(
-                              children: [
-                                const Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey),
-                                const SizedBox(width: 8),
-                                Text('Umur: ${session.participantAge} tahun'),
-                                const SizedBox(width: 24),
-                                const Icon(Icons.wc_outlined, size: 16, color: Colors.grey),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Jenis Kelamin: ${session.participantGender == 'male' ? 'Laki-laki' : session.participantGender == 'female' ? 'Perempuan' : '-'}',
-                                ),
-                              ],
-                            ),
-                            if (session.notes != null && session.notes!.isNotEmpty) ...[
-                              const SizedBox(height: 12),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Icon(Icons.notes_outlined, size: 16, color: Colors.grey),
-                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      'Catatan: ${session.notes}',
-                                      style: TextStyle(color: Colors.grey[700]),
+                                      session.participantName.isNotEmpty
+                                          ? session.participantName
+                                          : 'Sesi #${session.id}',
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: AppTheme.primaryColor,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: (statusMeta['color'] as Color).withOpacity(0.12),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      statusMeta['label'],
+                                      style: TextStyle(
+                                        color: statusMeta['color'] as Color,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ],
-                            if ((session.status == 'need_rescan' || session.status == 'rejected') &&
-                                session.rejectionReason != null &&
-                                session.rejectionReason!.isNotEmpty) ...[
-                              const SizedBox(height: 16),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.red[50],
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.red[200]!),
-                                ),
-                                child: Column(
+                              const Divider(height: 24),
+                              Row(
+                                children: [
+                                  const Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey),
+                                  const SizedBox(width: 8),
+                                  Text('Umur: ${session.participantAge} tahun'),
+                                  const SizedBox(width: 24),
+                                  const Icon(Icons.wc_outlined, size: 16, color: Colors.grey),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Jenis Kelamin: ${session.participantGender == 'male' ? 'Laki-laki' : session.participantGender == 'female' ? 'Perempuan' : '-'}',
+                                  ),
+                                ],
+                              ),
+                              if (session.notes != null && session.notes!.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      session.status == 'need_rescan'
-                                          ? 'Alasan Permintaan Scan Ulang:'
-                                          : 'Alasan Penolakan Sesi:',
-                                      style: TextStyle(
-                                        color: Colors.red[800],
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      session.rejectionReason!,
-                                      style: TextStyle(
-                                        color: Colors.red[900],
-                                        fontSize: 13,
+                                    const Icon(Icons.notes_outlined, size: 16, color: Colors.grey),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'Catatan: ${session.notes}',
+                                        style: TextStyle(color: Colors.grey[700]),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
+                              ],
+                              if ((session.status == 'need_rescan' || session.status == 'rejected') &&
+                                  session.rejectionReason != null &&
+                                  session.rejectionReason!.isNotEmpty) ...[
+                                const SizedBox(height: 16),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.errorColor.withOpacity(0.05),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: AppTheme.errorColor.withOpacity(0.2)),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        session.status == 'need_rescan'
+                                            ? 'Alasan Permintaan Scan Ulang:'
+                                            : 'Alasan Penolakan Sesi:',
+                                        style: const TextStyle(
+                                          color: AppTheme.errorColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        session.rejectionReason!,
+                                        style: TextStyle(
+                                          color: AppTheme.errorColor.withOpacity(0.9),
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Ringkasan Kualitas Sidik Jari — Card
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFE0E0E0)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.01),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.analytics_outlined, color: AppTheme.primaryColor, size: 18),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Ringkasan Kualitas Sidik Jari',
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Total Jari Pindai',
+                                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '${session.completedCount}/10',
+                                      style: const TextStyle(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.primaryColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Container(width: 1, height: 60, color: const Color(0xFFE0E0E0)),
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Rata-rata Kualitas',
+                                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    SizedBox(
+                                      width: 72,
+                                      height: 72,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          CircularProgressIndicator(
+                                            value: (avgQuality / 100).clamp(0.0, 1.0),
+                                            strokeWidth: 6,
+                                            backgroundColor: const Color(0xFFF1F5F9),
+                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                              avgQuality >= 70
+                                                  ? AppTheme.successColor
+                                                  : avgQuality >= 50
+                                                      ? AppTheme.warningColor
+                                                      : AppTheme.errorColor,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${avgQuality.toStringAsFixed(1)}%',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                              color: avgQuality >= 70
+                                                  ? AppTheme.successColor
+                                                  : avgQuality >= 50
+                                                      ? AppTheme.warningColor
+                                                      : AppTheme.errorColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Ringkasan Kualitas Sidik Jari — Gradient Card
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF1E1E2E), Color(0xFF252540)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.analytics_outlined, color: Colors.blue[300], size: 18),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Ringkasan Kualitas Sidik Jari',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Column(
-                                children: [
-                                  const Text(
-                                    'Total Jari Pindai',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    '${session.completedCount}/10',
-                                    style: const TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF00D4FF),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Container(width: 1, height: 60, color: Colors.white12),
-                              Column(
-                                children: [
-                                  const Text(
-                                    'Rata-rata Kualitas',
-                                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  SizedBox(
-                                    width: 72,
-                                    height: 72,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        CircularProgressIndicator(
-                                          value: (avgQuality / 100).clamp(0.0, 1.0),
-                                          strokeWidth: 6,
-                                          backgroundColor: Colors.white12,
-                                          valueColor: AlwaysStoppedAnimation<Color>(
-                                            avgQuality >= 70
-                                                ? Colors.greenAccent
-                                                : avgQuality >= 50
-                                                    ? Colors.orange
-                                                    : Colors.redAccent,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${avgQuality.toStringAsFixed(1)}%',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                            color: avgQuality >= 70
-                                                ? Colors.greenAccent
-                                                : avgQuality >= 50
-                                                    ? Colors.orange
-                                                    : Colors.redAccent,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: 24),
 
                     // Detail Sidik Jari List
@@ -1030,67 +984,75 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                         final fp = session.fingerprints[index];
                         final label = AppConstants.fingerLabels[fp.fingerPosition] ?? fp.fingerPosition;
                         final Color qualityColor = fp.isGoodQuality
-                            ? Colors.greenAccent
+                            ? AppTheme.successColor
                             : fp.isFairQuality
-                                ? Colors.orange
-                                : Colors.redAccent;
+                                ? AppTheme.warningColor
+                                : AppTheme.errorColor;
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 10),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border(
-                              left: BorderSide(
-                                color: qualityColor,
-                                width: 4,
-                              ),
-                            ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFE0E0E0)),
                             boxShadow: [
                               BoxShadow(
-                                color: qualityColor.withOpacity(0.08),
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
+                                color: Colors.black.withOpacity(0.01),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                            leading: CircleAvatar(
-                              backgroundColor: qualityColor.withOpacity(0.15),
-                              child: Text(
-                                '${index + 1}',
-                                style: TextStyle(
-                                  color: qualityColor,
-                                  fontWeight: FontWeight.bold,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  left: BorderSide(
+                                    color: qualityColor,
+                                    width: 4,
+                                  ),
                                 ),
                               ),
-                            ),
-                            title: Text(
-                              label,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                            subtitle: Text(
-                              'Kualitas: ${fp.qualityScore?.toStringAsFixed(1) ?? "N/A"}%',
-                              style: TextStyle(color: qualityColor, fontSize: 12),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  fp.isGoodQuality
-                                      ? Icons.check_circle_rounded
-                                      : fp.isFairQuality
-                                          ? Icons.warning_amber_rounded
-                                          : Icons.error_outline_rounded,
-                                  color: qualityColor,
-                                  size: 22,
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                leading: CircleAvatar(
+                                  backgroundColor: qualityColor.withOpacity(0.15),
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: TextStyle(
+                                      color: qualityColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                                const SizedBox(width: 4),
-                                Icon(Icons.chevron_right_rounded, color: Colors.grey[600], size: 20),
-                              ],
+                                title: Text(
+                                  label,
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                                subtitle: Text(
+                                  'Kualitas: ${fp.qualityScore?.toStringAsFixed(1) ?? "N/A"}%',
+                                  style: TextStyle(color: qualityColor, fontSize: 12),
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      fp.isGoodQuality
+                                          ? Icons.check_circle_rounded
+                                          : fp.isFairQuality
+                                              ? Icons.warning_amber_rounded
+                                              : Icons.error_outline_rounded,
+                                      color: qualityColor,
+                                      size: 22,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(Icons.chevron_right_rounded, color: Colors.grey[600], size: 20),
+                                  ],
+                                ),
+                                onTap: () => _showFingerDetail(context, fp, label),
+                              ),
                             ),
-                            onTap: () => _showFingerDetail(context, fp, label),
                           ),
                         );
                       },
@@ -1106,16 +1068,11 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                 right: 0,
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A2E),
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        blurRadius: 16,
-                        offset: const Offset(0, -4),
-                      ),
-                    ],
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      top: BorderSide(color: Color(0xFFE0E0E0), width: 1),
+                    ),
                   ),
                   child: SafeArea(
                     top: false,
@@ -1151,6 +1108,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 }

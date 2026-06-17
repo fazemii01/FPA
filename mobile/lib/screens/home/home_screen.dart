@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/scan_provider.dart';
+import '../../theme/app_theme.dart';
 
 import 'tabs/dashboard_tab.dart';
 import 'tabs/session_tab.dart';
@@ -39,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
     final isAdmin = user?.role == 'admin';
@@ -48,30 +50,44 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Dashboard Tab
     tabs.add(const DashboardTab());
-    navItems.add(const BottomNavigationBarItem(
-        icon: Icon(Icons.dashboard), label: 'Beranda'));
+    navItems.add(BottomNavigationBarItem(
+      icon: Icon(_currentIndex == 0 ? Icons.dashboard_rounded : Icons.dashboard_outlined),
+      label: 'Beranda',
+    ));
 
     // Session Tab
     tabs.add(const SessionTab());
-    navItems.add(const BottomNavigationBarItem(
-        icon: Icon(Icons.list_alt), label: 'Sesi'));
+    navItems.add(BottomNavigationBarItem(
+      icon: Icon(_currentIndex == 1 ? Icons.list_alt_rounded : Icons.list_alt_outlined),
+      label: 'Sesi',
+    ));
 
     // Review Tab (Admin Only)
+    int reviewIndex = -1;
     if (isAdmin) {
+      reviewIndex = tabs.length;
       tabs.add(const ReviewTab());
-      navItems.add(const BottomNavigationBarItem(
-          icon: Icon(Icons.assignment_turned_in), label: 'Tinjauan'));
+      navItems.add(BottomNavigationBarItem(
+        icon: Icon(_currentIndex == reviewIndex ? Icons.assignment_turned_in_rounded : Icons.assignment_turned_in_outlined),
+        label: 'Tinjauan',
+      ));
     }
 
     // Report History Tab
+    int historyIndex = tabs.length;
     tabs.add(const ReportHistoryTab());
-    navItems.add(const BottomNavigationBarItem(
-        icon: Icon(Icons.history), label: 'Riwayat'));
+    navItems.add(BottomNavigationBarItem(
+      icon: Icon(_currentIndex == historyIndex ? Icons.history_rounded : Icons.history_outlined),
+      label: 'Riwayat',
+    ));
 
     // Profile Tab
+    int profileIndex = tabs.length;
     tabs.add(const ProfileTab());
-    navItems.add(const BottomNavigationBarItem(
-        icon: Icon(Icons.person), label: 'Profil'));
+    navItems.add(BottomNavigationBarItem(
+      icon: Icon(_currentIndex == profileIndex ? Icons.person_rounded : Icons.person_outline_rounded),
+      label: 'Profil',
+    ));
 
     // Guard against index out of bounds if role changes dynamically
     if (_currentIndex >= tabs.length) {
@@ -79,9 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     String getTitle() {
-      // Provide dynamic titles based on the selected tab and role
-      if (_currentIndex == 0)
+      if (_currentIndex == 0) {
         return isAdmin ? 'FPA Portal - Admin' : '10-Finger Scanner';
+      }
       if (_currentIndex == 1) return 'Daftar Sesi Pemindaian';
 
       if (isAdmin) {
@@ -96,11 +112,21 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
-        title: Text(getTitle()),
+        backgroundColor: const Color(0xFFFAFAFA),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          getTitle(),
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: AppTheme.primaryColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded, color: AppTheme.primaryColor),
             tooltip: 'Segarkan data',
             onPressed: _refreshData,
           ),
@@ -110,17 +136,28 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _currentIndex,
         children: tabs,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-        items: navItems,
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            top: BorderSide(color: Color(0xFFE0E0E0), width: 1),
+          ),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: AppTheme.primaryColor,
+          unselectedItemColor: Colors.grey[500],
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, fontFamily: 'Inter'),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 11, fontFamily: 'Inter'),
+          elevation: 0,
+          items: navItems,
+        ),
       ),
     );
   }

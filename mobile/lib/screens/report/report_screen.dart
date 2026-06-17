@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/scan_provider.dart';
+import '../../widgets/app_toast.dart';
+import '../../theme/app_theme.dart';
 
 class ReportScreen extends StatefulWidget {
   final int sessionId;
@@ -26,11 +28,22 @@ class _ReportScreenState extends State<ReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
-        title: const Text('Scan Report'),
+        backgroundColor: const Color(0xFFFAFAFA),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          'Laporan Pemindaian',
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: AppTheme.primaryColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.primaryColor, size: 20),
           onPressed: () => context.go('/home'),
         ),
       ),
@@ -44,7 +57,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
           if (report == null) {
             return const Center(
-              child: Text('No report available'),
+              child: Text('Laporan tidak ditemukan'),
             );
           }
 
@@ -54,19 +67,34 @@ class _ReportScreenState extends State<ReportScreen> {
           final qualityScores = metrics?['quality_scores'] as Map<String, dynamic>? ?? {};
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFE0E0E0)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.01),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Overall Score',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          'Skor Keseluruhan',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: AppTheme.primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Center(
@@ -74,7 +102,7 @@ class _ReportScreenState extends State<ReportScreen> {
                             children: [
                               Text(
                                 '${report.overallScore.toStringAsFixed(1)}%',
-                                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                style: theme.textTheme.displayLarge?.copyWith(
                                   color: _getScoreColor(report.overallScore),
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -82,8 +110,9 @@ class _ReportScreenState extends State<ReportScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 _getScoreLabel(report.overallScore),
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   color: _getScoreColor(report.overallScore),
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
@@ -94,26 +123,41 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFE0E0E0)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.01),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Summary',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          'Ringkasan',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: AppTheme.primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 16),
-                        _buildInfoRow('Total Fingerprints', '$totalFingerprints'),
-                        const SizedBox(height: 8),
+                        _buildInfoRow('Total Sidik Jari', '$totalFingerprints'),
+                        const Divider(height: 20),
                         _buildInfoRow(
-                          'Average Quality',
+                          'Rata-rata Kualitas',
                           '${averageQuality.toStringAsFixed(1)}%',
                         ),
-                        const SizedBox(height: 8),
+                        const Divider(height: 20),
                         _buildInfoRow(
-                          'Generated',
+                          'Dibuat Pada',
                           _formatDate(report.createdAt),
                         ),
                       ],
@@ -121,15 +165,30 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFE0E0E0)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.01),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Fingerprint Details',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          'Detail Kualitas Jari',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: AppTheme.primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ...qualityScores.entries.map((entry) {
@@ -145,11 +204,13 @@ class _ReportScreenState extends State<ReportScreen> {
                                   children: [
                                     Text(
                                       _formatFingerPosition(position),
-                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                     Text(
                                       '${score.toStringAsFixed(1)}%',
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      style: theme.textTheme.bodyMedium?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: _getScoreColor(score),
                                       ),
@@ -162,7 +223,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                   child: LinearProgressIndicator(
                                     value: score / 100,
                                     minHeight: 8,
-                                    backgroundColor: Colors.grey[200],
+                                    backgroundColor: const Color(0xFFF1F5F9),
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                       _getScoreColor(score),
                                     ),
@@ -180,13 +241,28 @@ class _ReportScreenState extends State<ReportScreen> {
                 ElevatedButton.icon(
                   onPressed: () => _handleDownloadPDF(context),
                   icon: const Icon(Icons.download),
-                  label: const Text('Download PDF Report'),
+                  label: const Text('Unduh Laporan PDF'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
                   onPressed: () => context.go('/home'),
-                  icon: const Icon(Icons.home),
-                  label: const Text('Back to Home'),
+                  icon: const Icon(Icons.home_rounded, color: AppTheme.primaryColor),
+                  label: const Text('Kembali ke Beranda', style: TextStyle(color: AppTheme.primaryColor)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: const BorderSide(color: AppTheme.primaryColor),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -195,39 +271,6 @@ class _ReportScreenState extends State<ReportScreen> {
       ),
     );
   }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.grey[600],
-          ),
-        ),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Color _getScoreColor(double score) {
-    if (score >= 70) return Colors.green;
-    if (score >= 50) return Colors.orange;
-    return Colors.red;
-  }
-
-  String _getScoreLabel(double score) {
-    if (score >= 70) return 'Good Quality';
-    if (score >= 50) return 'Fair Quality';
-    return 'Poor Quality';
-  }
-
   String _formatFingerPosition(String position) {
     return position
         .split('_')
@@ -240,10 +283,38 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   void _handleDownloadPDF(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('PDF download functionality coming soon'),
+    AppToast.showInfo(context, 'Fitur unduh PDF akan segera tersedia');
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(color: Colors.grey),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
+  }
+
+  Color _getScoreColor(double score) {
+    if (score >= 80) return AppTheme.successColor;
+    if (score >= 60) return AppTheme.warningColor;
+    return AppTheme.errorColor;
+  }
+
+  String _getScoreLabel(double score) {
+    if (score >= 80) return 'Kualitas Sangat Baik';
+    if (score >= 60) return 'Kualitas Baik';
+    if (score >= 40) return 'Kualitas Cukup';
+    return 'Kualitas Rendah';
   }
 }

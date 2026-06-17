@@ -10,6 +10,7 @@ import 'dart:convert';
 import '../../config/app_config.dart';
 import '../../providers/scan_provider.dart';
 import '../../shared/widgets/circular_guide_overlay.dart';
+import '../../widgets/app_toast.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
 class FingerprintCaptureScreen extends StatefulWidget {
@@ -498,9 +499,7 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
         if (debugImages != null && debugImages.isNotEmpty) {
           _showRejectionDialog(context, scanProvider.error ?? 'Upload failed', debugImages);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(scanProvider.error ?? 'Upload failed')),
-          );
+          AppToast.showError(context, scanProvider.error ?? 'Upload failed');
         }
       }
     }
