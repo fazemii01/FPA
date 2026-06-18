@@ -65,6 +65,13 @@ class ProfileTab extends StatelessWidget {
                     user?.email ?? '',
                     style: TextStyle(color: Colors.grey[500], fontSize: 13),
                   ),
+                  if (user?.lembagaName != null && user!.lembagaName!.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '${user.lembagaName!} • ${user.lembagaCredits ?? 0} Kredit',
+                      style: TextStyle(color: Colors.grey[700], fontSize: 13, fontWeight: FontWeight.w500),
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
@@ -100,6 +107,37 @@ class ProfileTab extends StatelessWidget {
             const SizedBox(height: 12),
             
             if (isAdmin) ...[
+              BouncingWidget(
+                onTap: () => context.push('/topup'),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFE0E0E0)),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor.withOpacity(0.05),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.add_card_rounded, color: AppTheme.primaryColor),
+                    ),
+                    title: const Text(
+                      'Top Up Kredit Lembaga',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryColor, fontSize: 14),
+                    ),
+                    subtitle: Text(
+                      'Beli/tambah kredit pemindaian',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               BouncingWidget(
                 onTap: () => context.push('/register'),
                 child: Container(

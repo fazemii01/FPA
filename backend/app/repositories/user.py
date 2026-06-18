@@ -14,6 +14,7 @@ class UserRepository:
             hashed_password=hashed_password,
             full_name=user.full_name,
             role=UserRole(user.role.value),
+            lembaga_id=user.lembaga_id,
         )
         db.add(db_user)
         db.commit()

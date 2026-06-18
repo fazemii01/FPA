@@ -25,6 +25,8 @@ from app.middleware.auth import (
     get_current_user,
     require_admin,
     require_staff_or_admin,
+    require_permission,
+    require_super_admin,
 )
 from app.models.user import User, UserRole
 from app.models.scan_session import SessionStatus
@@ -38,7 +40,9 @@ image_processor = ImageProcessingService()
 def _ensure_session_visible(session, user: User):
     if session is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
-    if user.role != UserRole.ADMIN and session.user_id != user.id:
+    if user.role == UserRole.SUPER_ADMIN:
+        return session
+    if session.lembaga_id != user.lembaga_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
     return session
 
@@ -51,7 +55,7 @@ def _ensure_session_visible(session, user: User):
 def create_scan_session(
     payload: ScanSessionCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_staff_or_admin),
+    current_user: User = Depends(require_permission("CREATE_SESSION")),
 ):
     return ScanSessionRepository.create_session(db, current_user.id, payload)
 
@@ -69,11 +73,12 @@ def get_scan_session(
 @router.get("/sessions", response_model=list[ScanSessionResponse])
 def list_sessions(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("VIEW_HISTORY")),
 ):
-    if current_user.role == UserRole.ADMIN:
+    if current_user.role == UserRole.SUPER_ADMIN:
         return ScanSessionRepository.get_all_sessions(db)
-    return ScanSessionRepository.get_user_sessions(db, current_user.id)
+    # Both Admin and Staff/Operator share the same session history within the same institution
+    return ScanSessionRepository.get_all_sessions_by_lembaga(db, current_user.lembaga_id)
 
 
 @router.get(
@@ -82,9 +87,11 @@ def list_sessions(
 )
 def list_review_queue(
     db: Session = Depends(get_db),
-    _admin: User = Depends(require_admin),
+    current_user: User = Depends(require_permission("VIEW_HISTORY")),
 ):
-    return ScanSessionRepository.get_all_sessions(db, status=SessionStatus.WAITING_FOR_REVIEW)
+    if current_user.role == UserRole.SUPER_ADMIN:
+        return ScanSessionRepository.get_all_sessions(db, status=SessionStatus.WAITING_FOR_REVIEW)
+    return ScanSessionRepository.get_all_sessions_by_lembaga(db, current_user.lembaga_id, status=SessionStatus.WAITING_FOR_REVIEW)
 
 
 @router.post(
@@ -98,7 +105,7 @@ async def upload_fingerprint(
     file: UploadFile = File(...),
     enhanced_file: UploadFile = File(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_staff_or_admin),
+    current_user: User = Depends(require_permission("CREATE_SESSION")),
 ):
     session = ScanSessionRepository.get_session(db, session_id)
     _ensure_session_visible(session, current_user)
@@ -122,16 +129,6 @@ async def upload_fingerprint(
 
     processing_result = image_processor.process_fingerprint(file_data)
     quality_score = processing_result["quality_score"]
-
-    # Bypass quality threshold validation to allow continuous scanning workflow
-    # if quality_score < 70.0:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail={
-    #             "message": processing_result.get("reject_reason", "Kualitas sidik jari terlalu rendah."),
-    #             "debug_images": processing_result.get("debug_images", {})
-    #         }
-    #     )
 
     features = processing_result["features"]
     
@@ -169,7 +166,7 @@ async def upload_fingerprint(
 def get_session_fingerprints(
     session_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("VIEW_HISTORY")),
 ):
     session = ScanSessionRepository.get_session(db, session_id)
     _ensure_session_visible(session, current_user)
@@ -180,7 +177,7 @@ def get_session_fingerprints(
 def get_fingerprint_image(
     fingerprint_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("VIEW_HISTORY")),
 ):
     """Proxy endpoint: fetches the fingerprint image from MinIO and streams it back."""
     fingerprint = FingerprintRepository.get_fingerprint(db, fingerprint_id)
@@ -210,7 +207,7 @@ def get_fingerprint_image(
 def submit_for_review(
     session_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_staff_or_admin),
+    current_user: User = Depends(require_permission("CREATE_SESSION")),
 ):
     session = ScanSessionRepository.get_session(db, session_id)
     _ensure_session_visible(session, current_user)
@@ -241,7 +238,7 @@ def submit_for_review(
 def approve_session(
     session_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission("DELETE_SESSION")),
 ):
     session = ScanSessionRepository.get_session(db, session_id)
     _ensure_session_visible(session, admin)
@@ -258,7 +255,7 @@ def reject_session(
     session_id: int,
     payload: SessionRejectRequest,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission("DELETE_SESSION")),
 ):
     session = ScanSessionRepository.get_session(db, session_id)
     _ensure_session_visible(session, admin)
@@ -277,7 +274,7 @@ def request_rescan(
     session_id: int,
     payload: SessionRescanRequest,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission("DELETE_SESSION")),
 ):
     session = ScanSessionRepository.get_session(db, session_id)
     _ensure_session_visible(session, admin)
@@ -300,8 +297,11 @@ def request_rescan(
 def delete_scan_session(
     session_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission("DELETE_SESSION")),
 ):
+    # Retrieve session to ensure it is visible/belongs to the user's institution
+    session = ScanSessionRepository.get_session(db, session_id)
+    _ensure_session_visible(session, admin)
     success = ScanSessionRepository.delete_session(db, session_id)
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
@@ -316,7 +316,7 @@ def update_fingerprint_features(
     fingerprint_id: int,
     payload: FingerprintFeaturesUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_staff_or_admin),
+    current_user: User = Depends(require_permission("CREATE_SESSION")),
 ):
     fingerprint = FingerprintRepository.get_fingerprint(db, fingerprint_id)
     if fingerprint is None:

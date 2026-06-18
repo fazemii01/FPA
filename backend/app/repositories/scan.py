@@ -11,8 +11,13 @@ from datetime import datetime
 class ScanSessionRepository:
     @staticmethod
     def create_session(db: Session, user_id: int, payload: ScanSessionCreate) -> ScanSession:
+        from app.models.user import User
+        user = db.query(User).filter(User.id == user_id).first()
+        lembaga_id = user.lembaga_id if user else None
+
         session = ScanSession(
             user_id=user_id,
+            lembaga_id=lembaga_id,
             participant_name=payload.participant_name,
             participant_age=payload.participant_age,
             participant_gender=payload.participant_gender,
@@ -48,10 +53,33 @@ class ScanSessionRepository:
         )
 
     @staticmethod
+    def get_user_sessions_by_lembaga(db: Session, user_id: int, lembaga_id: int) -> List[ScanSession]:
+        return (
+            db.query(ScanSession)
+            .options(
+                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+            )
+            .filter(ScanSession.user_id == user_id, ScanSession.lembaga_id == lembaga_id)
+            .order_by(ScanSession.created_at.desc())
+            .all()
+        )
+
+    @staticmethod
     def get_all_sessions(db: Session, status: Optional[SessionStatus] = None) -> List[ScanSession]:
         q = db.query(ScanSession).options(
             selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
         )
+        if status is not None:
+            q = q.filter(ScanSession.status == status)
+        return q.order_by(ScanSession.created_at.desc()).all()
+
+    @staticmethod
+    def get_all_sessions_by_lembaga(
+        db: Session, lembaga_id: int, status: Optional[SessionStatus] = None
+    ) -> List[ScanSession]:
+        q = db.query(ScanSession).options(
+            selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+        ).filter(ScanSession.lembaga_id == lembaga_id)
         if status is not None:
             q = q.filter(ScanSession.status == status)
         return q.order_by(ScanSession.created_at.desc()).all()

@@ -112,6 +112,9 @@ class _DashboardTabState extends State<DashboardTab> {
                 if (!isAdmin) ...[
                   _buildQuickActionBtn(context, theme),
                   const SizedBox(height: 24),
+                ] else ...[
+                  _buildTopUpActionBtn(context, theme),
+                  const SizedBox(height: 24),
                 ],
 
                 // Recent Sessions
@@ -179,6 +182,17 @@ class _DashboardTabState extends State<DashboardTab> {
                   color: AppTheme.primaryColor,
                 ),
               ),
+              if (user?.lembagaName != null && user.lembagaName.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  '${user.lembagaName} • ${user.lembagaCredits ?? 0} Kredit',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -445,6 +459,24 @@ class _DashboardTabState extends State<DashboardTab> {
       onPressed: () => context.push('/clients/create'),
       icon: const Icon(Icons.person_add_alt_1_rounded, size: 20),
       label: const Text('Registrasi Peserta Baru'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopUpActionBtn(BuildContext context, ThemeData theme) {
+    return ElevatedButton.icon(
+      onPressed: () => context.push('/topup'),
+      icon: const Icon(Icons.add_card_rounded, size: 20),
+      label: const Text('Top Up Kredit Lembaga'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppTheme.primaryColor,
         foregroundColor: Colors.white,

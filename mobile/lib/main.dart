@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ScanProvider()),
       ],
       child: MaterialApp.router(
-        title: 'FPA - Fingerprint Scanner',
+        title: 'Allia Tap finger',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,

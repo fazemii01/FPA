@@ -15,6 +15,8 @@ import '../screens/scan/fingerprint_capture_screen.dart';
 import '../screens/report/report_screen.dart';
 import '../screens/report/report_summary_screen.dart';
 import '../screens/report/report_view_screen.dart';
+import '../screens/home/topup_screen.dart';
+
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -36,6 +38,10 @@ class AppRouter {
       GoRoute(
         path: '/home',
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/topup',
+        builder: (context, state) => const TopUpScreen(),
       ),
       GoRoute(
         path: '/clients/create',

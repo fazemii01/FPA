@@ -1,10 +1,11 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from enum import Enum
 
 
 class UserRoleEnum(str, Enum):
+    SUPER_ADMIN = "super_admin"
     ADMIN = "admin"
     STAFF = "staff"
 
@@ -14,6 +15,7 @@ class UserCreate(BaseModel):
     password: str
     full_name: Optional[str] = None
     role: UserRoleEnum = UserRoleEnum.STAFF
+    lembaga_id: Optional[int] = None
 
 
 class UserLogin(BaseModel):
@@ -26,6 +28,10 @@ class UserResponse(BaseModel):
     email: str
     full_name: Optional[str]
     role: UserRoleEnum
+    lembaga_id: Optional[int] = None
+    lembaga_name: Optional[str] = None
+    lembaga_credits: Optional[int] = None
+    permissions: List[str] = []
     is_active: bool
     created_at: datetime
 
@@ -37,3 +43,5 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     role: UserRoleEnum
+    permissions: List[str] = []
+

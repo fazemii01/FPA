@@ -61,9 +61,12 @@ class ReportService:
             report.pdf_path = pdf_path
             report.metrics = metrics
             report.created_at = datetime.utcnow()
+            if report.lembaga_id is None:
+                report.lembaga_id = session.lembaga_id
         else:
             report = Report(
                 scan_session_id=scan_session_id,
+                lembaga_id=session.lembaga_id,
                 overall_score=average_quality,
                 pdf_path=pdf_path,
                 metrics=metrics

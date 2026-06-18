@@ -52,10 +52,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.fingerprint_rounded,
-                        size: 64,
-                        color: AppTheme.primaryColor,
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        height: 64,
+                        width: 64,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.fingerprint_rounded,
+                            size: 64,
+                            color: AppTheme.primaryColor,
+                          );
+                        },
                       ),
                     ),
                   ),

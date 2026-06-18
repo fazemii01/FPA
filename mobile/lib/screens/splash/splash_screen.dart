@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'FPA - Fingerprint Scanner',
+              'Allia Tap finger',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 48),

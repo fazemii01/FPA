@@ -59,11 +59,11 @@ class ReportHistoryTab extends StatelessWidget {
     AuthProvider authProvider,
   ) {
     final isDone = session.status == 'report_generated';
-    final isAdmin = authProvider.user?.role == 'admin';
+    final canGenerateReport = authProvider.user?.hasPermission('GENERATE_REPORT') ?? false;
     
     final Color badgeColor = isDone ? AppTheme.successColor : AppTheme.warningColor;
     final String badgeLabel = isDone ? 'Laporan Selesai' : 'Sedang Diproses';
-
+ 
     return BouncingWidget(
       onTap: () => _onCardTap(context, session, scanProvider),
       child: Container(
@@ -120,7 +120,7 @@ class ReportHistoryTab extends StatelessWidget {
                   ],
                 ),
               ),
-              if (isAdmin && isDone) ...[
+              if (canGenerateReport && isDone) ...[
                 _RegenerateButton(
                   sessionId: session.id,
                   participantName: session.participantName.isNotEmpty ? session.participantName : 'Sesi #${session.id}',

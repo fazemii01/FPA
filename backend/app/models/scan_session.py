@@ -23,6 +23,7 @@ class ScanSession(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    lembaga_id = Column(Integer, ForeignKey("lembaga.id"), nullable=True)
 
     # Participant data (participants are not users)
     participant_name = Column(String(120), nullable=False, default="")
@@ -43,6 +44,7 @@ class ScanSession(Base):
     completed_at = Column(DateTime, nullable=True)
 
     user = relationship("User", back_populates="scan_sessions", foreign_keys=[user_id])
+    lembaga = relationship("Lembaga", back_populates="scan_sessions")
     reviewed_by = relationship("User", back_populates="reviewed_sessions", foreign_keys=[reviewed_by_id])
     fingerprints = relationship("Fingerprint", back_populates="scan_session", cascade="all, delete-orphan")
     report = relationship("Report", back_populates="scan_session", uselist=False)

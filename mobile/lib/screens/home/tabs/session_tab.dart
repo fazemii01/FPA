@@ -21,7 +21,7 @@ class _SessionTabState extends State<SessionTab> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final scanProvider = context.watch<ScanProvider>();
-    final isAdmin = authProvider.user?.role == 'admin';
+    final canDelete = authProvider.user?.hasPermission('DELETE_SESSION') ?? false;
 
     final filteredSessions = scanProvider.sessions.where((s) {
       final query = _searchQuery.toLowerCase();
@@ -58,7 +58,7 @@ class _SessionTabState extends State<SessionTab> {
                       itemBuilder: (context, index) {
                         final session = filteredSessions[index];
                         return _buildSessionCard(
-                            context, session, scanProvider, isAdmin);
+                            context, session, scanProvider, canDelete);
                       },
                     ),
             ),
@@ -115,7 +115,7 @@ class _SessionTabState extends State<SessionTab> {
     BuildContext context,
     ScanSession session,
     ScanProvider scanProvider,
-    bool isAdmin,
+    bool canDelete,
   ) {
     final meta = _statusMeta(session.status);
     final Color statusColor = meta['color'] as Color;
@@ -131,7 +131,7 @@ class _SessionTabState extends State<SessionTab> {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () => _onCardTap(context, session, scanProvider, isAdmin),
+        onTap: () => _onCardTap(context, session, scanProvider, canDelete),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -187,7 +187,7 @@ class _SessionTabState extends State<SessionTab> {
                       ],
                     ),
                   ),
-                  if (isAdmin)
+                  if (canDelete)
                     IconButton(
                       icon:
                           const Icon(Icons.delete_outline_rounded, color: AppTheme.errorColor),
@@ -234,7 +234,7 @@ class _SessionTabState extends State<SessionTab> {
     BuildContext context,
     ScanSession session,
     ScanProvider scanProvider,
-    bool isAdmin,
+    bool canDelete,
   ) async {
     showDialog(
       context: context,

@@ -8,7 +8,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from app.db.database import Base
-from app.models import User, ScanSession, Fingerprint, Report
+from app.models import User, ScanSession, Fingerprint, Report, Lembaga, RolePermission, PaymentLog
 from app.core.config import settings
 
 config = context.config

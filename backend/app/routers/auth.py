@@ -33,6 +33,10 @@ def register(
         current_user = UserRepository.get_user_by_id(db, int(payload["sub"]))
         if current_user is None or current_user.role != UserRole.ADMIN:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Requires role: admin")
+        
+        # If the creating admin is affiliated with a lembaga, the new user inherits it
+        if current_user.lembaga_id is not None:
+            user.lembaga_id = current_user.lembaga_id
 
     existing_user = UserRepository.get_user_by_email(db, user.email)
     if existing_user:
@@ -41,7 +45,10 @@ def register(
             detail="Email already registered",
         )
 
-    return UserRepository.create_user(db, user)
+    db_user = UserRepository.create_user(db, user)
+    from app.middleware.auth import get_permissions_for_role
+    db_user.permissions = get_permissions_for_role(db, db_user.role)
+    return db_user
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -56,10 +63,14 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     access_token = create_access_token(
         data={"sub": str(user.id), "role": user.role.value}
     )
+    from app.middleware.auth import get_permissions_for_role
+    permissions = get_permissions_for_role(db, user.role)
+
     return {
         "access_token": access_token,
         "token_type": "bearer",
         "role": user.role.value,
+        "permissions": permissions,
     }
 
 
