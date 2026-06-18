@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String baseUrl = 'http://192.168.100.145:8000';
+  static const String baseUrl = 'https://backend-tab.jaribakat.com';
   static const String apiVersion = '/api/v1';
 
   static const Duration connectTimeout = Duration(seconds: 90);
