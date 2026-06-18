@@ -11,7 +11,12 @@ git pull
 
 # 2. Activate virtual environment and update packages
 echo "Updating Python dependencies..."
-if [ -d "venv" ]; then
+if [ -f "/www/server/pyporject_evn/backend-tab/bin/activate" ]; then
+    echo "Detected aaPanel Python Manager environment. Activating..."
+    source /www/server/pyporject_evn/backend-tab/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+elif [ -d "venv" ]; then
     source venv/bin/activate
     pip install --upgrade pip
     pip install -r requirements.txt
