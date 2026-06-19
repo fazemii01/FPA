@@ -43,7 +43,7 @@ dependencies:
   screen_brightness: ^2.1.9
   url_launcher: ^6.1.11
   package_info_plus: ^8.0.0
-  ota_update: ^4.0.0
+  ota_update: ^7.1.0
 
 dev_dependencies:
   flutter_test:
