@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -188,19 +188,27 @@ def create_user(payload: UserCreate, db: Session = Depends(get_db)):
 
 @router.put("/users/{user_id}", response_model=UserAuditResponse)
 def update_user(user_id: int, payload: dict, db: Session = Depends(get_db)):
-    """Audit user: Change role, institution link, or account status."""
+    """Audit user: Edit details, change role, institution link, active status, or password."""
+    from app.core.security import get_password_hash
     u = db.query(User).filter(User.id == user_id).first()
     if not u:
         raise HTTPException(status_code=404, detail="User tidak ditemukan")
     
     if "full_name" in payload:
         u.full_name = payload["full_name"]
+    if "email" in payload:
+        existing = db.query(User).filter(User.email == payload["email"], User.id != user_id).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Email sudah terdaftar oleh pengguna lain")
+        u.email = payload["email"]
     if "role" in payload:
         u.role = UserRole(payload["role"])
     if "lembaga_id" in payload:
         u.lembaga_id = payload["lembaga_id"]
     if "is_active" in payload:
         u.is_active = payload["is_active"]
+    if "password" in payload and payload["password"]:
+        u.hashed_password = get_password_hash(payload["password"])
         
     db.commit()
     db.refresh(u)
@@ -214,6 +222,33 @@ def update_user(user_id: int, payload: dict, db: Session = Depends(get_db)):
         "is_active": u.is_active,
         "created_at": u.created_at
     }
+
+
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    """Delete user, cascading scan session deletions and clearing reviewer associations."""
+    u = db.query(User).filter(User.id == user_id).first()
+    if not u:
+        raise HTTPException(status_code=404, detail="User tidak ditemukan")
+        
+    from app.repositories.scan import ScanSessionRepository
+    from app.models.scan_session import ScanSession
+    
+    # 1. Clean up scan sessions created by this user
+    sessions = db.query(ScanSession).filter(ScanSession.user_id == user_id).all()
+    for s in sessions:
+        ScanSessionRepository.delete_session(db, s.id)
+        
+    # 2. Clear reviewed_by_id reference on sessions reviewed by this user
+    db.query(ScanSession).filter(ScanSession.reviewed_by_id == user_id).update(
+        {ScanSession.reviewed_by_id: None}, 
+        synchronize_session=False
+    )
+    
+    # 3. Delete the user itself
+    db.delete(u)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/permissions")

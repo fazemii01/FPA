@@ -36,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (authProvider.user?.role == 'admin') {
       await scanProvider.loadReviewQueue();
     }
+    // Refresh user profile to update remaining credits
+    await authProvider.checkToken();
   }
 
   @override
