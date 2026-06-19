@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (_currentIndex < navItems.length) {
         final label = navItems[_currentIndex].label;
-        if (label == 'Sesi') return 'Daftar Sesi Pemindaian';
+        if (label == 'Sesi') return 'Daftar Sesi Pemindaian.';
         if (label == 'Tinjauan') return 'Antrean Tinjauan';
         if (label == 'Riwayat') return 'Riwayat Laporan';
         if (label == 'Profil') return 'Profil Akun';
@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: AppTheme.primaryColor),
-            tooltip: 'Segarkan data',
+            tooltip: 'Segarkan data.',
             onPressed: _refreshData,
           ),
         ],
