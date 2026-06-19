@@ -15,6 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _agreedToTerms = false;
 
   @override
   void dispose() {
@@ -148,6 +149,53 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: Checkbox(
+                                value: _agreedToTerms,
+                                activeColor: AppTheme.primaryColor,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _agreedToTerms = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () async {
+                                  final result = await context.push<bool>('/agreement');
+                                  if (result == true) {
+                                    setState(() {
+                                      _agreedToTerms = true;
+                                    });
+                                  }
+                                },
+                                child: const Text.rich(
+                                  TextSpan(
+                                    text: 'Saya menyetujui ',
+                                    style: TextStyle(color: Colors.black54, fontSize: 13),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Syarat & Ketentuan Penggunaan Aplikasi',
+                                        style: TextStyle(
+                                          color: AppTheme.primaryColor,
+                                          fontWeight: FontWeight.bold,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 24),
                         Consumer<AuthProvider>(
                           builder: (context, authProvider, _) {
@@ -229,6 +277,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleLogin(
       BuildContext context, AuthProvider authProvider) async {
+    if (!_agreedToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Anda harus menyetujui Syarat & Ketentuan Penggunaan Aplikasi sebelum masuk.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       final success = await authProvider.login(
         email: _emailController.text,

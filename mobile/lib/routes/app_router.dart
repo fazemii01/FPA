@@ -16,6 +16,7 @@ import '../screens/report/report_screen.dart';
 import '../screens/report/report_summary_screen.dart';
 import '../screens/report/report_view_screen.dart';
 import '../screens/home/topup_screen.dart';
+import '../screens/auth/agreement_screen.dart';
 
 
 class AppRouter {
@@ -30,6 +31,10 @@ class AppRouter {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/agreement',
+        builder: (context, state) => const AgreementScreen(),
       ),
       GoRoute(
         path: '/register',
