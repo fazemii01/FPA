@@ -29,6 +29,7 @@ void main() {
         email: 'test@example.com',
         fullName: 'Test User',
         role: 'admin',
+        permissions: const [],
         isActive: true,
         createdAt: DateTime.parse('2026-06-05T12:00:00.000Z'),
       );

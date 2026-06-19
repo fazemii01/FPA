@@ -116,9 +116,12 @@ class UpdateService {
                       status = "Memasang...";
                     });
                     Navigator.of(progressContext).pop(); // dismiss dialog
-                  } else if (event.status == OtaStatus.ALREADY_FAILED_DEPRECATED || 
-                             event.status == OtaStatus.PERMISSION_NOT_GRANTED_DEPRECATED || 
-                             event.status == OtaStatus.INTERNAL_ERROR) {
+                  } else if (event.status == OtaStatus.ALREADY_RUNNING_ERROR ||
+                             event.status == OtaStatus.PERMISSION_NOT_GRANTED_ERROR ||
+                             event.status == OtaStatus.INTERNAL_ERROR ||
+                             event.status == OtaStatus.DOWNLOAD_ERROR ||
+                             event.status == OtaStatus.INSTALLATION_ERROR ||
+                             event.status == OtaStatus.CHECKSUM_ERROR) {
                     setState(() {
                       status = "Gagal mengunduh: ${event.status}";
                     });
