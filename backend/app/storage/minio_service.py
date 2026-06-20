@@ -54,10 +54,11 @@ class MinIOService:
         except S3Error as e:
             raise Exception(f"Error deleting file: {e}")
     
-    def get_presigned_url(self, object_name: str, expires: int = 3600) -> str:
+    def get_presigned_url(self, object_name: str, expires: int = 3600, bucket_name: str = None) -> str:
         try:
+            target_bucket = bucket_name or self.bucket_name
             url = self.client.presigned_get_object(
-                self.bucket_name,
+                target_bucket,
                 object_name,
                 expires=timedelta(seconds=expires)
             )

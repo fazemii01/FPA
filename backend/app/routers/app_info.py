@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.storage.minio_service import MinIOService
+from app.core.config import settings
 
 router = APIRouter(prefix="/app", tags=["App Info"])
 
@@ -12,7 +13,11 @@ def get_app_version():
     minio = MinIOService()
     
     # Generate a secure presigned URL valid for 24 hours (86400 seconds)
-    apk_download_url = minio.get_presigned_url("releases/fpa-latest.apk", expires=86400)
+    apk_download_url = minio.get_presigned_url(
+        "releases/fpa-latest.apk", 
+        expires=86400,
+        bucket_name=settings.MINIO_RELEASE_BUCKET_NAME
+    )
     
     return {
         "latest_version": LATEST_VERSION,

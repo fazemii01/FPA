@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     MINIO_ACCESS_KEY: str
     MINIO_SECRET_KEY: str
     MINIO_BUCKET_NAME: str = "fingerprints"
+    MINIO_RELEASE_BUCKET_NAME: str = "release"
     MINIO_SECURE: bool = False
     
     class Config:
