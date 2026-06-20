@@ -61,8 +61,8 @@ class UpdateService {
       context: context,
       barrierDismissible: !forceUpdate,
       builder: (BuildContext dialogContext) {
-        return WillPopScope(
-          onWillPop: () async => !forceUpdate,
+        return PopScope(
+          canPop: !forceUpdate,
           child: AlertDialog(
             title: const Text('Update Aplikasi Tersedia'),
             content: Text('Versi terbaru ($latestVersion) telah dirilis. Silakan unduh pembaruan untuk melanjutkan.'),
@@ -108,7 +108,7 @@ class UpdateService {
 
 class OtaProgressDialog extends StatefulWidget {
   final String apkUrl;
-  const OtaProgressDialog({Key? key, required this.apkUrl}) : super(key: key);
+  const OtaProgressDialog({super.key, required this.apkUrl});
 
   @override
   State<OtaProgressDialog> createState() => _OtaProgressDialogState();
@@ -145,7 +145,9 @@ class _OtaProgressDialogState extends State<OtaProgressDialog> {
               _status = "Memasang...";
             });
             // Auto close progress dialog when installing starts
-            Navigator.of(context).pop();
+            if (mounted) {
+              Navigator.of(context).pop();
+            }
           } else if (event.status == OtaStatus.ALREADY_RUNNING_ERROR ||
                      event.status == OtaStatus.PERMISSION_NOT_GRANTED_ERROR ||
                      event.status == OtaStatus.INTERNAL_ERROR ||

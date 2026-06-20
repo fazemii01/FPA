@@ -15,11 +15,11 @@ class FingerprintImage extends StatefulWidget {
   final BoxFit fit;
 
   const FingerprintImage({
-    Key? key,
+    super.key,
     required this.fingerprintId,
     this.height = 200,
     this.fit = BoxFit.cover,
-  }) : super(key: key);
+  });
 
   @override
   State<FingerprintImage> createState() => _FingerprintImageState();

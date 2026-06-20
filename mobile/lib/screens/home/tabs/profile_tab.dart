@@ -5,7 +5,7 @@ import '../../../providers/auth_provider.dart';
 import '../../../theme/app_theme.dart';
 
 class ProfileTab extends StatelessWidget {
-  const ProfileTab({Key? key}) : super(key: key);
+  const ProfileTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -253,10 +253,10 @@ class BouncingWidget extends StatefulWidget {
   final VoidCallback onTap;
 
   const BouncingWidget({
-    Key? key,
+    super.key,
     required this.child,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<BouncingWidget> createState() => _BouncingWidgetState();

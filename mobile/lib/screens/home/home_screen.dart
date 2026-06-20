@@ -11,7 +11,7 @@ import 'tabs/report_history_tab.dart';
 import 'tabs/profile_tab.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();

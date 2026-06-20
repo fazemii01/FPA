@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 
 class AgreementScreen extends StatelessWidget {
-  const AgreementScreen({Key? key}) : super(key: key);
+  const AgreementScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

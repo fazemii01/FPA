@@ -8,7 +8,7 @@ import '../../../theme/app_theme.dart';
 import '../../../widgets/app_toast.dart';
 
 class ReportHistoryTab extends StatelessWidget {
-  const ReportHistoryTab({Key? key}) : super(key: key);
+  const ReportHistoryTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -184,11 +184,10 @@ class _RegenerateButton extends StatefulWidget {
   final ScanProvider scanProvider;
 
   const _RegenerateButton({
-    Key? key,
     required this.sessionId,
     required this.participantName,
     required this.scanProvider,
-  }) : super(key: key);
+  });
 
   @override
   State<_RegenerateButton> createState() => _RegenerateButtonState();
@@ -228,13 +227,13 @@ class _RegenerateButtonState extends State<_RegenerateButton> {
       ),
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed == true && context.mounted) {
       setState(() => _isLoading = true);
       
       final success = await widget.scanProvider.generateReport(widget.sessionId);
       await widget.scanProvider.loadSession(widget.sessionId);
       
-      if (mounted) {
+      if (context.mounted) {
         setState(() => _isLoading = false);
         if (success) {
           AppToast.showSuccess(context, 'Laporan berhasil diregenerasi!');
@@ -286,10 +285,10 @@ class BouncingWidget extends StatefulWidget {
   final VoidCallback onTap;
 
   const BouncingWidget({
-    Key? key,
+    super.key,
     required this.child,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<BouncingWidget> createState() => _BouncingWidgetState();

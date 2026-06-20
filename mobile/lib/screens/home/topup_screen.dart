@@ -5,7 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 
 class TopUpScreen extends StatefulWidget {
-  const TopUpScreen({Key? key}) : super(key: key);
+  const TopUpScreen({super.key});
 
   @override
   State<TopUpScreen> createState() => _TopUpScreenState();
@@ -72,7 +72,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
 
     final String name = nameLembaga ?? 'Lembaga FPA';
     final String message = 'Hallo admin alliakids, kami dari $name ingin topup creadit dengan nominal $credits. mohon bantuanya!';
-    final String phoneNumber = '6285138511348'; 
+    const String phoneNumber = '6285138511348'; 
     final Uri url = Uri.parse('https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}');
 
     try {

@@ -6,7 +6,7 @@ import '../../theme/app_theme.dart';
 import '../../widgets/app_toast.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -232,7 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
                         DropdownButtonFormField<String>(
-                          value: _selectedRole,
+                          initialValue: _selectedRole,
                           decoration: const InputDecoration(
                             labelText: 'Peran Akun',
                             prefixIcon: Icon(Icons.admin_panel_settings_outlined, color: Colors.grey),
@@ -337,7 +337,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         role: _selectedRole,
       );
 
-      if (success && mounted) {
+      if (success && context.mounted) {
         final roleText = _selectedRole == 'admin' ? 'administrator' : 'staf';
         AppToast.showSuccess(context, 'Akun $roleText berhasil dibuat');
         if (context.canPop()) {

@@ -5,10 +5,10 @@ class FingerProgressWidget extends StatelessWidget {
   final int totalCount;
 
   const FingerProgressWidget({
-    Key? key,
+    super.key,
     required this.completedCount,
     required this.totalCount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

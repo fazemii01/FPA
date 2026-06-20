@@ -10,10 +10,10 @@ class ScanProgressScreen extends StatelessWidget {
   final int currentFingerIndex;
 
   const ScanProgressScreen({
-    Key? key,
+    super.key,
     required this.sessionId,
     required this.currentFingerIndex,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +122,7 @@ class ScanProgressScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.check_circle,
                             size: 48,
                             color: Colors.green,

@@ -8,7 +8,7 @@ import '../../widgets/fingerprint_image.dart';
 import '../../theme/app_theme.dart';
 
 class ScanScreen extends StatefulWidget {
-  const ScanScreen({Key? key}) : super(key: key);
+  const ScanScreen({super.key});
 
   @override
   State<ScanScreen> createState() => _ScanScreenState();

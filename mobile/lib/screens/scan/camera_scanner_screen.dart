@@ -20,11 +20,11 @@ class CameraScannerScreen extends StatefulWidget {
   final int fingerIndex;
 
   const CameraScannerScreen({
-    Key? key,
+    super.key,
     required this.sessionId,
     required this.fingerPosition,
     required this.fingerIndex,
-  }) : super(key: key);
+  });
 
   @override
   State<CameraScannerScreen> createState() => _CameraScannerScreenState();
@@ -108,7 +108,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
         
         // Increase screen brightness to 50% while capturing
         try {
-          await ScreenBrightness().setScreenBrightness(0.5);
+          await ScreenBrightness().setApplicationScreenBrightness(0.5);
         } catch (e) {
           print('Error setting screen brightness: $e');
         }
@@ -122,7 +122,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
   void dispose() {
     _cameraController?.dispose();
     try {
-      ScreenBrightness().resetScreenBrightness();
+      ScreenBrightness().resetApplicationScreenBrightness();
     } catch (e) {
       print('Error resetting screen brightness: $e');
     }
@@ -131,7 +131,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
 
   Future<void> _captureImage() async {
     if (_cameraController == null || _isCapturing) return;
-
+    final scanProvider = context.read<ScanProvider>();
     try {
       setState(() => _isCapturing = true);
       
@@ -146,7 +146,6 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
       final enhancedPath = await OpenCVService.binarizeFingerprint(image.path);
 
       // Upload immediately
-      final scanProvider = context.read<ScanProvider>();
       final success = await scanProvider.uploadFingerprint(
         sessionId: widget.sessionId,
         fingerPosition: widget.fingerPosition,
@@ -202,6 +201,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
   }
 
   Future<void> _pickFromGallery() async {
+    final scanProvider = context.read<ScanProvider>();
     try {
       setState(() => _isCapturing = true);
       final image = await _imagePicker.pickImage(source: ImageSource.gallery);
@@ -213,7 +213,6 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
         final enhancedPath = await OpenCVService.binarizeFingerprint(image.path);
 
         // Upload immediately
-        final scanProvider = context.read<ScanProvider>();
         final success = await scanProvider.uploadFingerprint(
           sessionId: widget.sessionId,
           fingerPosition: widget.fingerPosition,
@@ -546,9 +545,9 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      Text(
+                      const Text(
                         'Jangan terlalu dekat jika blur. Gunakan zoom 1.5x sampai 2.0x dan ambil saat ridge mulai terlihat.',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                         ),

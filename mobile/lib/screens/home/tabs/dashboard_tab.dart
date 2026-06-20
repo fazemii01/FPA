@@ -7,7 +7,7 @@ import '../../../models/scan_model.dart';
 import '../../../theme/app_theme.dart';
 
 class DashboardTab extends StatefulWidget {
-  const DashboardTab({Key? key}) : super(key: key);
+  const DashboardTab({super.key});
 
   @override
   State<DashboardTab> createState() => _DashboardTabState();
@@ -570,7 +570,7 @@ class _DashboardTabState extends State<DashboardTab> {
             builder: (context) => const Center(child: CircularProgressIndicator()),
           );
           final success = await scanProvider.loadSession(session.id);
-          if (mounted) {
+          if (context.mounted) {
             Navigator.pop(context);
             if (success) {
               if (isAdmin || session.status == 'waiting_for_review' || session.status == 'approved' || session.status == 'rejected') {

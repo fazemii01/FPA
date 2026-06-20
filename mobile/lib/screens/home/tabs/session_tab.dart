@@ -8,7 +8,7 @@ import '../../../theme/app_theme.dart';
 import '../../../widgets/app_toast.dart';
 
 class SessionTab extends StatefulWidget {
-  const SessionTab({Key? key}) : super(key: key);
+  const SessionTab({super.key});
 
   @override
   State<SessionTab> createState() => _SessionTabState();
@@ -242,7 +242,7 @@ class _SessionTabState extends State<SessionTab> {
       builder: (ctx) => const Center(child: CircularProgressIndicator()),
     );
     final success = await scanProvider.loadSession(session.id);
-    if (mounted) {
+    if (context.mounted) {
       Navigator.pop(context);
       if (success) {
         final s = session.status;
@@ -292,9 +292,9 @@ class _SessionTabState extends State<SessionTab> {
       ),
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed == true && context.mounted) {
       final success = await scanProvider.submitForReview(session.id);
-      if (mounted) {
+      if (context.mounted) {
         if (success) {
           AppToast.showSuccess(context, 'Sesi "$name" berhasil dikirim untuk ditinjau!');
         } else {
@@ -356,9 +356,9 @@ class _SessionTabState extends State<SessionTab> {
       ),
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed == true && context.mounted) {
       final success = await scanProvider.deleteSession(session.id);
-      if (mounted) {
+      if (context.mounted) {
         if (success) {
           AppToast.showSuccess(context, 'Sesi berhasil dihapus');
         } else {

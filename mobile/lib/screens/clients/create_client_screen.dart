@@ -6,7 +6,7 @@ import '../../theme/app_theme.dart';
 import '../../widgets/app_toast.dart';
 
 class CreateClientScreen extends StatefulWidget {
-  const CreateClientScreen({Key? key}) : super(key: key);
+  const CreateClientScreen({super.key});
 
   @override
   State<CreateClientScreen> createState() => _CreateClientScreenState();
@@ -138,7 +138,7 @@ class _CreateClientScreenState extends State<CreateClientScreen> {
                           Expanded(
                             flex: 3,
                             child: DropdownButtonFormField<String>(
-                              value: _selectedGender,
+                              initialValue: _selectedGender,
                               decoration: const InputDecoration(
                                 labelText: 'Jenis Kelamin',
                                 prefixIcon: Icon(Icons.wc_outlined, color: Colors.grey),

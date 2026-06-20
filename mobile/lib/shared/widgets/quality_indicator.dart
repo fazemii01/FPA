@@ -5,10 +5,10 @@ class QualityIndicator extends StatelessWidget {
   final bool showLabel;
 
   const QualityIndicator({
-    Key? key,
+    super.key,
     required this.qualityScore,
     this.showLabel = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

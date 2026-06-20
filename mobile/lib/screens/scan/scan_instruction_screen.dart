@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ScanInstructionScreen extends StatelessWidget {
-  const ScanInstructionScreen({Key? key}) : super(key: key);
+  const ScanInstructionScreen({super.key});
 
   static const _leftHand = [
     ('left_thumb',  'Ibu Jari'),
@@ -20,11 +20,7 @@ class ScanInstructionScreen extends StatelessWidget {
     ('right_pinky',  'Kelingking'),
   ];
 
-  // Scan order: right hand first (1-5) then left (6-10)
-  static const _scanOrder = [
-    ..._rightHand,
-    ..._leftHand,
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,40 +48,40 @@ class ScanInstructionScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // ── Instruction cards ────────────────────────────────────────
-            _InstructionCard(
+            const _InstructionCard(
               step: '01',
               icon: Icons.clean_hands_outlined,
               title: 'Persiapan',
               description:
                   'Pastikan tangan bersih dan kering sebelum memulai pemindaian.',
-              color: const Color(0xFF4FC3F7),
+              color: Color(0xFF4FC3F7),
             ),
             const SizedBox(height: 12),
-            _InstructionCard(
+            const _InstructionCard(
               step: '02',
               icon: Icons.touch_app_outlined,
               title: 'Posisi Jari',
               description:
                   'Letakkan jari di tengah lingkaran panduan dengan tekanan ringan dan stabil.',
-              color: const Color(0xFF81C784),
+              color: Color(0xFF81C784),
             ),
             const SizedBox(height: 12),
-            _InstructionCard(
+            const _InstructionCard(
               step: '03',
               icon: Icons.wb_sunny_outlined,
               title: 'Pencahayaan',
               description:
                   'Pastikan area memiliki pencahayaan yang cukup untuk hasil terbaik.',
-              color: const Color(0xFFFFB74D),
+              color: Color(0xFFFFB74D),
             ),
             const SizedBox(height: 12),
-            _InstructionCard(
+            const _InstructionCard(
               step: '04',
               icon: Icons.verified_outlined,
               title: 'Kualitas',
               description:
                   'Tunggu hingga indikator kualitas menunjukkan "Baik" sebelum menangkap.',
-              color: const Color(0xFFCE93D8),
+              color: Color(0xFFCE93D8),
             ),
 
             const SizedBox(height: 32),

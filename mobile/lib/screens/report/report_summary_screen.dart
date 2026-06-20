@@ -8,9 +8,9 @@ class ReportSummaryScreen extends StatefulWidget {
   final int sessionId;
 
   const ReportSummaryScreen({
-    Key? key,
+    super.key,
     required this.sessionId,
-  }) : super(key: key);
+  });
 
   @override
   State<ReportSummaryScreen> createState() => _ReportSummaryScreenState();

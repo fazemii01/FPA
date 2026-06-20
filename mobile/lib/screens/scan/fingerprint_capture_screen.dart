@@ -18,10 +18,10 @@ class FingerprintCaptureScreen extends StatefulWidget {
   final String fingerPosition;
 
   const FingerprintCaptureScreen({
-    Key? key,
+    super.key,
     required this.sessionId,
     required this.fingerPosition,
-  }) : super(key: key);
+  });
 
   @override
   State<FingerprintCaptureScreen> createState() =>
@@ -110,7 +110,7 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
         
         // Increase screen brightness to 50% while capturing
         try {
-          await ScreenBrightness().setScreenBrightness(0.5);
+          await ScreenBrightness().setApplicationScreenBrightness(0.5);
         } catch (e) {
           print('Error setting screen brightness: $e');
         }
@@ -124,7 +124,7 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
   void dispose() {
     _cameraController?.dispose();
     try {
-      ScreenBrightness().resetScreenBrightness();
+      ScreenBrightness().resetApplicationScreenBrightness();
     } catch (e) {
       print('Error resetting screen brightness: $e');
     }
@@ -234,9 +234,9 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
                             color: Colors.black.withValues(alpha: 0.55),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
+                          child: const Text(
                             'Jangan terlalu dekat jika blur. Arahkan UJUNG jari (bukan ruas) ke kamera. Pastikan ridges/guratan terlihat jelas.',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,

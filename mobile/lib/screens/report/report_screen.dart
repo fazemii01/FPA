@@ -9,9 +9,9 @@ class ReportScreen extends StatefulWidget {
   final int sessionId;
 
   const ReportScreen({
-    Key? key,
+    super.key,
     required this.sessionId,
-  }) : super(key: key);
+  });
 
   @override
   State<ReportScreen> createState() => _ReportScreenState();
@@ -232,7 +232,7 @@ class _ReportScreenState extends State<ReportScreen> {
                               ],
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),

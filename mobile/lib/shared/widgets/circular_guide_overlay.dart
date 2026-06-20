@@ -9,10 +9,10 @@ class CircularGuideOverlay extends StatelessWidget {
   final double qualityScore;
 
   const CircularGuideOverlay({
-    Key? key,
+    super.key,
     required this.fingerLabel,
     required this.qualityScore,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

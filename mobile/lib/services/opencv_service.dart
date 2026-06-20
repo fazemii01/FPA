@@ -21,7 +21,6 @@ class OpenCVService {
     cv.Mat? blurredToDispose;
     cv.Mat? sharpenedToDispose;
     cv.Mat? binaryToDispose;
-    cv.Mat? invertedToDispose;
     cv.CLAHE? claheToDispose;
 
     try {
@@ -75,7 +74,6 @@ class OpenCVService {
       blurredToDispose?.dispose();
       sharpenedToDispose?.dispose();
       binaryToDispose?.dispose();
-      invertedToDispose?.dispose();
       claheToDispose?.dispose();
     }
   }

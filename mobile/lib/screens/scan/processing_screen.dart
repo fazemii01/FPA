@@ -7,9 +7,9 @@ class ProcessingScreen extends StatefulWidget {
   final int sessionId;
 
   const ProcessingScreen({
-    Key? key,
+    super.key,
     required this.sessionId,
-  }) : super(key: key);
+  });
 
   @override
   State<ProcessingScreen> createState() => _ProcessingScreenState();
@@ -103,7 +103,7 @@ class _ProcessingScreenState extends State<ProcessingScreen> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ] else ...[
-                Icon(
+                const Icon(
                   Icons.error_outline,
                   size: 64,
                   color: Colors.red,

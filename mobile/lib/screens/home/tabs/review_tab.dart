@@ -8,7 +8,7 @@ import '../../../theme/app_theme.dart';
 import '../../../widgets/app_toast.dart';
 
 class ReviewTab extends StatelessWidget {
-  const ReviewTab({Key? key}) : super(key: key);
+  const ReviewTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -151,10 +151,10 @@ class BouncingWidget extends StatefulWidget {
   final VoidCallback onTap;
 
   const BouncingWidget({
-    Key? key,
+    super.key,
     required this.child,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<BouncingWidget> createState() => _BouncingWidgetState();
@@ -406,7 +406,7 @@ class _ReviewCardState extends State<_ReviewCard> {
     if (_isLoading) return;
     setState(() => _isLoading = true);
     final success = await scanProvider.loadSession(widget.session.id);
-    if (mounted) {
+    if (context.mounted) {
       setState(() => _isLoading = false);
       if (success) {
         context.push('/scan/review/${widget.session.id}');
@@ -447,11 +447,11 @@ class _ReviewCardState extends State<_ReviewCard> {
       ),
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed == true && context.mounted) {
       setState(() => _isLoading = true);
       final success =
           await scanProvider.generateReport(widget.session.id);
-      if (mounted) {
+      if (context.mounted) {
         setState(() => _isLoading = false);
         if (success) {
           AppToast.showSuccess(context, 'Laporan berhasil dibuat!');

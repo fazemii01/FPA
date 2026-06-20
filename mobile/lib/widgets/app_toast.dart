@@ -26,7 +26,6 @@ class AppToast {
         iconColor = AppTheme.warningColor;
         break;
       case ToastType.info:
-      default:
         icon = Icons.info_rounded;
         iconColor = AppTheme.primaryColor;
         break;

@@ -13,9 +13,9 @@ class ReviewCapturedFingersScreen extends StatefulWidget {
   final int sessionId;
 
   const ReviewCapturedFingersScreen({
-    Key? key,
+    super.key,
     required this.sessionId,
-  }) : super(key: key);
+  });
 
   @override
   State<ReviewCapturedFingersScreen> createState() => _ReviewCapturedFingersScreenState();
@@ -113,7 +113,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: selectedPattern,
+                      initialValue: selectedPattern,
                       decoration: const InputDecoration(
                         labelText: 'Tipe Pola Jari',
                         border: OutlineInputBorder(),
@@ -209,7 +209,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
     });
 
     final success = await scanProvider.submitForReview(widget.sessionId);
-    if (mounted) {
+    if (context.mounted) {
       setState(() {
         _isActionLoading = false;
       });
@@ -227,7 +227,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
     setState(() => _isActionLoading = true);
 
     final success = await scanProvider.approveSession(widget.sessionId);
-    if (mounted) {
+    if (context.mounted) {
       setState(() => _isActionLoading = false);
       if (success) {
         AppToast.showSuccess(context, 'Sesi disetujui. Admin dapat membuat laporan sekarang.');
@@ -243,7 +243,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
     setState(() => _isActionLoading = true);
 
     final success = await scanProvider.generateReport(widget.sessionId);
-    if (mounted) {
+    if (context.mounted) {
       setState(() => _isActionLoading = false);
       if (success) {
         AppToast.showSuccess(context, 'Laporan berhasil dibuat!');
@@ -306,7 +306,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
           _isActionLoading = true;
         });
         final success = await scanProvider.rejectSession(widget.sessionId, reason);
-        if (mounted) {
+        if (context.mounted) {
           setState(() {
             _isActionLoading = false;
           });
@@ -366,7 +366,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                               });
                             },
                           );
-                        }).toList(),
+                        }),
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: reasonController,
@@ -420,7 +420,7 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
         final fingers = result['fingers'] as List<String>;
         final reason = result['reason'] as String;
         final success = await scanProvider.requestRescan(widget.sessionId, fingers, reason);
-        if (mounted) {
+        if (context.mounted) {
           setState(() {
             _isActionLoading = false;
           });
@@ -511,11 +511,11 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppTheme.successColor.withOpacity(0.3)),
               ),
-              child: Row(
+              child: const Row(
                 children: [
-                  const Icon(Icons.check_circle_outline, color: AppTheme.successColor, size: 18),
-                  const SizedBox(width: 8),
-                  const Expanded(
+                  Icon(Icons.check_circle_outline, color: AppTheme.successColor, size: 18),
+                  SizedBox(width: 8),
+                  Expanded(
                     child: Text(
                       'Sesi telah disetujui. Klik di bawah untuk membuat laporan analisis.',
                       style: TextStyle(color: AppTheme.successColor, fontSize: 12),
@@ -643,12 +643,12 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
           ],
         );
       } else if (session.status == 'waiting_for_review') {
-        return Row(
+        return const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.hourglass_top_rounded, color: AppTheme.warningColor),
-            const SizedBox(width: 8),
-            const Text(
+            Icon(Icons.hourglass_top_rounded, color: AppTheme.warningColor),
+            SizedBox(width: 8),
+            Text(
               'Menunggu Tinjauan Admin',
               style: TextStyle(
                 color: AppTheme.warningColor,
