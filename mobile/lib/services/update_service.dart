@@ -79,7 +79,9 @@ class UpdateService {
                 onPressed: () async {
                   Navigator.of(dialogContext).pop(); // Close dialog
                   if (Platform.isAndroid) {
-                    await _runAndroidOta(context, apkUrl);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _runAndroidOta(context, apkUrl);
+                    });
                   } else if (Platform.isIOS) {
                     await launchUrl(Uri.parse(iosUrl), mode: LaunchMode.externalApplication);
                   }
@@ -93,6 +95,7 @@ class UpdateService {
   }
 
   static Future<void> _runAndroidOta(BuildContext context, String apkUrl) async {
+    debugPrint("OTA: _runAndroidOta called, showing dialog");
     showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -123,18 +126,21 @@ class _OtaProgressDialogState extends State<OtaProgressDialog> {
   }
 
   void _startDownload() {
+    debugPrint("OTA: _startDownload initiated with URL: ${widget.apkUrl}");
     try {
       _subscription = OtaUpdate().execute(
         widget.apkUrl,
         destinationFilename: 'fpa-latest.apk',
       ).listen(
         (OtaEvent event) {
+          debugPrint("OTA: Event status: ${event.status}, value: ${event.value}");
           if (event.status == OtaStatus.DOWNLOADING) {
             setState(() {
               _progress = double.tryParse(event.value ?? '0') ?? 0;
               _status = "Mengunduh...";
             });
           } else if (event.status == OtaStatus.INSTALLING) {
+            debugPrint("OTA: Installation started. Popping progress dialog.");
             setState(() {
               _status = "Memasang...";
             });
@@ -146,6 +152,7 @@ class _OtaProgressDialogState extends State<OtaProgressDialog> {
                      event.status == OtaStatus.DOWNLOAD_ERROR ||
                      event.status == OtaStatus.INSTALLATION_ERROR ||
                      event.status == OtaStatus.CHECKSUM_ERROR) {
+            debugPrint("OTA: Failure status encountered: ${event.status}");
             setState(() {
               _status = "Gagal mengunduh: ${event.status}";
             });
@@ -155,6 +162,7 @@ class _OtaProgressDialogState extends State<OtaProgressDialog> {
           }
         },
         onError: (error) {
+          debugPrint("OTA: Stream error: $error");
           setState(() {
             _status = "Gagal mengunduh: $error";
           });
@@ -164,6 +172,7 @@ class _OtaProgressDialogState extends State<OtaProgressDialog> {
         },
       );
     } catch (e) {
+      debugPrint("OTA: Synchronous exception: $e");
       setState(() {
         _status = "Gagal menginisiasi update: $e";
       });
