@@ -56,11 +56,11 @@ class MinIOService:
     
     def get_presigned_url(self, object_name: str, expires: int = 3600) -> str:
         try:
-            url = self.client.get_presigned_download_url(
+            url = self.client.presigned_get_object(
                 self.bucket_name,
                 object_name,
                 expires=timedelta(seconds=expires)
             )
             return url
-        except S3Error as e:
+        except Exception as e:
             raise Exception(f"Error generating presigned URL: {e}")
