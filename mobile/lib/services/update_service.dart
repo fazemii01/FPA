@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ota_update/ota_update.dart';
@@ -96,72 +97,100 @@ class UpdateService {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext progressContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            double progress = 0;
-            String status = "Mengunduh...";
-
-            try {
-              OtaUpdate().execute(
-                apkUrl,
-                destinationFilename: 'fpa-latest.apk',
-              ).listen(
-                (OtaEvent event) {
-                  if (event.status == OtaStatus.DOWNLOADING) {
-                    setState(() {
-                      progress = double.tryParse(event.value ?? '0') ?? 0;
-                    });
-                  } else if (event.status == OtaStatus.INSTALLING) {
-                    setState(() {
-                      status = "Memasang...";
-                    });
-                    Navigator.of(progressContext).pop(); // dismiss dialog
-                  } else if (event.status == OtaStatus.ALREADY_RUNNING_ERROR ||
-                             event.status == OtaStatus.PERMISSION_NOT_GRANTED_ERROR ||
-                             event.status == OtaStatus.INTERNAL_ERROR ||
-                             event.status == OtaStatus.DOWNLOAD_ERROR ||
-                             event.status == OtaStatus.INSTALLATION_ERROR ||
-                             event.status == OtaStatus.CHECKSUM_ERROR) {
-                    setState(() {
-                      status = "Gagal mengunduh: ${event.status}";
-                    });
-                    Future.delayed(const Duration(seconds: 3), () {
-                      if (context.mounted) Navigator.of(progressContext).pop();
-                    });
-                  }
-                },
-                onError: (error) {
-                  setState(() {
-                    status = "Gagal mengunduh: $error";
-                  });
-                  Future.delayed(const Duration(seconds: 3), () {
-                    if (context.mounted) Navigator.of(progressContext).pop();
-                  });
-                },
-              );
-            } catch (e) {
-              setState(() {
-                status = "Gagal menginisiasi update: $e";
-              });
-              Future.delayed(const Duration(seconds: 3), () {
-                if (context.mounted) Navigator.of(progressContext).pop();
-              });
-            }
-
-            return AlertDialog(
-              title: Text(status),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  LinearProgressIndicator(value: progress / 100),
-                  const SizedBox(height: 16),
-                  Text('${progress.toStringAsFixed(0)}%'),
-                ],
-              ),
-            );
-          },
-        );
+        return OtaProgressDialog(apkUrl: apkUrl);
       },
+    );
+  }
+}
+
+class OtaProgressDialog extends StatefulWidget {
+  final String apkUrl;
+  const OtaProgressDialog({Key? key, required this.apkUrl}) : super(key: key);
+
+  @override
+  State<OtaProgressDialog> createState() => _OtaProgressDialogState();
+}
+
+class _OtaProgressDialogState extends State<OtaProgressDialog> {
+  double _progress = 0;
+  String _status = "Mengunduh...";
+  StreamSubscription<OtaEvent>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _startDownload();
+  }
+
+  void _startDownload() {
+    try {
+      _subscription = OtaUpdate().execute(
+        widget.apkUrl,
+        destinationFilename: 'fpa-latest.apk',
+      ).listen(
+        (OtaEvent event) {
+          if (event.status == OtaStatus.DOWNLOADING) {
+            setState(() {
+              _progress = double.tryParse(event.value ?? '0') ?? 0;
+              _status = "Mengunduh...";
+            });
+          } else if (event.status == OtaStatus.INSTALLING) {
+            setState(() {
+              _status = "Memasang...";
+            });
+            // Auto close progress dialog when installing starts
+            Navigator.of(context).pop();
+          } else if (event.status == OtaStatus.ALREADY_RUNNING_ERROR ||
+                     event.status == OtaStatus.PERMISSION_NOT_GRANTED_ERROR ||
+                     event.status == OtaStatus.INTERNAL_ERROR ||
+                     event.status == OtaStatus.DOWNLOAD_ERROR ||
+                     event.status == OtaStatus.INSTALLATION_ERROR ||
+                     event.status == OtaStatus.CHECKSUM_ERROR) {
+            setState(() {
+              _status = "Gagal mengunduh: ${event.status}";
+            });
+            Future.delayed(const Duration(seconds: 3), () {
+              if (mounted) Navigator.of(context).pop();
+            });
+          }
+        },
+        onError: (error) {
+          setState(() {
+            _status = "Gagal mengunduh: $error";
+          });
+          Future.delayed(const Duration(seconds: 3), () {
+            if (mounted) Navigator.of(context).pop();
+          });
+        },
+      );
+    } catch (e) {
+      setState(() {
+        _status = "Gagal menginisiasi update: $e";
+      });
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) Navigator.of(context).pop();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(_status),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          LinearProgressIndicator(value: _progress / 100),
+          const SizedBox(height: 16),
+          Text('${_progress.toStringAsFixed(0)}%'),
+        ],
+      ),
     );
   }
 }
