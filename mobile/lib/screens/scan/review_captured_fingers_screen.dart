@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 import '../../config/app_config.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/scan_provider.dart';
@@ -23,13 +24,35 @@ class ReviewCapturedFingersScreen extends StatefulWidget {
 
 class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScreen> {
   bool _isActionLoading = false;
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ScanProvider>().loadSession(widget.sessionId);
+      _startPolling();
     });
+  }
+
+  void _startPolling() {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 4), (timer) async {
+      final scanProvider = Provider.of<ScanProvider>(context, listen: false);
+      if (mounted) {
+        final result = await scanProvider.refreshSession(widget.sessionId);
+        if (result == SessionRefreshResult.deleted && mounted) {
+          _refreshTimer?.cancel();
+          AppToast.showError(context, 'Sesi pemindaian telah dihapus.');
+          context.go('/home');
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
   }
 
   Map<String, dynamic> _getStatusMetadata(String status) {

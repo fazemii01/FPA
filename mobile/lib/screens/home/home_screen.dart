@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     String getTitle() {
       if (_currentIndex == 0) {
-        return user?.role == 'admin' ? 'FPA Portal - Admin' : '10-Finger Scanner';
+        return user?.role == 'admin' ? 'FPA Portal - Admin' : 'Tab Allia Finger';
       }
       if (_currentIndex < navItems.length) {
         final label = navItems[_currentIndex].label;

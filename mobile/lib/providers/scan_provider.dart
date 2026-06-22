@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import '../models/scan_model.dart';
 import '../services/api_service.dart';
 
+enum SessionRefreshResult {
+  success,
+  deleted,
+  error,
+}
+
 class ScanProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
 
@@ -425,5 +431,35 @@ class ScanProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  Future<SessionRefreshResult> refreshSession(int sessionId) async {
+    try {
+      final response = await _apiService.get('/scans/sessions/$sessionId');
+      final fetchedSession = ScanSession.fromJson(response);
+      
+      if (_currentSession != null && _currentSession!.id == sessionId) {
+        _currentSession = fetchedSession;
+      }
+      
+      final index = _sessions.indexWhere((s) => s.id == sessionId);
+      if (index != -1) {
+        _sessions[index] = fetchedSession;
+      }
+      
+      notifyListeners();
+      return SessionRefreshResult.success;
+    } catch (e) {
+      final errorStr = e.toString().toLowerCase();
+      if (errorStr.contains('not found')) {
+        _sessions.removeWhere((s) => s.id == sessionId);
+        if (_currentSession?.id == sessionId) {
+          _currentSession = null;
+        }
+        notifyListeners();
+        return SessionRefreshResult.deleted;
+      }
+      return SessionRefreshResult.error;
+    }
   }
 }

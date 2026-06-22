@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:async';
 import '../../config/app_config.dart';
 import '../../providers/scan_provider.dart';
 import '../../models/scan_model.dart';
 import '../../widgets/fingerprint_image.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_toast.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -15,6 +17,36 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
+  Timer? _refreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startPolling();
+    });
+  }
+
+  void _startPolling() {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 4), (timer) async {
+      final scanProvider = Provider.of<ScanProvider>(context, listen: false);
+      final session = scanProvider.currentSession;
+      if (session != null && mounted) {
+        final result = await scanProvider.refreshSession(session.id);
+        if (result == SessionRefreshResult.deleted && mounted) {
+          _refreshTimer?.cancel();
+          AppToast.showError(context, 'Sesi pemindaian telah dihapus.');
+          context.go('/home');
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
   static const List<String> leftFingers = [
     'left_thumb',
     'left_index',
