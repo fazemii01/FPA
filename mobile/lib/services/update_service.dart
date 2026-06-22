@@ -5,6 +5,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ota_update/ota_update.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'api_service.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import '../providers/auth_provider.dart';
+import '../routes/navigator_key.dart';
 
 class UpdateService {
   static Future<void> checkForUpdates(BuildContext context) async {
@@ -24,7 +28,48 @@ class UpdateService {
 
       if (_isVersionOlder(currentVersion, latestVersion)) {
         if (!context.mounted) return;
-        await _showUpdateDialog(context, latestVersion, apkUrl, iosUrl, forceUpdate);
+
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        if (authProvider.isAuthenticated) {
+          // Show alert to user explaining they will be logged out for the update
+          await showDialog<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext alertContext) {
+              return AlertDialog(
+                title: const Text('Pembaruan Tersedia'),
+                content: const Text(
+                    'Pembaruan aplikasi baru tersedia. Anda akan dikeluarkan dari akun terlebih dahulu untuk melanjutkan proses pembaruan.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(alertContext).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+
+          // Log out the user
+          await authProvider.logout();
+
+          // Navigate to login page using the navigatorKey context to ensure safety
+          final currentCtx = navigatorKey.currentContext;
+          if (currentCtx != null && currentCtx.mounted) {
+            currentCtx.go('/login');
+          }
+
+          // Allow transition to finish
+          await Future.delayed(const Duration(milliseconds: 500));
+        }
+
+        // Get the latest mounted context, preferably the login page context
+        final updateContext = navigatorKey.currentContext ?? context;
+        if (updateContext.mounted) {
+          await _showUpdateDialog(updateContext, latestVersion, apkUrl, iosUrl, forceUpdate);
+        }
       }
     } catch (e) {
       debugPrint('Failed to check for updates: $e');

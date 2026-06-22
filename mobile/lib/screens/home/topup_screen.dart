@@ -16,7 +16,12 @@ class _TopUpScreenState extends State<TopUpScreen> {
   final _customCreditController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   
-  static const int _pricePerCredit = 300000;
+  int getPricePerCredit(String? type) {
+    if (type == 'partner') {
+      return 95000;
+    }
+    return 125000;
+  }
   
   final List<int> _packages = [5, 10, 20, 50];
 
@@ -223,7 +228,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              _formatCurrency(pkgCredits * _pricePerCredit),
+                              _formatCurrency(pkgCredits * getPricePerCredit(user?.lembagaType)),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: isSelected ? Colors.white.withOpacity(0.8) : Colors.grey[600],
@@ -303,7 +308,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.primaryColor),
                           ),
                           Text(
-                            _formatCurrency(sessionsDipesan * _pricePerCredit),
+                            _formatCurrency(sessionsDipesan * getPricePerCredit(user?.lembagaType)),
                             style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: AppTheme.primaryColor),
                           ),
                         ],

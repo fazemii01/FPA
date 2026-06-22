@@ -2,7 +2,7 @@ name: fingerprint_scanner
 description: "10-Finger Fingerprint Scanner Mobile Application"
 publish_to: 'none'
 
-version: 1.0.3+4
+version: 1.0.7+8
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -64,4 +64,4 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/alliakids-logo.png"
+  image_path: "assets/images/jaribakat.jpeg"

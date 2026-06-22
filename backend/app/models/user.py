@@ -49,3 +49,7 @@ class User(Base):
     @property
     def lembaga_credits(self) -> Optional[int]:
         return self.lembaga.credits if self.lembaga else None
+
+    @property
+    def lembaga_type(self) -> Optional[str]:
+        return self.lembaga.type if self.lembaga else None

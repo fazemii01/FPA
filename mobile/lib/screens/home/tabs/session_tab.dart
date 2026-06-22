@@ -163,7 +163,7 @@ class _SessionTabState extends State<SessionTab> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Umur: ${session.participantAge} th  ·  ${session.completedCount}/10 Jari',
+                          'Umur: ${session.participantAge} th  ·  ${session.completedCount}/10 Jari  ·  Op: ${session.operatorName ?? 'Tidak diketahui'}',
                           style: TextStyle(
                               color: Colors.grey[600], fontSize: 12),
                         ),

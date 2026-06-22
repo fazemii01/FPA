@@ -43,7 +43,7 @@ def create_invoice(payload: InvoiceCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Lembaga tidak ditemukan")
         
     # Calculate amount
-    price_per_credit = 300000.0
+    price_per_credit = 95000.0 if lembaga.type == "partner" else 125000.0
     subtotal = payload.credits * price_per_credit
     total_amount = subtotal - payload.discount
     if total_amount < 0:

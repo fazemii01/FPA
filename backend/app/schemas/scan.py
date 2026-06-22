@@ -90,6 +90,8 @@ class ScanSessionResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     completed_at: Optional[datetime]
+    operator_name: Optional[str] = None
+    operator_email: Optional[str] = None
     fingerprints: List[FingerprintResponse] = []
 
     class Config:

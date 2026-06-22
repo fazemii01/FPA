@@ -3,10 +3,10 @@ import sys
 import re
 import subprocess
 
-def run_command(cmd, ignore_error=False):
+def run_command(cmd, ignore_error=False, cwd=None):
     print(f"Running: {' '.join(cmd)}")
     try:
-        result = subprocess.run(cmd, check=True, text=True, capture_output=True)
+        result = subprocess.run(cmd, check=True, text=True, capture_output=True, cwd=cwd, encoding="utf-8")
         if result.stdout.strip():
             print(result.stdout.strip())
         return True
@@ -93,6 +93,13 @@ def main():
     with open(app_info_path, 'w') as f:
         f.write(updated_app_info)
     print("Updated app_info.py successfully.")
+
+    # 4b. Regenerate Flutter Launcher Icons
+    print("\n--- Regenerating Flutter Launcher Icons ---")
+    mobile_dir = os.path.join(script_dir, "mobile")
+    flutter_cmd = "flutter.bat" if os.name == "nt" else "flutter"
+    run_command([flutter_cmd, "pub", "get"], cwd=mobile_dir, ignore_error=True)
+    run_command([flutter_cmd, "pub", "run", "flutter_launcher_icons"], cwd=mobile_dir, ignore_error=True)
 
     # 5. Run Git commands
     print("\n--- Running Git commands ---")

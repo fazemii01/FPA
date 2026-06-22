@@ -351,7 +351,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Umur: ${widget.session.participantAge} th  ·  ${widget.session.completedCount}/10 Jari',
+                          'Umur: ${widget.session.participantAge} th  ·  ${widget.session.completedCount}/10 Jari  ·  Op: ${widget.session.operatorName ?? 'Tidak diketahui'}',
                           style: TextStyle(color: Colors.grey[600], fontSize: 12),
                         ),
                       ],

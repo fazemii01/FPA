@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/scan_provider.dart';
 import '../../theme/app_theme.dart';
+import '../../services/update_service.dart';
 
 import 'tabs/dashboard_tab.dart';
 import 'tabs/session_tab.dart';
@@ -38,6 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     // Refresh user profile to update remaining credits
     await authProvider.checkToken();
+
+    // Check for updates
+    if (mounted) {
+      UpdateService.checkForUpdates(context);
+    }
   }
 
   @override

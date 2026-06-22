@@ -31,6 +31,7 @@ class UserResponse(BaseModel):
     lembaga_id: Optional[int] = None
     lembaga_name: Optional[str] = None
     lembaga_credits: Optional[int] = None
+    lembaga_type: Optional[str] = None
     permissions: List[str] = []
     is_active: bool
     created_at: datetime

@@ -14,6 +14,8 @@ class ScanSession {
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? completedAt;
+  final String? operatorName;
+  final String? operatorEmail;
   final List<Fingerprint> fingerprints;
 
   ScanSession({
@@ -32,6 +34,8 @@ class ScanSession {
     required this.createdAt,
     required this.updatedAt,
     this.completedAt,
+    this.operatorName,
+    this.operatorEmail,
     this.fingerprints = const [],
   });
 
@@ -54,6 +58,8 @@ class ScanSession {
       completedAt: json['completed_at'] != null 
           ? DateTime.parse(json['completed_at'] as String)
           : null,
+      operatorName: json['operator_name'] as String?,
+      operatorEmail: json['operator_email'] as String?,
       fingerprints: (json['fingerprints'] as List<dynamic>?)
           ?.map((e) => Fingerprint.fromJson(e as Map<String, dynamic>))
           .toList() ?? [],
@@ -77,6 +83,8 @@ class ScanSession {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'completed_at': completedAt?.toIso8601String(),
+      'operator_name': operatorName,
+      'operator_email': operatorEmail,
       'fingerprints': fingerprints.map((e) => e.toJson()).toList(),
     };
   }
@@ -97,6 +105,8 @@ class ScanSession {
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? completedAt,
+    String? operatorName,
+    String? operatorEmail,
     List<Fingerprint>? fingerprints,
   }) {
     return ScanSession(
@@ -115,6 +125,8 @@ class ScanSession {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       completedAt: completedAt ?? this.completedAt,
+      operatorName: operatorName ?? this.operatorName,
+      operatorEmail: operatorEmail ?? this.operatorEmail,
       fingerprints: fingerprints ?? this.fingerprints,
     );
   }

@@ -43,6 +43,7 @@ def list_lembaga(db: Session = Depends(get_db)):
             "name": lem.name,
             "credits": lem.credits,
             "is_active": lem.is_active,
+            "type": lem.type,
             "created_at": lem.created_at,
             "users_count": users_count,
             "reports_count": reports_count
@@ -59,7 +60,8 @@ def create_lembaga(payload: LembagaCreate, db: Session = Depends(get_db)):
     lem = Lembaga(
         name=payload.name,
         credits=payload.credits,
-        is_active=payload.is_active
+        is_active=payload.is_active,
+        type=payload.type
     )
     db.add(lem)
     db.commit()
@@ -69,6 +71,7 @@ def create_lembaga(payload: LembagaCreate, db: Session = Depends(get_db)):
         "name": lem.name,
         "credits": lem.credits,
         "is_active": lem.is_active,
+        "type": lem.type,
         "created_at": lem.created_at,
         "users_count": 0,
         "reports_count": 0
@@ -91,6 +94,8 @@ def update_lembaga(lembaga_id: int, payload: LembagaUpdate, db: Session = Depend
         lem.credits = payload.credits
     if payload.is_active is not None:
         lem.is_active = payload.is_active
+    if payload.type is not None:
+        lem.type = payload.type
         
     db.commit()
     db.refresh(lem)
@@ -102,6 +107,7 @@ def update_lembaga(lembaga_id: int, payload: LembagaUpdate, db: Session = Depend
         "name": lem.name,
         "credits": lem.credits,
         "is_active": lem.is_active,
+        "type": lem.type,
         "created_at": lem.created_at,
         "users_count": users_count,
         "reports_count": reports_count

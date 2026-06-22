@@ -7,12 +7,14 @@ class LembagaCreate(BaseModel):
     name: str
     credits: int = 0
     is_active: bool = True
+    type: str = "umum"
 
 
 class LembagaUpdate(BaseModel):
     name: Optional[str] = None
     credits: Optional[int] = None
     is_active: Optional[bool] = None
+    type: Optional[str] = None
 
 
 class LembagaResponse(BaseModel):
@@ -20,6 +22,7 @@ class LembagaResponse(BaseModel):
     name: str
     credits: int
     is_active: bool
+    type: str
     created_at: datetime
     users_count: int = 0
     reports_count: int = 0

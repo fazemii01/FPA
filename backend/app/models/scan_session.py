@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Enum as SQLEnum
+from typing import Optional
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from enum import Enum
@@ -48,3 +49,11 @@ class ScanSession(Base):
     reviewed_by = relationship("User", back_populates="reviewed_sessions", foreign_keys=[reviewed_by_id])
     fingerprints = relationship("Fingerprint", back_populates="scan_session", cascade="all, delete-orphan")
     report = relationship("Report", back_populates="scan_session", uselist=False)
+
+    @property
+    def operator_name(self) -> Optional[str]:
+        return self.user.full_name if self.user else None
+
+    @property
+    def operator_email(self) -> Optional[str]:
+        return self.user.email if self.user else None

@@ -86,8 +86,8 @@ def test_public_invoice_workflow(client):
     invoice_data = create_res.json()
     assert invoice_data["client_name"] == "Klien Budi"
     assert invoice_data["credits"] == 10
-    # 10 * 300,000 - 50,000 = 2,950,000
-    assert invoice_data["total_amount"] == 2950000
+    # 10 * 125,000 - 50,000 = 1,200,000
+    assert invoice_data["total_amount"] == 1200000
     assert invoice_data["status"] == "pending"
     assert "uuid" in invoice_data
     assert "code" in invoice_data
@@ -144,4 +144,52 @@ def test_public_invoice_workflow(client):
     assert lem_after.credits == 20
 
     # 9. Clean up
+    db.close()
+
+
+def test_partner_invoice_pricing(client):
+    db = TestingSessionLocal()
+    from app.core.security import get_password_hash
+    hashed = get_password_hash("admin123")
+    
+    # 1. Create super admin
+    user = User(
+        email="superadmin2@example.com",
+        hashed_password=hashed,
+        full_name="Super Admin 2",
+        role=UserRole.SUPER_ADMIN,
+        is_active=True
+    )
+    db.add(user)
+    
+    # 2. Seed Partner Lembaga
+    lem = Lembaga(name="Lembaga Partner Test", credits=5, type="partner")
+    db.add(lem)
+    db.commit()
+    db.refresh(lem)
+    db.refresh(user)
+
+    # 3. Login to get token
+    login_res = client.post(
+        "/auth/login",
+        json={"email": "superadmin2@example.com", "password": "admin123"}
+    )
+    token = login_res.json()["access_token"]
+    
+    # 4. Create Invoice for Partner
+    create_res = client.post(
+        "/invoices",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "lembaga_id": lem.id,
+            "client_name": "Klien Partner",
+            "description": "Top up Partner",
+            "credits": 10,
+            "discount": 10000
+        }
+    )
+    assert create_res.status_code == 200
+    invoice_data = create_res.json()
+    # 10 * 95,000 - 10,000 = 940,000
+    assert invoice_data["total_amount"] == 940000
     db.close()

@@ -7,6 +7,7 @@ class User {
   final int? lembagaId;
   final String? lembagaName;
   final int? lembagaCredits;
+  final String? lembagaType;
   final bool isActive;
   final DateTime createdAt;
 
@@ -19,6 +20,7 @@ class User {
     this.lembagaId,
     this.lembagaName,
     this.lembagaCredits,
+    this.lembagaType,
     required this.isActive,
     required this.createdAt,
   });
@@ -36,6 +38,7 @@ class User {
       lembagaId: json['lembaga_id'] as int?,
       lembagaName: json['lembaga_name'] as String?,
       lembagaCredits: json['lembaga_credits'] as int?,
+      lembagaType: json['lembaga_type'] as String?,
       isActive: json['is_active'] as bool? ?? true,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
@@ -51,6 +54,7 @@ class User {
       'lembaga_id': lembagaId,
       'lembaga_name': lembagaName,
       'lembaga_credits': lembagaCredits,
+      'lembaga_type': lembagaType,
       'is_active': isActive,
       'created_at': createdAt.toIso8601String(),
     };

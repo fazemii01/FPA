@@ -543,9 +543,19 @@ class _DashboardTabState extends State<DashboardTab> {
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
-          child: Text(
-            '${session.completedCount}/10 Jari terindeks',
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${session.completedCount}/10 Jari terindeks',
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Operator: ${session.operatorName ?? 'Tidak diketahui'}',
+                style: TextStyle(color: Colors.grey[500], fontSize: 11, fontStyle: FontStyle.italic),
+              ),
+            ],
           ),
         ),
         trailing: Container(

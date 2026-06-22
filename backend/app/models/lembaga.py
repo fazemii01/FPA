@@ -11,6 +11,7 @@ class Lembaga(Base):
     name = Column(String, unique=True, index=True, nullable=False)
     credits = Column(Integer, default=0, nullable=False)
     is_active = Column(Boolean, default=True)
+    type = Column(String(50), default="umum", nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

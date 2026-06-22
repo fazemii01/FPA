@@ -34,7 +34,8 @@ class ScanSessionRepository:
         return (
             db.query(ScanSession)
             .options(
-                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features),
+                joinedload(ScanSession.user)
             )
             .filter(ScanSession.id == session_id)
             .first()
@@ -45,7 +46,8 @@ class ScanSessionRepository:
         return (
             db.query(ScanSession)
             .options(
-                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features),
+                joinedload(ScanSession.user)
             )
             .filter(ScanSession.user_id == user_id)
             .order_by(ScanSession.created_at.desc())
@@ -57,7 +59,8 @@ class ScanSessionRepository:
         return (
             db.query(ScanSession)
             .options(
-                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features),
+                joinedload(ScanSession.user)
             )
             .filter(ScanSession.user_id == user_id, ScanSession.lembaga_id == lembaga_id)
             .order_by(ScanSession.created_at.desc())
@@ -67,7 +70,8 @@ class ScanSessionRepository:
     @staticmethod
     def get_all_sessions(db: Session, status: Optional[SessionStatus] = None) -> List[ScanSession]:
         q = db.query(ScanSession).options(
-            selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+            selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features),
+            joinedload(ScanSession.user)
         )
         if status is not None:
             q = q.filter(ScanSession.status == status)
@@ -78,7 +82,8 @@ class ScanSessionRepository:
         db: Session, lembaga_id: int, status: Optional[SessionStatus] = None
     ) -> List[ScanSession]:
         q = db.query(ScanSession).options(
-            selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features)
+            selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features),
+            joinedload(ScanSession.user)
         ).filter(ScanSession.lembaga_id == lembaga_id)
         if status is not None:
             q = q.filter(ScanSession.status == status)
