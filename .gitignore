@@ -1,2 +1,6 @@
 # Ignore dashboard directory since it is maintained in a separate Git repository
 /dashboard/
+/docs
+/DESIGN.md
+/deploy.sh
+/release.sh
