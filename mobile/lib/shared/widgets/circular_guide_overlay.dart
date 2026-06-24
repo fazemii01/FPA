@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 /// Guide size in logical pixels — must match the guideSize constant in
@@ -35,21 +36,23 @@ class CircularGuideOverlay extends StatelessWidget {
           ),
 
           // Square guide border + ghost fingerprint icon
-          Container(
-            width: kGuideSize,
-            height: kGuideSize,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: _getQualityColor(),
-                width: 2.5,
-              ),
+          CustomPaint(
+            painter: _DashedRoundedRectPainter(
+              color: _getQualityColor(),
+              strokeWidth: 2.5,
+              dashWidth: 10.0,
+              dashSpace: 6.0,
+              radius: 16.0,
             ),
-            child: Center(
-              child: Icon(
-                Icons.fingerprint,
-                size: 90,
-                color: _getQualityColor().withValues(alpha: 0.22),
+            child: SizedBox(
+              width: kGuideSize,
+              height: kGuideSize,
+              child: Center(
+                child: Icon(
+                  Icons.fingerprint,
+                  size: 90,
+                  color: _getQualityColor().withValues(alpha: 0.22),
+                ),
               ),
             ),
           ),
@@ -200,5 +203,67 @@ class _CornerTickPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CornerTickPainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+class _DashedRoundedRectPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double dashWidth;
+  final double dashSpace;
+  final double radius;
+
+  _DashedRoundedRectPainter({
+    required this.color,
+    this.strokeWidth = 2.5,
+    this.dashWidth = 8.0,
+    this.dashSpace = 4.0,
+    this.radius = 16.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
+    final path = Path()..addRRect(rrect);
+    
+    final dashPath = _createDashedPath(path, dashWidth, dashSpace);
+    canvas.drawPath(dashPath, paint);
+  }
+
+  Path _createDashedPath(Path source, double dashWidth, double dashSpace) {
+    final Path dest = Path();
+    for (final PathMetric metric in source.computeMetrics()) {
+      double distance = 0.0;
+      bool draw = true;
+      while (distance < metric.length) {
+        final double len = draw ? dashWidth : dashSpace;
+        if (distance + len > metric.length) {
+          dest.addPath(
+            metric.extractPath(distance, metric.length),
+            Offset.zero,
+          );
+          break;
+        }
+        if (draw) {
+          dest.addPath(
+            metric.extractPath(distance, distance + len),
+            Offset.zero,
+          );
+        }
+        distance += len;
+        draw = !draw;
+      }
+    }
+    return dest;
+  }
+
+  @override
+  bool shouldRepaint(_DashedRoundedRectPainter oldDelegate) =>
       oldDelegate.color != color;
 }

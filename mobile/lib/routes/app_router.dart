@@ -17,6 +17,7 @@ import '../screens/report/report_summary_screen.dart';
 import '../screens/report/report_view_screen.dart';
 import '../screens/home/topup_screen.dart';
 import '../screens/auth/agreement_screen.dart';
+import '../screens/profile/user_manual_screen.dart';
 
 
 class AppRouter {
@@ -129,6 +130,10 @@ class AppRouter {
           final sessionId = int.parse(state.pathParameters['sessionId']!);
           return ReportScreen(sessionId: sessionId);
         },
+      ),
+      GoRoute(
+        path: '/profile/manual',
+        builder: (context, state) => const UserManualScreen(),
       ),
     ],
   );

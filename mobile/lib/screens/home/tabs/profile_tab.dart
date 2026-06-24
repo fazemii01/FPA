@@ -168,8 +168,39 @@ class ProfileTab extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
             ],
+            const SizedBox(height: 12),
+            BouncingWidget(
+              onTap: () => context.push('/profile/manual'),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFE0E0E0)),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryColor.withOpacity(0.05),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.book_rounded, color: AppTheme.primaryColor),
+                  ),
+                  title: const Text(
+                    'Panduan Pengguna',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryColor, fontSize: 14),
+                  ),
+                  subtitle: Text(
+                    'Panduan pemindaian dan pembuatan laporan',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
             
             BouncingWidget(
               onTap: () => _handleLogout(context, authProvider),

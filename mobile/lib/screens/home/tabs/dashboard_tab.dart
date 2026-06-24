@@ -57,6 +57,8 @@ class _DashboardTabState extends State<DashboardTab> {
                 const SizedBox(height: 12),
                 // Welcome Panel
                 _buildWelcomePanel(context, user, isAdmin),
+                const SizedBox(height: 16),
+                _buildCombinedAssetBalanceCard(context, user, theme),
                 const SizedBox(height: 32),
 
                 // Bento Grid Section Header
@@ -182,14 +184,13 @@ class _DashboardTabState extends State<DashboardTab> {
                   color: AppTheme.primaryColor,
                 ),
               ),
-              if (user?.lembagaName != null && user.lembagaName.isNotEmpty) ...[
+              if (user?.email != null) ...[
                 const SizedBox(height: 2),
                 Text(
-                  '${user.lembagaName} • ${user.lembagaCredits ?? 0} Kredit',
+                  user.email!,
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 12,
-                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -212,6 +213,75 @@ class _DashboardTabState extends State<DashboardTab> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildCombinedAssetBalanceCard(BuildContext context, dynamic user, ThemeData theme) {
+    final credits = user?.lembagaCredits ?? 0;
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF3F51B5), // Premium Dark Indigo
+            Color(0xFF2196F3), // Royal Blue
+            Color(0xFF00BCD4), // Cyan
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF3F51B5).withOpacity(0.25),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'KREDIT AKTIF LEMBAGA',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.85),
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const Icon(
+                Icons.account_balance_wallet_rounded,
+                color: Colors.white70,
+                size: 20,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '$credits Kredit',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            user?.lembagaName ?? 'Institusi Terdaftar',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.9),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
