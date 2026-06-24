@@ -49,10 +49,10 @@ class UserManualScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'PANDUAN VISUAL',
                     style: TextStyle(
                       color: Colors.white70,
@@ -61,8 +61,8 @@ class UserManualScreen extends StatelessWidget {
                       letterSpacing: 1.5,
                     ),
                   ),
-                  SizedBox(height: 4),
-                  Text(
+                  const SizedBox(height: 4),
+                  const Text(
                     'Tab Allia Finger',
                     style: TextStyle(
                       color: Colors.white,
@@ -70,7 +70,7 @@ class UserManualScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Text(
                     'Pelajari seluruh alur operasional aplikasi secara cepat melalui panduan gambar interaktif di bawah.',
                     style: TextStyle(
