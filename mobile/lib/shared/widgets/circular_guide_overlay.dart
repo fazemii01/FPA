@@ -7,11 +7,13 @@ const double kGuideSize = 200.0;
 class CircularGuideOverlay extends StatelessWidget {
   final String fingerLabel;
   final double qualityScore;
+  final double overlayOpacity;
 
   const CircularGuideOverlay({
     super.key,
     required this.fingerLabel,
     required this.qualityScore,
+    this.overlayOpacity = 0.05,
   });
 
   @override
@@ -24,7 +26,7 @@ class CircularGuideOverlay extends StatelessWidget {
         children: [
           // Dimmed background with transparent square hole cut out
           ColoredBox(
-            color: Colors.black.withValues(alpha: 0.45),
+            color: Colors.black.withValues(alpha: overlayOpacity),
             child: const SizedBox.expand(),
           ),
           ClipPath(

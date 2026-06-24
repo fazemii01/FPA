@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../providers/scan_provider.dart';
 import '../../widgets/app_toast.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/fingerprint_image.dart';
+import '../../models/scan_model.dart';
+import '../../config/app_config.dart';
 
 class ReportScreen extends StatefulWidget {
   final int sessionId;
@@ -23,7 +26,150 @@ class _ReportScreenState extends State<ReportScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ScanProvider>().loadReport(widget.sessionId);
+      context.read<ScanProvider>().loadSession(widget.sessionId);
     });
+  }
+
+  void _showFingerDetail(BuildContext context, Fingerprint fp, String label) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          title: Text(
+            label,
+            style: const TextStyle(
+              color: AppTheme.primaryColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  color: Colors.grey[100],
+                  width: double.infinity,
+                  height: 200,
+                  child: FingerprintImage(
+                    fingerprintId: fp.id,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Kualitas: ${fp.qualityScore?.toStringAsFixed(1) ?? "N/A"}%',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              Text('Tipe Pola: ${fp.patternType ?? "-"}'),
+              const SizedBox(height: 4),
+              Text('Jumlah Garis (Ridge): ${fp.ridgeCount ?? "-"}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Tutup', style: TextStyle(color: Colors.grey)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showFingerprintsBottomSheet(BuildContext context, ScanSession session) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const Text(
+                'Detail Sidik Jari',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: session.fingerprints.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemBuilder: (context, index) {
+                    final fp = session.fingerprints[index];
+                    final label = AppConstants.fingerLabels[fp.fingerPosition] ?? fp.fingerPosition;
+                    final Color qualityColor = fp.isGoodQuality
+                        ? AppTheme.successColor
+                        : fp.isFairQuality
+                            ? AppTheme.warningColor
+                            : AppTheme.errorColor;
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFE0E0E0)),
+                      ),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: qualityColor.withOpacity(0.15),
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              color: qualityColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          label,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          'Kualitas: ${fp.qualityScore?.toStringAsFixed(1) ?? "N/A"}%',
+                          style: TextStyle(color: qualityColor, fontSize: 12),
+                        ),
+                        trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showFingerDetail(context, fp, label);
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -252,6 +398,21 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
+                if (scanProvider.currentSession != null) ...[
+                  OutlinedButton.icon(
+                    onPressed: () => _showFingerprintsBottomSheet(context, scanProvider.currentSession!),
+                    icon: const Icon(Icons.fingerprint_rounded, color: AppTheme.primaryColor),
+                    label: const Text('Lihat Detail Sidik Jari', style: TextStyle(color: AppTheme.primaryColor)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: AppTheme.primaryColor),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 OutlinedButton.icon(
                   onPressed: () => context.go('/home'),
                   icon: const Icon(Icons.home_rounded, color: AppTheme.primaryColor),

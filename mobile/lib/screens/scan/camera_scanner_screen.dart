@@ -43,6 +43,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
   double _minZoom = 1.0;
   double _maxZoom = 4.0;
   double _currentZoom = 1.8;
+  double _overlayOpacity = 0.05;
 
   @override
   void initState() {
@@ -198,6 +199,18 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
     } catch (e) {
       print('Error setting flash mode: $e');
     }
+  }
+
+  void _cycleOpacity() {
+    setState(() {
+      if (_overlayOpacity == 0.45) {
+        _overlayOpacity = 0.25;
+      } else if (_overlayOpacity == 0.25) {
+        _overlayOpacity = 0.05;
+      } else {
+        _overlayOpacity = 0.45;
+      }
+    });
   }
 
   Future<void> _pickFromGallery() async {
@@ -461,36 +474,61 @@ class _CameraScannerScreenState extends State<CameraScannerScreen> {
                 child: CircularGuideOverlay(
                   fingerLabel: label,
                   qualityScore: _qualityScore,
+                  overlayOpacity: _overlayOpacity,
                 ),
               ),
               Positioned(
                 top: 16,
                 right: 16,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      _flashMode == FlashMode.always
-                          ? Icons.flash_on
-                          : _flashMode == FlashMode.torch
-                              ? Icons.highlight
-                              : Icons.flash_off,
-                      color: _flashMode == FlashMode.always
-                          ? Colors.green
-                          : _flashMode == FlashMode.torch
-                              ? Colors.yellow
-                              : Colors.white60,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          _flashMode == FlashMode.always
+                              ? Icons.flash_on
+                              : _flashMode == FlashMode.torch
+                                  ? Icons.highlight
+                                  : Icons.flash_off,
+                          color: _flashMode == FlashMode.always
+                              ? Colors.green
+                              : _flashMode == FlashMode.torch
+                                  ? Colors.yellow
+                                  : Colors.white60,
+                        ),
+                        onPressed: _cycleFlashMode,
+                        tooltip: _flashMode == FlashMode.always
+                            ? 'Flash On Capture'
+                            : _flashMode == FlashMode.torch
+                                ? 'Continuous Torch'
+                                : 'Flash Off',
+                      ),
                     ),
-                    onPressed: _cycleFlashMode,
-                    tooltip: _flashMode == FlashMode.always
-                        ? 'Flash On Capture'
-                        : _flashMode == FlashMode.torch
-                            ? 'Continuous Torch'
-                            : 'Flash Off',
-                  ),
+                    const SizedBox(height: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.opacity,
+                          color: Colors.white,
+                        ),
+                        onPressed: _cycleOpacity,
+                        tooltip: _overlayOpacity == 0.45
+                            ? 'Overlay: Standard (45%)'
+                            : _overlayOpacity == 0.25
+                                ? 'Overlay: Medium (25%)'
+                                : 'Overlay: Clear (5%)',
+                      ),
+                    ),
+                  ],
                 ),
               ),
               // Floating Zoom Controller Overlay

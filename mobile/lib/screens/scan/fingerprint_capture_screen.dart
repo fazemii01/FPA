@@ -37,6 +37,8 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
   double _minZoom = 1.0;
   double _maxZoom = 4.0;
   double _currentZoom = 1.8;
+  String? _previewImagePath;
+  double _overlayOpacity = 0.05;
 
   @override
   void initState() {
@@ -168,6 +170,147 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
                 ),
               );
             }
+
+            if (_previewImagePath != null) {
+              return Container(
+                color: Colors.black,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 24),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[900],
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.white24, width: 2),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(14),
+                              child: AspectRatio(
+                                aspectRatio: 1.0,
+                                child: Image.file(
+                                  File(_previewImagePath!),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 32),
+                            child: Text(
+                              'Tinjau Kualitas Gambar',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 32),
+                            child: Text(
+                              'Apakah sidik jari terpusat dan guratan (ridges) terlihat sangat jelas?',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.8),
+                            ],
+                          ),
+                        ),
+                        padding: const EdgeInsets.fromLTRB(24, 32, 24, 40),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _isCapturing
+                                    ? null
+                                    : () async {
+                                        setState(() {
+                                          _previewImagePath = null;
+                                        });
+                                        try {
+                                          await _cameraController?.setFocusMode(FocusMode.auto);
+                                        } catch (_) {}
+                                      },
+                                icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                                label: const Text(
+                                  'Scan Ulang',
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Colors.white54, width: 1.5),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: _isCapturing
+                                    ? null
+                                    : () async {
+                                        setState(() => _isCapturing = true);
+                                        await _uploadFingerprint(_previewImagePath!);
+                                      },
+                                icon: _isCapturing
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Icon(Icons.check_rounded, color: Colors.white),
+                                label: const Text(
+                                  'Gunakan',
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 0,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
             return Stack(
               children: [
                 Positioned.fill(
@@ -215,6 +358,7 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
                   child: CircularGuideOverlay(
                     fingerLabel: label,
                     qualityScore: 0,
+                    overlayOpacity: _overlayOpacity,
                   ),
                 ),
                 Positioned(
@@ -245,18 +389,43 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
                           ),
                         ),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            _isTorchOn ? Icons.flash_on : Icons.flash_off,
-                            color: _isTorchOn ? Colors.yellow : Colors.white,
+                      const SizedBox(width: 8),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                _isTorchOn ? Icons.flash_on : Icons.flash_off,
+                                color: _isTorchOn ? Colors.yellow : Colors.white,
+                              ),
+                              onPressed: _toggleTorch,
+                            ),
                           ),
-                          onPressed: _toggleTorch,
-                        ),
+                          const SizedBox(height: 12),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.opacity,
+                                color: Colors.white,
+                              ),
+                              onPressed: _cycleOpacity,
+                              tooltip: _overlayOpacity == 0.45
+                                  ? 'Overlay: Standard (45%)'
+                                  : _overlayOpacity == 0.25
+                                      ? 'Overlay: Medium (25%)'
+                                      : 'Overlay: Clear (5%)',
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -415,7 +584,10 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
       final image = await _cameraController!.takePicture();
       // Crop to the oval guide before uploading
       final croppedPath = await _cropToGuide(image.path);
-      await _uploadFingerprint(croppedPath);
+      setState(() {
+        _previewImagePath = croppedPath;
+        _isCapturing = false;
+      });
     } catch (e) {
       print('Error capturing image: $e');
       setState(() => _isCapturing = false);
@@ -437,6 +609,18 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
     }
   }
 
+  void _cycleOpacity() {
+    setState(() {
+      if (_overlayOpacity == 0.45) {
+        _overlayOpacity = 0.25;
+      } else if (_overlayOpacity == 0.25) {
+        _overlayOpacity = 0.05;
+      } else {
+        _overlayOpacity = 0.45;
+      }
+    });
+  }
+
   Future<void> _pickFromGallery() async {
     try {
       setState(() => _isCapturing = true);
@@ -444,7 +628,10 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
       if (image != null) {
         // Crop to the oval guide region before uploading
         final croppedPath = await _cropToGuide(image.path);
-        await _uploadFingerprint(croppedPath);
+        setState(() {
+          _previewImagePath = croppedPath;
+          _isCapturing = false;
+        });
       } else {
         setState(() => _isCapturing = false);
       }
@@ -490,7 +677,10 @@ class _FingerprintCaptureScreenState extends State<FingerprintCaptureScreen> {
     if (success && mounted) {
       context.go('/scan');
     } else {
-      setState(() => _isCapturing = false);
+      setState(() {
+        _isCapturing = false;
+        _previewImagePath = null;
+      });
       try {
         await _cameraController?.setFocusMode(FocusMode.auto);
       } catch (_) {}

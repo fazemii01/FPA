@@ -6,7 +6,7 @@ from app.core.config import settings
 router = APIRouter(prefix="/app", tags=["App Info"])
 
 # This constant will be updated whenever a new release is pushed
-LATEST_VERSION = "1.0.8"
+LATEST_VERSION = "1.0.9"
 
 @router.get("/version")
 def get_app_version():
