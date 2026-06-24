@@ -74,7 +74,7 @@ class UserManualScreen extends StatelessWidget {
                   Text(
                     'Pelajari seluruh alur operasional aplikasi secara cepat melalui panduan gambar interaktif di bawah.',
                     style: TextStyle(
-                      color: Colors.white87,
+                      color: Colors.white.withOpacity(0.87),
                       fontSize: 12,
                       height: 1.4,
                     ),
