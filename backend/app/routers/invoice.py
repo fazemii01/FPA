@@ -9,6 +9,7 @@ from app.middleware.auth import require_super_admin
 from app.models.invoice import Invoice
 from app.models.lembaga import Lembaga
 from app.models.payment_log import PaymentLog
+from app.models.system_setting import SystemSetting
 from app.schemas.invoice import InvoiceCreate, InvoiceResponse
 from app.storage.minio_service import MinIOService
 
@@ -42,8 +43,10 @@ def create_invoice(payload: InvoiceCreate, db: Session = Depends(get_db)):
     if not lembaga:
         raise HTTPException(status_code=404, detail="Lembaga tidak ditemukan")
         
-    # Calculate amount
-    price_per_credit = 95000.0 if lembaga.type == "partner" else 125000.0
+    # Calculate amount dynamically from SystemSetting
+    price_key = "price_partner" if lembaga.type == "partner" else "price_umum"
+    setting = db.query(SystemSetting).filter(SystemSetting.key == price_key).first()
+    price_per_credit = float(setting.value) if setting else (95000.0 if lembaga.type == "partner" else 125000.0)
     subtotal = payload.credits * price_per_credit
     total_amount = subtotal - payload.discount
     if total_amount < 0:

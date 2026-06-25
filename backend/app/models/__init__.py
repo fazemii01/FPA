@@ -7,6 +7,7 @@ from app.models.lembaga import Lembaga
 from app.models.role_permission import RolePermission
 from app.models.payment_log import PaymentLog
 from app.models.invoice import Invoice
+from app.models.system_setting import SystemSetting
 
 __all__ = [
     "User",
@@ -21,4 +22,5 @@ __all__ = [
     "RolePermission",
     "PaymentLog",
     "Invoice",
+    "SystemSetting",
 ]

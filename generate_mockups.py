@@ -165,7 +165,7 @@ def create_dashboard_mockup(output_path):
     
     # Bento Card 2: Menunggu Tinjauan
     draw.rounded_rectangle([width//2 + 10, 295, width-40, 385], radius=12, fill=bg_light, outline=(226, 232, 240), width=1)
-    draw.ellipse([width//2 + 24, 308, width//2 + 46, 330], fill=(255, 243, 205)) # Amber tint
+    draw.ellipse([width//2 + 24, 308, width//2 + 46, 330], fill=(254, 243, 199)) # Amber tint
     # Icon replacement (Clock)
     draw.ellipse([width//2 + 30, 314, width//2 + 40, 324], fill=(245, 158, 11))
     draw.text((width//2 + 24, 345), "2 Review", fill=text_dark, font=font_bold)

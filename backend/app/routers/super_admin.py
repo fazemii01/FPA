@@ -10,6 +10,7 @@ from app.models.payment_log import PaymentLog
 from app.models.role_permission import RolePermission
 from app.models.scan_session import ScanSession
 from app.models.report import Report
+from app.models.system_setting import SystemSetting
 
 from app.schemas.user import UserCreate
 from app.schemas.super_admin import (
@@ -21,6 +22,8 @@ from app.schemas.super_admin import (
     PaymentLogResponse,
     UserAuditResponse,
     DashboardStatsResponse,
+    SystemSettingResponse,
+    SystemSettingsUpdate,
 )
 
 router = APIRouter(
@@ -341,3 +344,28 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
         "recent_sessions": recent_sessions,
         "credit_summary": credit_summary
     }
+
+
+@router.get("/settings", response_model=List[SystemSettingResponse])
+def get_settings(db: Session = Depends(get_db)):
+    """Retrieve all system settings."""
+    return db.query(SystemSetting).all()
+
+
+@router.put("/settings")
+def update_settings(payload: SystemSettingsUpdate, db: Session = Depends(get_db)):
+    """Bulk update system settings."""
+    settings = {
+        "topup_bulk_options": payload.topup_bulk_options,
+        "price_umum": str(payload.price_umum),
+        "price_partner": str(payload.price_partner),
+    }
+    for key, val in settings.items():
+        setting = db.query(SystemSetting).filter(SystemSetting.key == key).first()
+        if not setting:
+            setting = SystemSetting(key=key, value=val)
+            db.add(setting)
+        else:
+            setting.value = val
+    db.commit()
+    return {"status": "success"}

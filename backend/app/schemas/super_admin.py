@@ -78,3 +78,18 @@ class DashboardStatsResponse(BaseModel):
     total_reports: int
     recent_sessions: List[dict] = []
     credit_summary: List[dict] = []
+
+
+class SystemSettingResponse(BaseModel):
+    key: str
+    value: str
+
+    class Config:
+        from_attributes = True
+
+
+class SystemSettingsUpdate(BaseModel):
+    topup_bulk_options: str
+    price_umum: int
+    price_partner: int
+

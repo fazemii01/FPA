@@ -242,7 +242,7 @@ def main():
         Paragraph("<b>4.1 Panel Kontrol Kanan Atas:</b>", h2_style),
         Paragraph("Gunakan panel kontrol mengambang untuk meningkatkan ketajaman gambar:", body_style),
         Paragraph("&bull; <b>Senter/Torch (⚡)</b>: Aktifkan senter untuk memperjelas alur garis sidik jari.", bullet_style),
-        Paragraph("&bull; <b>Transparansi (💧)</b>: Siklus overlay (Low: 0.05, Medium: 0.25, Standard: 0.45) jika layar terlalu gelap. Default dimulai dari tingkat **Low (0.05)** agar layar viewfinder terlihat jernih dan terang secara instan.", bullet_style),
+        Paragraph("&bull; <b>Transparansi (💧)</b>: Siklus overlay (Low: 0.05, Medium: 0.25, Standard: 0.45) jika layar terlalu gelap. Default diatur ke <b>Low (0.05)</b> agar layar viewfinder terlihat jernih.", bullet_style),
         Paragraph("&bull; <b>Zoom Slider</b>: Gunakan zoom <b>1.8x - 2.0x</b> dengan jarak HP ke jari sekitar 10-15 cm untuk menghindari blur dan bayangan ponsel.", bullet_style),
         Paragraph("&bull; <b>Autofocus Manual</b>: Ketuk layar pada area jari untuk mengunci fokus lensa.", bullet_style),
     ]
@@ -317,7 +317,7 @@ def main():
         ("T: Mengapa kamera terlalu gelap saat pertama kali dibuka?", 
          "J: Aplikasi secara default menggunakan overlay gelap (Low: 0.05 opacity) di luar panduan untuk isolasi cahaya. Anda dapat mengubah kegelapan overlay dengan mengetuk ikon air (💧) di kanan atas."),
         ("T: Bagaimana cara mencegah hasil foto terdeteksi buram/blur?", 
-         "J: Jaga jarak ponsel minimal 10 cm dari jari subjek. Atur zoom internal 1.8x s.d 2.0x and ketuk layar pada area jari untuk mengunci autofocus."),
+         "J: Jaga jarak ponsel minimal 10 cm dari jari subjek. Atur zoom internal 1.8x s.d 2.0x dan ketuk layar pada area jari untuk mengunci autofocus."),
         ("T: Saya tidak sengaja menutup aplikasi saat pemindaian berlangsung.", 
          "J: Semua jari yang sudah diunggah (centang hijau) aman di server. Cukup buka tab Sesi, klik subjek Anda, lalu klik 'Lanjutkan Pemindaian' untuk melanjutkan.")
     ]

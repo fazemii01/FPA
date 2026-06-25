@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/api_service.dart';
 import '../../theme/app_theme.dart';
 
 class TopUpScreen extends StatefulWidget {
@@ -16,18 +17,22 @@ class _TopUpScreenState extends State<TopUpScreen> {
   final _customCreditController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   
+  List<int> _packages = [5, 10, 15, 20];
+  int _priceUmum = 125000;
+  int _pricePartner = 95000;
+  bool _isLoading = true;
+
   int getPricePerCredit(String? type) {
     if (type == 'partner') {
-      return 95000;
+      return _pricePartner;
     }
-    return 125000;
+    return _priceUmum;
   }
-  
-  final List<int> _packages = [5, 10, 20, 50];
 
   @override
   void initState() {
     super.initState();
+    _fetchTopUpConfig();
     _customCreditController.addListener(() {
       if (_customCreditController.text.isNotEmpty && _selectedPackageIndex != null) {
         setState(() {
@@ -37,6 +42,33 @@ class _TopUpScreenState extends State<TopUpScreen> {
         setState(() {});
       }
     });
+  }
+
+  Future<void> _fetchTopUpConfig() async {
+    try {
+      final data = await ApiService().get('/app/topup-config');
+      if (data != null && mounted) {
+        setState(() {
+          if (data['packages'] != null) {
+            _packages = List<int>.from(data['packages']);
+          }
+          if (data['price_umum'] != null) {
+            _priceUmum = data['price_umum'];
+          }
+          if (data['price_partner'] != null) {
+            _pricePartner = data['price_partner'];
+          }
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to fetch topup config: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
