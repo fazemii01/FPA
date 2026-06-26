@@ -141,3 +141,84 @@ def get_report(
     if not report:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Report not found")
     return report
+
+
+@router.get(
+    "/sessions/{session_id}/download",
+)
+def download_report(
+    session_id: int,
+    token: str,
+    db: Session = Depends(get_db),
+):
+    """Download report PDF as an attachment."""
+    from fastapi import Response
+    from app.core.security import decode_access_token
+    from app.repositories.user import UserRepository
+    from app.storage.minio_service import MinIOService
+    from app.middleware.auth import get_permissions_for_role
+    
+    # 1. Validate token
+    payload = decode_access_token(token)
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication token",
+        )
+    user_id = payload.get("sub")
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication token",
+        )
+    user = UserRepository.get_user_by_id(db, int(user_id))
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+        )
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is disabled",
+        )
+    
+    # 2. Check permission VIEW_HISTORY
+    user.permissions = get_permissions_for_role(db, user.role)
+    if user.role != UserRole.SUPER_ADMIN and "VIEW_HISTORY" not in getattr(user, "permissions", []):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permission denied",
+        )
+        
+    # 3. Check scan session and report visibility
+    session = ScanSessionRepository.get_session(db, session_id)
+    _ensure_session_visible(session, user)
+    
+    report = ReportService.get_report(db, session_id)
+    if not report or not report.pdf_path:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Report not found or PDF has not been generated yet",
+        )
+        
+    # 4. Fetch PDF from MinIO
+    try:
+        minio_service = MinIOService()
+        pdf_bytes = minio_service.get_fingerprint(report.pdf_path)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch report from storage: {exc}",
+        )
+        
+    filename = report.pdf_path.split("/")[-1]
+    
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}"
+        }
+    )
+

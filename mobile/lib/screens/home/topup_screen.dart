@@ -156,9 +156,11 @@ class _TopUpScreenState extends State<TopUpScreen> {
           },
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
             child: Column(

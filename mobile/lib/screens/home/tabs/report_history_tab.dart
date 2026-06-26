@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
+import '../../../config/app_config.dart';
 import '../../../providers/scan_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../models/scan_model.dart';
@@ -149,7 +150,7 @@ class ReportHistoryTab extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 icon: const Icon(Icons.download_rounded, color: AppTheme.primaryColor, size: 20),
-                onPressed: () => _onDownloadTap(context, session, scanProvider),
+                onPressed: () => _onDownloadTap(context, session, scanProvider, authProvider),
               ),
             ],
           ],
@@ -158,7 +159,12 @@ class ReportHistoryTab extends StatelessWidget {
     );
   }
 
-  Future<void> _onDownloadTap(BuildContext context, ScanSession session, ScanProvider scanProvider) async {
+  Future<void> _onDownloadTap(
+    BuildContext context,
+    ScanSession session,
+    ScanProvider scanProvider,
+    AuthProvider authProvider,
+  ) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -167,8 +173,8 @@ class ReportHistoryTab extends StatelessWidget {
     final success = await scanProvider.loadReport(session.id);
     if (context.mounted) {
       Navigator.pop(context);
-      if (success && scanProvider.currentReport?.pdfUrl != null) {
-        final url = Uri.parse(scanProvider.currentReport!.pdfUrl!);
+      if (success && scanProvider.currentReport != null) {
+        final url = Uri.parse('${ApiConfig.reports}/sessions/${session.id}/download?token=${authProvider.token}');
         try {
           final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
           if (!launched) {

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/scan_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../widgets/app_toast.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/fingerprint_image.dart';
@@ -399,6 +400,20 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  onPressed: () => _handlePreviewPDF(context),
+                  icon: const Icon(Icons.remove_red_eye_rounded),
+                  label: const Text('Lihat Laporan'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.successColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 if (scanProvider.currentSession != null) ...[
                   OutlinedButton.icon(
                     onPressed: () => _showFingerprintsBottomSheet(context, scanProvider.currentSession!),
@@ -445,9 +460,10 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Future<void> _handleDownloadPDF(BuildContext context) async {
-    final report = context.read<ScanProvider>().currentReport;
-    if (report?.pdfUrl != null) {
-      final url = Uri.parse(report!.pdfUrl!);
+    final authProvider = context.read<AuthProvider>();
+    final token = authProvider.token;
+    if (token != null) {
+      final url = Uri.parse('${ApiConfig.reports}/sessions/${widget.sessionId}/download?token=$token');
       try {
         final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
         if (!launched) {
@@ -469,7 +485,36 @@ class _ReportScreenState extends State<ReportScreen> {
         }
       }
     } else {
-      AppToast.showError(context, 'URL laporan tidak ditemukan');
+      AppToast.showError(context, 'Token autentikasi tidak ditemukan');
+    }
+  }
+
+  Future<void> _handlePreviewPDF(BuildContext context) async {
+    final report = context.read<ScanProvider>().currentReport;
+    if (report?.pdfUrl != null) {
+      final url = Uri.parse(report!.pdfUrl!);
+      try {
+        final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+        if (!launched) {
+          final launchedDefault = await launchUrl(url, mode: LaunchMode.platformDefault);
+          if (!launchedDefault && context.mounted) {
+            AppToast.showError(context, 'Tidak dapat membuka preview laporan');
+          }
+        }
+      } catch (e) {
+        try {
+          final launchedDefault = await launchUrl(url, mode: LaunchMode.platformDefault);
+          if (!launchedDefault && context.mounted) {
+            AppToast.showError(context, 'Gagal membuka preview: $e');
+          }
+        } catch (err) {
+          if (context.mounted) {
+            AppToast.showError(context, 'Error: $err');
+          }
+        }
+      }
+    } else {
+      AppToast.showError(context, 'URL preview tidak ditemukan');
     }
   }
 

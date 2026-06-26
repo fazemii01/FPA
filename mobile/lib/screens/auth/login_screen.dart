@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 
@@ -16,6 +17,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _agreedToTerms = false;
+  String _apkVersion = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadApkVersion();
+  }
+
+  Future<void> _loadApkVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      setState(() {
+        _apkVersion = packageInfo.version;
+      });
+    } catch (e) {
+      // ignore
+    }
+  }
 
   @override
   void dispose() {
@@ -299,6 +318,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       return const SizedBox.shrink();
                     },
                   ),
+                  if (_apkVersion.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      'v$_apkVersion',
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ],
               ),
             ),
