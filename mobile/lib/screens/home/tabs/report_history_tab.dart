@@ -129,6 +129,8 @@ class ReportHistoryTab extends StatelessWidget {
                 const SizedBox(width: 12),
               ],
               const Icon(Icons.remove_red_eye_rounded, color: AppTheme.primaryColor, size: 20),
+              const SizedBox(width: 8),
+              const Icon(Icons.download_rounded, color: AppTheme.primaryColor, size: 20),
             ],
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../providers/scan_provider.dart';
 import '../../widgets/app_toast.dart';
 import '../../theme/app_theme.dart';
@@ -443,8 +444,33 @@ class _ReportScreenState extends State<ReportScreen> {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 
-  void _handleDownloadPDF(BuildContext context) {
-    AppToast.showInfo(context, 'Fitur unduh PDF akan segera tersedia');
+  Future<void> _handleDownloadPDF(BuildContext context) async {
+    final report = context.read<ScanProvider>().currentReport;
+    if (report?.pdfUrl != null) {
+      final url = Uri.parse(report!.pdfUrl!);
+      try {
+        final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+        if (!launched) {
+          final launchedDefault = await launchUrl(url, mode: LaunchMode.platformDefault);
+          if (!launchedDefault && context.mounted) {
+            AppToast.showError(context, 'Tidak dapat mengunduh laporan PDF');
+          }
+        }
+      } catch (e) {
+        try {
+          final launchedDefault = await launchUrl(url, mode: LaunchMode.platformDefault);
+          if (!launchedDefault && context.mounted) {
+            AppToast.showError(context, 'Gagal mengunduh: $e');
+          }
+        } catch (err) {
+          if (context.mounted) {
+            AppToast.showError(context, 'Error: $err');
+          }
+        }
+      }
+    } else {
+      AppToast.showError(context, 'URL laporan tidak ditemukan');
+    }
   }
 
   Widget _buildInfoRow(String label, String value) {

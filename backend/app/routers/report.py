@@ -19,8 +19,6 @@ def _ensure_session_visible(session, user: User):
         return session
     if session.lembaga_id != user.lembaga_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
-    if user.role != UserRole.ADMIN and session.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
     return session
 
 
