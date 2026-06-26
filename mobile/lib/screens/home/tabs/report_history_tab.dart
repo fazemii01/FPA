@@ -64,81 +64,100 @@ class ReportHistoryTab extends StatelessWidget {
     final Color badgeColor = isDone ? AppTheme.successColor : AppTheme.warningColor;
     final String badgeLabel = isDone ? 'Laporan Selesai' : 'Sedang Diproses';
  
-    return BouncingWidget(
-      onTap: () => _onCardTap(context, session, scanProvider),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFE0E0E0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.01),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.08),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.description_outlined, color: AppTheme.primaryColor, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Expanded(
+              child: BouncingWidget(
+                onTap: isDone ? () => context.push('/report/${session.id}') : () {},
+                child: Row(
                   children: [
-                    Text(
-                      session.participantName.isNotEmpty ? session.participantName : 'Sesi #${session.id}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.primaryColor),
-                    ),
-                    const SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: badgeColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
+                        color: AppTheme.primaryColor.withOpacity(0.08),
+                        shape: BoxShape.circle,
                       ),
-                      child: Text(
-                        badgeLabel,
-                        style: TextStyle(
-                          color: badgeColor,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: const Icon(Icons.description_outlined, color: AppTheme.primaryColor, size: 24),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            session.participantName.isNotEmpty ? session.participantName : 'Sesi #${session.id}',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.primaryColor),
+                          ),
+                          const SizedBox(height: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: badgeColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              badgeLabel,
+                              style: TextStyle(
+                                color: badgeColor,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              if (canGenerateReport && isDone) ...[
-                _RegenerateButton(
-                  sessionId: session.id,
-                  participantName: session.participantName.isNotEmpty ? session.participantName : 'Sesi #${session.id}',
-                  scanProvider: scanProvider,
-                ),
-                const SizedBox(width: 12),
-              ],
-              const Icon(Icons.remove_red_eye_rounded, color: AppTheme.primaryColor, size: 20),
-              const SizedBox(width: 8),
-              const Icon(Icons.download_rounded, color: AppTheme.primaryColor, size: 20),
+            ),
+            const SizedBox(width: 12),
+            if (canGenerateReport && isDone) ...[
+              _RegenerateButton(
+                sessionId: session.id,
+                participantName: session.participantName.isNotEmpty ? session.participantName : 'Sesi #${session.id}',
+                scanProvider: scanProvider,
+              ),
+              const SizedBox(width: 12),
             ],
-          ),
+            if (isDone) ...[
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.remove_red_eye_rounded, color: AppTheme.primaryColor, size: 20),
+                onPressed: () => context.push('/report/${session.id}'),
+              ),
+              const SizedBox(width: 12),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.download_rounded, color: AppTheme.primaryColor, size: 20),
+                onPressed: () => _onDownloadTap(context, session, scanProvider),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 
-  Future<void> _onCardTap(BuildContext context, ScanSession session, ScanProvider scanProvider) async {
+  Future<void> _onDownloadTap(BuildContext context, ScanSession session, ScanProvider scanProvider) async {
     showDialog(
       context: context,
       barrierDismissible: false,
