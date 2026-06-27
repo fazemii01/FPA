@@ -25,34 +25,22 @@ class RidgeEnhancement:
         self.n_orientations = n_orientations
 
     def estimate_ridge_orientation(self, gray: np.ndarray) -> np.ndarray:
-        """Block-wise ridge orientation in radians [0, pi). Shape == gray.shape."""
+        """Calculate smooth, pixel-level ridge orientation in radians [0, pi)."""
         img = gray.astype(np.float32)
         gx = cv2.Sobel(img, cv2.CV_32F, 1, 0, ksize=3)
         gy = cv2.Sobel(img, cv2.CV_32F, 0, 1, ksize=3)
 
-        h, w = gray.shape
-        bs = self.block_size
-        
         # Compute local gradient components vx and vy per pixel
         vx = 2.0 * gx * gy
         vy = gx * gx - gy * gy
         
         # Smooth vx and vy with a Gaussian filter to eliminate local noise
-        vx_smooth = cv2.GaussianBlur(vx, (15, 15), 0)
-        vy_smooth = cv2.GaussianBlur(vy, (15, 15), 0)
+        vx_smooth = cv2.GaussianBlur(vx, (25, 25), 0)
+        vy_smooth = cv2.GaussianBlur(vy, (25, 25), 0)
 
-        orient = np.zeros((h, w), dtype=np.float32)
-        for y in range(0, h, bs):
-            for x in range(0, w, bs):
-                vx_blk = vx_smooth[y : y + bs, x : x + bs]
-                vy_blk = vy_smooth[y : y + bs, x : x + bs]
-                if vx_blk.size == 0:
-                    continue
-                v_x = float(np.sum(vx_blk))
-                v_y = float(np.sum(vy_blk))
-                theta = 0.5 * np.arctan2(v_x, v_y) + np.pi / 2.0
-                orient[y : y + bs, x : x + bs] = theta
-        return orient
+        # Compute theta per-pixel
+        theta = 0.5 * np.arctan2(vx_smooth, vy_smooth) + np.pi / 2.0
+        return theta
 
     def create_gabor_filters(self) -> list[tuple[float, np.ndarray]]:
         filters: list[tuple[float, np.ndarray]] = []

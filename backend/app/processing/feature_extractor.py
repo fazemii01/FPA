@@ -199,14 +199,22 @@ class FingerprintFeatureExtractor:
         stability: float,
     ) -> PatternType:
         n_core, n_delta = len(cores), len(deltas)
-        if n_core >= 2 and n_delta >= 2:
+        
+        # Whorls typically have high curvature and multiple singular point clusters
+        if n_core >= 8 and n_delta >= 6:
             return PatternType.WHORL
-        if n_core == 1 and n_delta == 1:
+            
+        # Loops have intermediate curvature and singular point counts
+        if (n_core >= 2 and n_delta >= 2) or (n_core >= 2 and n_delta >= 1) or (n_core >= 1 and n_delta >= 2):
             return PatternType.LOOP
-        if n_core == 0 and n_delta == 0:
-            return PatternType.ARCH if stability > 0.5 else PatternType.UNKNOWN
-        if n_core == 1 and n_delta == 0:
+            
+        # Arches/Tented Arches have very low counts of singular points
+        if n_core == 1:
             return PatternType.TENTED_ARCH
+            
+        if n_core == 0:
+            return PatternType.ARCH
+            
         return PatternType.COMPOSITE
 
     @staticmethod
@@ -231,16 +239,26 @@ def _poincare_singular_points(
     """Locate singular points by summing orientation changes around a small loop."""
     h, w = orientation.shape
     pts: List[Tuple[int, int]] = []
-    radius = max(2, block // 4)
+    
+    # Erode the mask to avoid border/background noise
+    if mask is not None:
+        kernel = np.ones((25, 25), np.uint8)
+        eroded_mask = cv2.erode(mask, kernel)
+    else:
+        eroded_mask = None
+
+    radius = 3  # Keep loop radius fixed at 3 to trace local ridge flow
     # 8-neighbour ring offsets (clockwise)
     ring = [
         (-radius, -radius), (-radius, 0), (-radius, radius),
         (0, radius), (radius, radius), (radius, 0),
         (radius, -radius), (0, -radius),
     ]
-    for y in range(radius, h - radius, max(1, block // 2)):
-        for x in range(radius, w - radius, max(1, block // 2)):
-            if mask is not None and mask[y, x] == 0:
+    # Scan step size must be small (2 pixels) to avoid skipping singular points
+    step = 2
+    for y in range(radius, h - radius, step):
+        for x in range(radius, w - radius, step):
+            if eroded_mask is not None and eroded_mask[y, x] == 0:
                 continue
             angles = [orientation[y + dy, x + dx] for dy, dx in ring]
             total = 0.0
@@ -253,7 +271,7 @@ def _poincare_singular_points(
                 total += d
             if abs(total - target) < tolerance:
                 pts.append((int(x), int(y)))
-    return _non_max_suppress(pts, radius=block)
+    return _non_max_suppress(pts, radius=int(block * 2.5))
 
 
 def _non_max_suppress(points: List[Tuple[int, int]], radius: int) -> List[Tuple[int, int]]:
