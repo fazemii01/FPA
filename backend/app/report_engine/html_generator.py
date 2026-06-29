@@ -828,68 +828,68 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
                 <td bgcolor="#1B365D" style="padding: 8px 12px; color: #FFFFFF; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Dokumentasi Pemindaian / Scanned Fingerprints</td>
             </tr></table>
-            <div class="participant-highlight" style="margin-bottom: 20px;">Hasil Pemindaian Sidik Jari: <span>{participant_name}</span></div>
+            <div class="participant-highlight" style="margin-bottom: 15px;">Hasil Pemindaian Sidik Jari: <span>{participant_name}</span></div>
             
-            <div style="background-color: #7CA9C0; padding: 20px; border-radius: 12px; border: 1px solid #5A879E; margin: 10px auto; width: 85%;">
-                <table width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed; border-collapse: collapse;">
+            <div style="background-color: #7CA9C0; padding: 12px; border-radius: 12px; border: 1px solid #5A879E; margin: 5px auto; width: 330px;">
+                <table width="300" cellpadding="0" cellspacing="0" style="table-layout: fixed; border-collapse: collapse; width: 300px; margin: 0 auto;">
                     <!-- Row 1: Thumb -->
                     <tr style="border-bottom: 1px solid #99BDD2;">
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {left_thumb_img}
                         </td>
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {right_thumb_img}
                         </td>
-                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
-                            Ibu Jari<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Thumb</span>
+                        <td align="left" width="140" style="vertical-align: middle; padding: 6px 5px 6px 15px; font-weight: bold; color: #ffffff; font-size: 11pt; width: 140px;">
+                            Ibu Jari<br><span style="font-size: 8.5pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Thumb</span>
                         </td>
                     </tr>
                     <!-- Row 2: Index -->
                     <tr style="border-bottom: 1px solid #99BDD2;">
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {left_index_img}
                         </td>
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {right_index_img}
                         </td>
-                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
-                            Jari Telunjuk<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Index finger</span>
+                        <td align="left" width="140" style="vertical-align: middle; padding: 6px 5px 6px 15px; font-weight: bold; color: #ffffff; font-size: 11pt; width: 140px;">
+                            Jari Telunjuk<br><span style="font-size: 8.5pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Index finger</span>
                         </td>
                     </tr>
                     <!-- Row 3: Middle -->
                     <tr style="border-bottom: 1px solid #99BDD2;">
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {left_middle_img}
                         </td>
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {right_middle_img}
                         </td>
-                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
-                            Jari Tengah<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Middle finger</span>
+                        <td align="left" width="140" style="vertical-align: middle; padding: 6px 5px 6px 15px; font-weight: bold; color: #ffffff; font-size: 11pt; width: 140px;">
+                            Jari Tengah<br><span style="font-size: 8.5pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Middle finger</span>
                         </td>
                     </tr>
                     <!-- Row 4: Ring -->
                     <tr style="border-bottom: 1px solid #99BDD2;">
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {left_ring_img}
                         </td>
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {right_ring_img}
                         </td>
-                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
-                            Jari Manis<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Ring finger</span>
+                        <td align="left" width="140" style="vertical-align: middle; padding: 6px 5px 6px 15px; font-weight: bold; color: #ffffff; font-size: 11pt; width: 140px;">
+                            Jari Manis<br><span style="font-size: 8.5pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Ring finger</span>
                         </td>
                     </tr>
                     <!-- Row 5: Little -->
                     <tr>
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {left_pinky_img}
                         </td>
-                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                        <td align="center" width="80" style="vertical-align: middle; padding: 6px 5px; width: 80px;">
                             {right_pinky_img}
                         </td>
-                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
-                            Jari Kelingking<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Little finger</span>
+                        <td align="left" width="140" style="vertical-align: middle; padding: 6px 5px 6px 15px; font-weight: bold; color: #ffffff; font-size: 11pt; width: 140px;">
+                            Jari Kelingking<br><span style="font-size: 8.5pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Little finger</span>
                         </td>
                     </tr>
                 </table>
@@ -1976,9 +1976,9 @@ class HTMLReportGenerator:
 
         def _get_img_html(b64_str: str) -> str:
             if b64_str:
-                return f'<img src="data:image/png;base64,{b64_str}" width="75" height="90" style="border: 2.5px solid #ffffff; background-color: #ffffff; display: block;" />'
+                return f'<img src="data:image/png;base64,{b64_str}" width="50" height="65" style="width: 50px; height: 65px; border: 2px solid #ffffff; background-color: #ffffff; display: block; margin: 0 auto;" />'
             else:
-                return '<table width="80" height="95" bgcolor="#f5f5f5" style="border: 1.5px dashed #cccccc; border-collapse: collapse;"><tr><td align="center" valign="middle" style="font-size: 8pt; color: #999999; font-weight: bold;">TIDAK<br>ADA</td></tr></table>'
+                return '<table width="54" height="69" bgcolor="#f5f5f5" style="width: 54px; height: 69px; border: 1px dashed #cccccc; border-collapse: collapse; margin: 0 auto;"><tr><td align="center" valign="middle" style="font-size: 7.5pt; color: #999999; font-weight: bold; line-height: 1.1;">TIDAK<br>ADA</td></tr></table>'
 
         left_thumb_img = _get_img_html(fingerprints_images.get("left_thumb", ""))
         right_thumb_img = _get_img_html(fingerprints_images.get("right_thumb", ""))
