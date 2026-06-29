@@ -1112,7 +1112,123 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- Page 5: LEARNING STYLE (VAK) -->
+    <!-- Page 6: KECENDERUNGAN TIGA BAGIAN OTAK -->
+    <div class="report-page">
+        <div class="page-inner" style="padding: 30px 35px 50px; position: relative; height: 275mm;">
+            <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
+                <td bgcolor="#1B365D" style="padding: 8px 12px; color: #FFFFFF; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Kecenderungan Tiga Bagian Otak / Triune Brain Tendency</td>
+            </tr></table>
+            <div class="participant-highlight" style="margin-bottom: 20px;">Pemetaan Bagian Otak: <span>{participant_name}</span></div>
+
+            <!-- Brain Image Illustration and Percentages Table -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed; margin-bottom: 25px;">
+                <tr>
+                    <td width="40%" align="center" style="vertical-align: middle;">
+                        <!-- Brain drawing/placeholder -->
+                        <div style="border: 2px solid #5A879E; background-color: #F4F6F9; border-radius: 50%; width: 140px; height: 140px; text-align: center; padding: 25px 0 0 0; margin: 0 auto; box-sizing: border-box;">
+                            <span style="font-size: 9pt; font-weight: bold; color: #1B365D;">NEOCORTEX</span><br>
+                            <span style="font-size: 9pt; font-weight: bold; color: #F15A24;">LIMBIC</span><br>
+                            <span style="font-size: 9pt; font-weight: bold; color: #7CA9C0;">BRAIN STEM</span>
+                        </div>
+                    </td>
+                    <td width="60%" style="vertical-align: middle; padding-left: 20px;">
+                        <table width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; font-size: 10pt;">
+                            <tr style="border-bottom: 1px solid #E2E8F0;">
+                                <td width="35%" style="font-weight: bold; color: #1B365D;">Neo Cortex</td>
+                                <td width="45%" style="font-size: 8.5pt; color: #666;">Analytical Mind</td>
+                                <td width="20%" align="right" style="font-weight: bold; color: #1B365D; font-size: 11pt;">{neocortex_pct}%</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #E2E8F0;">
+                                <td style="font-weight: bold; color: #F15A24;">Limbic System</td>
+                                <td style="font-size: 8.5pt; color: #666;">Emotional Mind</td>
+                                <td align="right" style="font-weight: bold; color: #F15A24; font-size: 11pt;">{limbic_pct}%</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; color: #7CA9C0;">Brain Stem</td>
+                                <td style="font-size: 8.5pt; color: #666;">Instinctive Mind</td>
+                                <td align="right" style="font-weight: bold; color: #7CA9C0; font-size: 11pt;">{brainstem_pct}%</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Comparative Ratio Bar -->
+            <div style="margin-bottom: 30px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed; border-collapse: collapse; border-radius: 8px; overflow: hidden; height: 35px;"><tr>
+                    <td align="center" style="width: {neocortex_pct}%; background-color: #1B365D; color: white; font-size: 9pt; font-weight: bold; line-height: 35px;">Neo Cortex {neocortex_pct}%</td>
+                    <td align="center" style="width: {limbic_pct}%; background-color: #F15A24; color: white; font-size: 9pt; font-weight: bold; line-height: 35px;">Limbic {limbic_pct}%</td>
+                    <td align="center" style="width: {brainstem_pct}%; background-color: #7CA9C0; color: white; font-size: 9pt; font-weight: bold; line-height: 35px;">Brain Stem {brainstem_pct}%</td>
+                </tr></table>
+            </div>
+
+            <!-- Three Columns Table -->
+            <table width="100%" cellpadding="0" cellspacing="10" style="table-layout: fixed; margin: 0 -10px;">
+                <tr>
+                    <!-- Neo Cortex -->
+                    <td valign="top" bgcolor="#F8FAFC" style="border: 1px solid #E2E8F0; border-top: 4px solid #1B365D; border-radius: 6px; padding: 12px 10px;">
+                        <div style="font-weight: bold; color: #1B365D; font-size: 9.5pt; text-align: center; text-transform: uppercase; margin-bottom: 8px;">NEO CORTEX</div>
+                        <ul style="margin: 0; padding-left: 12px; font-size: 7.5pt; line-height: 1.4; color: #444;">
+                            <li>Didasari atas tujuan dan hasil</li>
+                            <li>Berpikir rasional</li>
+                            <li>Mandiri</li>
+                            <li>Menyukai tantangan</li>
+                            <li>Hanya terpaku pada hasil</li>
+                            <li>Kurang menikmati proses</li>
+                            <li>Senang dipuji</li>
+                            <li>Pola bicara langsung pada tujuan</li>
+                            <li>Tindakan terencana</li>
+                            <li>Pandai berargumentasi</li>
+                            <li>Bisa belajar dari kesalahan</li>
+                            <li>Memiliki perhitungan yang jelas</li>
+                            <li>Cenderung memaksakan pendapat</li>
+                            <li>Kemauan kuat mencapai tujuan</li>
+                        </ul>
+                    </td>
+
+                    <!-- Limbic System -->
+                    <td valign="top" bgcolor="#FFFDFB" style="border: 1px solid #FEE2E2; border-top: 4px solid #F15A24; border-radius: 6px; padding: 12px 10px;">
+                        <div style="font-weight: bold; color: #F15A24; font-size: 9.5pt; text-align: center; text-transform: uppercase; margin-bottom: 8px;">LIMBIC SYSTEM</div>
+                        <ul style="margin: 0; padding-left: 12px; font-size: 7.5pt; line-height: 1.4; color: #444;">
+                            <li>Didasari perasaan kenyamanan yang didapat sejak kecil</li>
+                            <li>Stimulus teratur menumbuhkan rasa nyaman & tertib</li>
+                            <li>Stimulus dinamis/bebas menumbuhkan kreativitas</li>
+                            <li>Perasaan sensitif & peka</li>
+                            <li>Empati tinggi terhadap sesama</li>
+                            <li>Mengutamakan nilai persahabatan</li>
+                            <li>Kemampuan adaptasi sosial baik</li>
+                            <li>Cenderung menghindari konflik</li>
+                            <li>Butuh pujian & apresiasi untuk mendongkrak prestasi</li>
+                        </ul>
+                    </td>
+
+                    <!-- Brain Stem -->
+                    <td valign="top" bgcolor="#F0F9FF" style="border: 1px solid #E0F2FE; border-top: 4px solid #7CA9C0; border-radius: 6px; padding: 12px 10px;">
+                        <div style="font-weight: bold; color: #7CA9C0; font-size: 9.5pt; text-align: center; text-transform: uppercase; margin-bottom: 8px;">BRAIN STEM</div>
+                        <ul style="margin: 0; padding-left: 12px; font-size: 7.5pt; line-height: 1.4; color: #444;">
+                            <li>Tindakan didasari keyakinan mendasar sejak masa kecil</li>
+                            <li>Keyakinan kokoh & butuh pengulangan untuk belajar</li>
+                            <li>Pola pikir praktis & sederhana</li>
+                            <li>Sangat terbantu oleh petunjuk instruksi yang jelas</li>
+                            <li>Nyaman dengan rencana kegiatan harian yang terstruktur</li>
+                            <li>Reaksi emosional cenderung spontan & refleksif</li>
+                            <li>Butuh motivasi serta dorongan yang konsisten</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="page-footer">
+                <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
+                <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
+                    <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 6</td>
+                </tr></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 7: LEARNING STYLE (VAK) -->
     <div class="report-page">
         <div class="page-inner">
             <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
@@ -1230,13 +1346,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 6</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 7</td>
                 </tr></table>
             </div>
         </div>
     </div>
 
-    <!-- Page 6: MULTIPLE QUOTIENT -->
+    <!-- Page 8: MULTIPLE QUOTIENT -->
     <div class="report-page">
         <div class="page-inner">
             <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
@@ -1355,13 +1471,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 7</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 8</td>
                 </tr></table>
             </div>
         </div>
     </div>
 
-    <!-- Page 7: ADAPTABILITAS KEPRIBADIAN -->
+    <!-- Page 9: ADAPTABILITAS KEPRIBADIAN -->
     <div class="report-page">
         <div class="page-inner">
             <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
@@ -1482,13 +1598,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 8</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 9</td>
                 </tr></table>
             </div>
         </div>
     </div>
 
-    <!-- Page 8: REFERENSI EKSTRAKURIKULER & LOVE LANGUAGE -->
+    <!-- Page 10: REFERENSI EKSTRAKURIKULER & LOVE LANGUAGE -->
     <div class="report-page">
         <div class="page-inner">
             <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
@@ -1525,13 +1641,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 9</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 10</td>
                 </tr></table>
             </div>
         </div>
     </div>
 
-    <!-- Page 9: REFERENSI AKADEMIK & KARIR -->
+    <!-- Page 11: REFERENSI AKADEMIK & KARIR -->
     <div class="report-page">
         <div class="page-inner">
             <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
@@ -1550,13 +1666,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 10</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 11</td>
                 </tr></table>
             </div>
         </div>
     </div>
 
-    <!-- Page 10: KESIMPULAN & SARAN -->
+    <!-- Page 12: KESIMPULAN & SARAN -->
     <div class="report-page">
         <div class="page-inner">
             <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
@@ -1590,7 +1706,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 11</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 12</td>
                 </tr></table>
             </div>
         </div>
@@ -1950,6 +2066,23 @@ class HTMLReportGenerator:
             "kritis": disc_pcts["Dominan"]
         }
         
+        # 8. Triune Brain (Neocortex, Limbic, Brain Stem)
+        neocortex_raw = (finger_weights["left_thumb"] + finger_weights["right_thumb"] +
+                         finger_weights["left_index"] + finger_weights["right_index"])
+        limbic_raw = (finger_weights["left_ring"] + finger_weights["right_ring"])
+        brainstem_raw = (finger_weights["left_middle"] + finger_weights["right_middle"] +
+                         finger_weights["left_pinky"] + finger_weights["right_pinky"])
+        
+        neocortex_pct = round((neocortex_raw / total_weight) * 100, 2)
+        limbic_pct = round((limbic_raw / total_weight) * 100, 2)
+        brainstem_pct = round(100.0 - neocortex_pct - limbic_pct, 2)
+        
+        triune_pcts = {
+            "neocortex": neocortex_pct,
+            "limbic": limbic_pct,
+            "brainstem": brainstem_pct
+        }
+        
         return {
             "intelligences": intel_pcts,
             "quotients": q_pcts,
@@ -1957,7 +2090,8 @@ class HTMLReportGenerator:
             "vak": vak_pcts,
             "adaptability": adaptability_pcts,
             "disc": disc_pcts,
-            "love_languages": ll_pcts
+            "love_languages": ll_pcts,
+            "triune_brain": triune_pcts
         }
 
     @classmethod
@@ -1993,6 +2127,10 @@ class HTMLReportGenerator:
 
         metrics = cls.calculate_dmit_metrics(features_list)
         
+        triune = metrics.get("triune_brain", {"neocortex": 33.3, "limbic": 33.3, "brainstem": 33.4})
+        neocortex_pct = triune["neocortex"]
+        limbic_pct = triune["limbic"]
+        brainstem_pct = triune["brainstem"]
         # Sort intelligences to find strengths
         sorted_intel = sorted(metrics["intelligences"].items(), key=lambda x: x[1], reverse=True)
         top_int_1 = sorted_intel[0][0].upper()
@@ -2340,6 +2478,9 @@ class HTMLReportGenerator:
         return HTML_TEMPLATE.format(
             participant_name=participant_name,
             fingerprint_b64=FINGERPRINT_B64,
+            neocortex_pct=neocortex_pct,
+            limbic_pct=limbic_pct,
+            brainstem_pct=brainstem_pct,
             left_thumb_img=left_thumb_img,
             right_thumb_img=right_thumb_img,
             left_index_img=left_index_img,
