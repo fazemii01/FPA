@@ -822,7 +822,90 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- Page 2: MULTIPLE INTELLIGENCE -->
+    <!-- Page 2: DOKUMENTASI PEMINDAIAN (FINGERPRINTS) -->
+    <div class="report-page">
+        <div class="page-inner" style="padding: 30px 35px 50px; position: relative; height: 275mm;">
+            <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
+                <td bgcolor="#1B365D" style="padding: 8px 12px; color: #FFFFFF; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Dokumentasi Pemindaian / Scanned Fingerprints</td>
+            </tr></table>
+            <div class="participant-highlight" style="margin-bottom: 20px;">Hasil Pemindaian Sidik Jari: <span>{participant_name}</span></div>
+            
+            <div style="background-color: #7CA9C0; padding: 20px; border-radius: 12px; border: 1px solid #5A879E; margin: 10px auto; width: 85%;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed; border-collapse: collapse;">
+                    <!-- Row 1: Thumb -->
+                    <tr style="border-bottom: 1px solid #99BDD2;">
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {left_thumb_img}
+                        </td>
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {right_thumb_img}
+                        </td>
+                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
+                            Ibu Jari<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Thumb</span>
+                        </td>
+                    </tr>
+                    <!-- Row 2: Index -->
+                    <tr style="border-bottom: 1px solid #99BDD2;">
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {left_index_img}
+                        </td>
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {right_index_img}
+                        </td>
+                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
+                            Jari Telunjuk<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Index finger</span>
+                        </td>
+                    </tr>
+                    <!-- Row 3: Middle -->
+                    <tr style="border-bottom: 1px solid #99BDD2;">
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {left_middle_img}
+                        </td>
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {right_middle_img}
+                        </td>
+                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
+                            Jari Tengah<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Middle finger</span>
+                        </td>
+                    </tr>
+                    <!-- Row 4: Ring -->
+                    <tr style="border-bottom: 1px solid #99BDD2;">
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {left_ring_img}
+                        </td>
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {right_ring_img}
+                        </td>
+                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
+                            Jari Manis<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Ring finger</span>
+                        </td>
+                    </tr>
+                    <!-- Row 5: Little -->
+                    <tr>
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {left_pinky_img}
+                        </td>
+                        <td align="center" style="vertical-align: middle; padding: 12px 10px;">
+                            {right_pinky_img}
+                        </td>
+                        <td align="left" style="vertical-align: middle; padding: 12px 10px 12px 20px; font-weight: bold; color: #ffffff; font-size: 13pt;">
+                            Jari Kelingking<br><span style="font-size: 10pt; font-weight: normal; color: #f0f5fa; opacity: 0.9;">Little finger</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="page-footer">
+                <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
+                <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
+                    <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 2</td>
+                </tr></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: MULTIPLE INTELLIGENCE -->
     <div class="report-page">
         <div class="page-inner">
             <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
@@ -834,20 +917,20 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             
             <table width="100%" style="table-layout: fixed; margin-top: 10px;"><tr>
                 <td bgcolor="#F4F6F9" style="padding: 10px 12px; font-size: 9pt; line-height: 1.4; color: #444; border-left: 4px solid #1B365D;"><strong>Analisis Singkat:</strong><br>
-                Kecerdasan Anda berkembang dengan karakteristik yang unik. Kekuatan utama terletak pada kecerdasan <strong>{top_intelligence_1}</strong> dan <strong>{top_intelligence_2}</strong> yang sangat menonjol. Pendampingan yang konsisten dan bimbingan yang terarah akan membantu Anda memaksimalkan seluruh potensi ini untuk pencapaian akademis dan karir yang lebih baik.</td>
+                Kecerdasan Anda berkembang dengan karakteristik yang unik. Kekuatan utama terletak pada kecerdasan <strong>{top_intelligence_1}</strong> and <strong>{top_intelligence_2}</strong> yang sangat menonjol. Pendampingan yang konsisten dan bimbingan yang terarah akan membantu Anda memaksimalkan seluruh potensi ini untuk pencapaian akademis dan karir yang lebih baik.</td>
             </tr></table>
             
             <div class="page-footer">
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 2</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 3</td>
                 </tr></table>
             </div>
         </div>
     </div>
 
-    <!-- Page 3: TIPS STIMULASI KECERDASAN -->
+    <!-- Page 4: TIPS STIMULASI KECERDASAN -->
     <div class="report-page">
         <div class="page-inner" style="padding: 30px 35px 50px;">
             <table width="100%" style="table-layout: fixed; margin-bottom: 15px;"><tr>
@@ -863,7 +946,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 3</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 4</td>
                 </tr></table>
             </div>
         </div>
@@ -1023,7 +1106,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 4</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 5</td>
                 </tr></table>
             </div>
         </div>
@@ -1147,7 +1230,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 5</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 6</td>
                 </tr></table>
             </div>
         </div>
@@ -1272,7 +1355,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 6</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 7</td>
                 </tr></table>
             </div>
         </div>
@@ -1399,7 +1482,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 7</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 8</td>
                 </tr></table>
             </div>
         </div>
@@ -1442,7 +1525,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 8</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 9</td>
                 </tr></table>
             </div>
         </div>
@@ -1467,7 +1550,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 9</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 10</td>
                 </tr></table>
             </div>
         </div>
@@ -1507,7 +1590,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <hr style="border: none; height: 1px; background-color: #F15A24; margin-bottom: 5px;">
                 <table width="100%" style="table-layout: fixed; width: 100%;"><tr>
                     <td width="50%" style="text-align: left; color: #1B365D; font-weight: bold;">TAB ALLIA FINGER</td>
-                    <td width="50%" style="text-align: right; color: #888;">Halaman 10</td>
+                    <td width="50%" style="text-align: right; color: #888;">Halaman 11</td>
                 </tr></table>
             </div>
         </div>
@@ -1878,8 +1961,36 @@ class HTMLReportGenerator:
         }
 
     @classmethod
-    def generate_html_report(cls, participant_name: str, features_list: List[Dict[str, Any]]) -> str:
+    def generate_html_report(
+        cls,
+        participant_name: str,
+        features_list: List[Dict[str, Any]],
+        fingerprints_images: Dict[str, str] = None,
+    ) -> str:
         """Process results and format the rich HTML template."""
+        if fingerprints_images is None:
+            fingerprints_images = {
+                "left_thumb": "", "left_index": "", "left_middle": "", "left_ring": "", "left_pinky": "",
+                "right_thumb": "", "right_index": "", "right_middle": "", "right_ring": "", "right_pinky": ""
+            }
+
+        def _get_img_html(b64_str: str) -> str:
+            if b64_str:
+                return f'<img src="data:image/png;base64,{b64_str}" width="75" height="90" style="border: 2.5px solid #ffffff; background-color: #ffffff; display: block;" />'
+            else:
+                return '<table width="80" height="95" bgcolor="#f5f5f5" style="border: 1.5px dashed #cccccc; border-collapse: collapse;"><tr><td align="center" valign="middle" style="font-size: 8pt; color: #999999; font-weight: bold;">TIDAK<br>ADA</td></tr></table>'
+
+        left_thumb_img = _get_img_html(fingerprints_images.get("left_thumb", ""))
+        right_thumb_img = _get_img_html(fingerprints_images.get("right_thumb", ""))
+        left_index_img = _get_img_html(fingerprints_images.get("left_index", ""))
+        right_index_img = _get_img_html(fingerprints_images.get("right_index", ""))
+        left_middle_img = _get_img_html(fingerprints_images.get("left_middle", ""))
+        right_middle_img = _get_img_html(fingerprints_images.get("right_middle", ""))
+        left_ring_img = _get_img_html(fingerprints_images.get("left_ring", ""))
+        right_ring_img = _get_img_html(fingerprints_images.get("right_ring", ""))
+        left_pinky_img = _get_img_html(fingerprints_images.get("left_pinky", ""))
+        right_pinky_img = _get_img_html(fingerprints_images.get("right_pinky", ""))
+
         metrics = cls.calculate_dmit_metrics(features_list)
         
         # Sort intelligences to find strengths
@@ -2229,6 +2340,16 @@ class HTMLReportGenerator:
         return HTML_TEMPLATE.format(
             participant_name=participant_name,
             fingerprint_b64=FINGERPRINT_B64,
+            left_thumb_img=left_thumb_img,
+            right_thumb_img=right_thumb_img,
+            left_index_img=left_index_img,
+            right_index_img=right_index_img,
+            left_middle_img=left_middle_img,
+            right_middle_img=right_middle_img,
+            left_ring_img=left_ring_img,
+            right_ring_img=right_ring_img,
+            left_pinky_img=left_pinky_img,
+            right_pinky_img=right_pinky_img,
             intelligence_rows=intel_rows_html,
             top_intelligence_1=top_int_1,
             top_intelligence_2=top_int_2,
@@ -2287,9 +2408,14 @@ class HTMLReportGenerator:
         )
 
     @classmethod
-    def generate_pdf_report(cls, participant_name: str, features_list: List[Dict[str, Any]]) -> bytes:
+    def generate_pdf_report(
+        cls,
+        participant_name: str,
+        features_list: List[Dict[str, Any]],
+        fingerprints_images: Dict[str, str] = None,
+    ) -> bytes:
         """Convert calculated report HTML directly into PDF bytes using WeasyPrint or xhtml2pdf."""
-        html_content = cls.generate_html_report(participant_name, features_list)
+        html_content = cls.generate_html_report(participant_name, features_list, fingerprints_images)
         
         # 1. Try WeasyPrint (preferred for high-fidelity flexbox support)
         if weasyprint is not None:

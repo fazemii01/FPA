@@ -236,9 +236,8 @@ def _poincare_singular_points(
     target: float,
     tolerance: float = 0.5,
 ) -> List[Tuple[int, int]]:
-    """Locate singular points by summing orientation changes around a small loop."""
+    """Locate singular points by summing orientation changes around a small loop (vectorized)."""
     h, w = orientation.shape
-    pts: List[Tuple[int, int]] = []
     
     # Erode the mask to avoid border/background noise
     if mask is not None:
@@ -254,23 +253,31 @@ def _poincare_singular_points(
         (0, radius), (radius, radius), (radius, 0),
         (radius, -radius), (0, -radius),
     ]
-    # Scan step size must be small (2 pixels) to avoid skipping singular points
-    step = 2
-    for y in range(radius, h - radius, step):
-        for x in range(radius, w - radius, step):
-            if eroded_mask is not None and eroded_mask[y, x] == 0:
-                continue
-            angles = [orientation[y + dy, x + dx] for dy, dx in ring]
-            total = 0.0
-            for i in range(len(angles)):
-                d = angles[(i + 1) % len(angles)] - angles[i]
-                if d > np.pi / 2:
-                    d -= np.pi
-                elif d < -np.pi / 2:
-                    d += np.pi
-                total += d
-            if abs(total - target) < tolerance:
-                pts.append((int(x), int(y)))
+
+    # Vectorized computation of Poincaré Index
+    # Extract slices for each neighbor offset in the ring
+    slices = []
+    for dy, dx in ring:
+        slices.append(orientation[radius + dy : h - radius + dy, radius + dx : w - radius + dx])
+        
+    diffs = []
+    for i in range(8):
+        d = slices[(i + 1) % 8] - slices[i]
+        # Map differences to range [-pi/2, pi/2]
+        d = (d + np.pi/2) % np.pi - np.pi/2
+        diffs.append(d)
+        
+    total = np.sum(diffs, axis=0)
+    
+    # Filter by target index and mask
+    if eroded_mask is not None:
+        mask_slice = eroded_mask[radius:-radius, radius:-radius]
+        ys, xs = np.where((np.abs(total - target) < tolerance) & (mask_slice > 0))
+    else:
+        ys, xs = np.where(np.abs(total - target) < tolerance)
+        
+    # Map back to original coordinate system
+    pts = [(int(x + radius), int(y + radius)) for y, x in zip(ys, xs)]
     return _non_max_suppress(pts, radius=int(block * 2.5))
 
 

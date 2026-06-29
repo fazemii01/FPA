@@ -39,10 +39,29 @@ class ReportService:
             for feat in db_features
         ]
         
-        # 3. Generate high-fidelity PDF from HTML + CSS
-        pdf_bytes = HTMLReportGenerator.generate_pdf_report(session.participant_name, features_list)
-        
         minio_service = MinIOService()
+        
+        # Fetch fingerprint images and encode to base64
+        fingerprints_images = {
+            "left_thumb": "", "left_index": "", "left_middle": "", "left_ring": "", "left_pinky": "",
+            "right_thumb": "", "right_index": "", "right_middle": "", "right_ring": "", "right_pinky": ""
+        }
+        for fp in fingerprints:
+            if fp.image_path:
+                try:
+                    import base64
+                    img_bytes = minio_service.get_fingerprint(fp.image_path)
+                    b64_str = base64.b64encode(img_bytes).decode("utf-8")
+                    fingerprints_images[fp.finger_position.value] = b64_str
+                except Exception as exc:
+                    print(f"Failed to fetch fingerprint image for {fp.finger_position.value}: {exc}")
+
+        # 3. Generate high-fidelity PDF from HTML + CSS
+        pdf_bytes = HTMLReportGenerator.generate_pdf_report(
+            session.participant_name,
+            features_list,
+            fingerprints_images=fingerprints_images
+        )
         
         # Sanitize participant name to be filename-safe (spaces replaced by underscores)
         safe_name = "".join(c for c in session.participant_name if c.isalnum() or c in "._- ").strip()
