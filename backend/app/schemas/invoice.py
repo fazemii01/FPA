@@ -4,7 +4,8 @@ from datetime import datetime
 
 
 class InvoiceCreate(BaseModel):
-    lembaga_id: int
+    lembaga_id: Optional[int] = None
+    wilayah_id: Optional[int] = None
     client_name: str
     description: str
     credits: int
@@ -22,8 +23,10 @@ class InvoiceResponse(BaseModel):
     id: int
     uuid: str
     code: str
-    lembaga_id: int
+    lembaga_id: Optional[int] = None
     lembaga_name: Optional[str] = None
+    wilayah_id: Optional[int] = None
+    wilayah_name: Optional[str] = None
     client_name: str
     description: str
     credits: int

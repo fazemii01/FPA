@@ -13,7 +13,7 @@ security = HTTPBearer()
 
 
 def get_permissions_for_role(db: Session, role: UserRole) -> List[str]:
-    if role == UserRole.SUPER_ADMIN:
+    if role in (UserRole.SUPER_ADMIN, UserRole.ADMIN_PUSAT):
         return ["CREATE_SESSION", "VIEW_HISTORY", "DELETE_SESSION", "GENERATE_REPORT", "MANAGE_USERS"]
     
     # Query database for configured permissions
@@ -84,7 +84,7 @@ def require_role(*allowed_roles: UserRole):
 
 def require_permission(permission_key: str):
     async def _enforcer(current_user: User = Depends(get_current_user)) -> User:
-        if current_user.role == UserRole.SUPER_ADMIN:
+        if current_user.role in (UserRole.SUPER_ADMIN, UserRole.ADMIN_PUSAT):
             return current_user
         if permission_key not in getattr(current_user, "permissions", []):
             raise HTTPException(
@@ -97,5 +97,6 @@ def require_permission(permission_key: str):
 
 require_admin = require_role(UserRole.ADMIN)
 require_staff_or_admin = require_role(UserRole.ADMIN, UserRole.STAFF)
-require_super_admin = require_role(UserRole.SUPER_ADMIN)
+require_super_admin = require_role(UserRole.SUPER_ADMIN, UserRole.ADMIN_PUSAT)
+require_admin_pusat = require_role(UserRole.ADMIN_PUSAT)
 

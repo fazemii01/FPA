@@ -7,6 +7,7 @@ from app.db.database import Base
 
 
 class UserRole(str, Enum):
+    ADMIN_PUSAT = "admin_pusat"
     SUPER_ADMIN = "super_admin"
     ADMIN = "admin"
     STAFF = "staff"
@@ -21,11 +22,13 @@ class User(Base):
     full_name = Column(String)
     role = Column(SQLEnum(UserRole, name="userrole", values_callable=lambda x: [e.value for e in x]), nullable=False, default=UserRole.STAFF)
     lembaga_id = Column(Integer, ForeignKey("lembaga.id"), nullable=True)
+    wilayah_id = Column(Integer, ForeignKey("wilayah.id"), nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     lembaga = relationship("Lembaga", back_populates="users")
+    wilayah = relationship("Wilayah", back_populates="users")
 
     scan_sessions = relationship(
         "ScanSession",

@@ -162,8 +162,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           textAlign: TextAlign.left,
                         ),
                         const SizedBox(height: 24),
-                        TextFormField(
+                         TextFormField(
                           controller: _fullNameController,
+                          style: const TextStyle(color: Colors.black87),
                           decoration: const InputDecoration(
                             labelText: 'Nama Lengkap',
                             prefixIcon: Icon(Icons.person_outline_rounded, color: Colors.grey),
@@ -179,6 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _emailController,
+                          style: const TextStyle(color: Colors.black87),
                           decoration: const InputDecoration(
                             labelText: 'Email',
                             prefixIcon: Icon(Icons.email_outlined, color: Colors.grey),
@@ -197,6 +199,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _passwordController,
+                          style: const TextStyle(color: Colors.black87),
                           decoration: const InputDecoration(
                             labelText: 'Password',
                             prefixIcon: Icon(Icons.lock_outlined, color: Colors.grey),
@@ -215,6 +218,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _confirmPasswordController,
+                          style: const TextStyle(color: Colors.black87),
                           decoration: const InputDecoration(
                             labelText: 'Konfirmasi Password',
                             prefixIcon: Icon(Icons.lock_outlined, color: Colors.grey),

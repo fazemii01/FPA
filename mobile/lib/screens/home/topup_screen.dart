@@ -290,6 +290,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                 
                 TextFormField(
                   controller: _customCreditController,
+                  style: const TextStyle(color: Colors.black87),
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                     labelText: 'Jumlah Kredit Kustom',

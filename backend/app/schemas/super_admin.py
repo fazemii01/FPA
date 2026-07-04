@@ -8,6 +8,7 @@ class LembagaCreate(BaseModel):
     credits: int = 0
     is_active: bool = True
     type: str = "umum"
+    wilayah_id: Optional[int] = None
 
 
 class LembagaUpdate(BaseModel):
@@ -15,6 +16,7 @@ class LembagaUpdate(BaseModel):
     credits: Optional[int] = None
     is_active: Optional[bool] = None
     type: Optional[str] = None
+    wilayah_id: Optional[int] = None
 
 
 class LembagaResponse(BaseModel):
@@ -23,6 +25,8 @@ class LembagaResponse(BaseModel):
     credits: int
     is_active: bool
     type: str
+    wilayah_id: Optional[int] = None
+    wilayah_name: Optional[str] = None
     created_at: datetime
     users_count: int = 0
     reports_count: int = 0
@@ -44,8 +48,10 @@ class PermissionMappingUpdate(BaseModel):
 
 class PaymentLogResponse(BaseModel):
     id: int
-    lembaga_id: int
-    lembaga_name: str
+    lembaga_id: Optional[int] = None
+    lembaga_name: Optional[str] = None
+    wilayah_id: Optional[int] = None
+    wilayah_name: Optional[str] = None
     amount: float
     credits_added: int
     status: str
@@ -63,6 +69,8 @@ class UserAuditResponse(BaseModel):
     role: str
     lembaga_id: Optional[int]
     lembaga_name: Optional[str]
+    wilayah_id: Optional[int] = None
+    wilayah_name: Optional[str] = None
     is_active: bool
     created_at: datetime
 
@@ -78,6 +86,7 @@ class DashboardStatsResponse(BaseModel):
     total_reports: int
     recent_sessions: List[dict] = []
     credit_summary: List[dict] = []
+    wilayah_credits: Optional[int] = None
 
 
 class SystemSettingResponse(BaseModel):

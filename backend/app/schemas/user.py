@@ -5,6 +5,7 @@ from enum import Enum
 
 
 class UserRoleEnum(str, Enum):
+    ADMIN_PUSAT = "admin_pusat"
     SUPER_ADMIN = "super_admin"
     ADMIN = "admin"
     STAFF = "staff"
@@ -16,6 +17,7 @@ class UserCreate(BaseModel):
     full_name: Optional[str] = None
     role: UserRoleEnum = UserRoleEnum.STAFF
     lembaga_id: Optional[int] = None
+    wilayah_id: Optional[int] = None
 
 
 class UserLogin(BaseModel):
@@ -32,6 +34,8 @@ class UserResponse(BaseModel):
     lembaga_name: Optional[str] = None
     lembaga_credits: Optional[int] = None
     lembaga_type: Optional[str] = None
+    wilayah_id: Optional[int] = None
+    wilayah_name: Optional[str] = None
     permissions: List[str] = []
     is_active: bool
     created_at: datetime

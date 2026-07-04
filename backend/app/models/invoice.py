@@ -11,7 +11,8 @@ class Invoice(Base):
     id = Column(Integer, primary_key=True, index=True)
     uuid = Column(String(50), unique=True, index=True, default=lambda: str(uuid.uuid4()))
     code = Column(String(20), unique=True, index=True, nullable=False)
-    lembaga_id = Column(Integer, ForeignKey("lembaga.id"), nullable=False)
+    lembaga_id = Column(Integer, ForeignKey("lembaga.id"), nullable=True)
+    wilayah_id = Column(Integer, ForeignKey("wilayah.id"), nullable=True)
     client_name = Column(String(120), nullable=False)
     description = Column(String(255), nullable=False)
     credits = Column(Integer, nullable=False)
@@ -23,3 +24,4 @@ class Invoice(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     lembaga = relationship("Lembaga", back_populates="invoices")
+    wilayah = relationship("Wilayah")

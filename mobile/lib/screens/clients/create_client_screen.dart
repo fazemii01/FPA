@@ -92,6 +92,7 @@ class _CreateClientScreenState extends State<CreateClientScreen> {
                     children: [
                       TextFormField(
                         controller: _nameController,
+                        style: const TextStyle(color: Colors.black87),
                         decoration: const InputDecoration(
                           labelText: 'Nama Lengkap',
                           hintText: 'Nama lengkap sesuai KTP',
@@ -113,6 +114,7 @@ class _CreateClientScreenState extends State<CreateClientScreen> {
                             flex: 2,
                             child: TextFormField(
                               controller: _ageController,
+                              style: const TextStyle(color: Colors.black87),
                               decoration: const InputDecoration(
                                 labelText: 'Umur',
                                 hintText: 'Tahun',
@@ -139,6 +141,7 @@ class _CreateClientScreenState extends State<CreateClientScreen> {
                             flex: 3,
                             child: DropdownButtonFormField<String>(
                               initialValue: _selectedGender,
+                              style: const TextStyle(color: Colors.black87, fontSize: 16),
                               decoration: const InputDecoration(
                                 labelText: 'Jenis Kelamin',
                                 prefixIcon: Icon(Icons.wc_outlined, color: Colors.grey),
@@ -146,11 +149,11 @@ class _CreateClientScreenState extends State<CreateClientScreen> {
                               items: const [
                                 DropdownMenuItem(
                                   value: 'male',
-                                  child: Text('Laki-laki'),
+                                  child: Text('Laki-laki', style: TextStyle(color: Colors.black87)),
                                 ),
                                 DropdownMenuItem(
                                   value: 'female',
-                                  child: Text('Perempuan'),
+                                  child: Text('Perempuan', style: TextStyle(color: Colors.black87)),
                                 ),
                               ],
                               onChanged: (value) {
@@ -171,6 +174,7 @@ class _CreateClientScreenState extends State<CreateClientScreen> {
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _notesController,
+                        style: const TextStyle(color: Colors.black87),
                         decoration: const InputDecoration(
                           labelText: 'Catatan Tambahan',
                           hintText: 'Keterangan klinis atau catatan lainnya (opsional)',

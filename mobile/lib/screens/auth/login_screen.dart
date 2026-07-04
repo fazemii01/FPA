@@ -145,6 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           child: TextFormField(
                             controller: _emailController,
+                            style: const TextStyle(color: Colors.black87),
                             decoration: const InputDecoration(
                               labelText: 'Email',
                               prefixIcon: Icon(Icons.email_outlined, color: Colors.grey),
@@ -152,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
                               if (value?.isEmpty ?? true) {
-                                return 'Email is required';
+                                  return 'Email is required';
                               }
                               if (!value!.contains('@')) {
                                 return 'Enter a valid email';
@@ -174,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           child: TextFormField(
                             controller: _passwordController,
+                            style: const TextStyle(color: Colors.black87),
                             decoration: const InputDecoration(
                               labelText: 'Password',
                               prefixIcon: Icon(Icons.lock_outlined, color: Colors.grey),

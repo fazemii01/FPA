@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db.database import Base
@@ -12,10 +12,12 @@ class Lembaga(Base):
     credits = Column(Integer, default=0, nullable=False)
     is_active = Column(Boolean, default=True)
     type = Column(String(50), default="umum", nullable=False)
+    wilayah_id = Column(Integer, ForeignKey("wilayah.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     users = relationship("User", back_populates="lembaga")
+    wilayah = relationship("Wilayah", back_populates="lembaga")
     scan_sessions = relationship("ScanSession", back_populates="lembaga")
     reports = relationship("Report", back_populates="lembaga")
     payment_logs = relationship("PaymentLog", back_populates="lembaga")

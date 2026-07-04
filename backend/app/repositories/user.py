@@ -15,6 +15,7 @@ class UserRepository:
             full_name=user.full_name,
             role=UserRole(user.role.value),
             lembaga_id=user.lembaga_id,
+            wilayah_id=user.wilayah_id,
         )
         db.add(db_user)
         db.commit()
