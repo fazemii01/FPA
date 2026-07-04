@@ -77,6 +77,18 @@ def upgrade() -> None:
     with op.batch_alter_table("payment_logs") as batch_op:
         batch_op.alter_column("lembaga_id", existing_type=sa.Integer(), nullable=True)
 
+    # 3. Seed Admin Pusat user if not exists
+    from app.core.security import get_password_hash
+    import datetime
+
+    existing = conn.execute(sa.text("SELECT id FROM users WHERE email = 'pusat@alliago.id'")).first()
+    if not existing:
+        hashed_pw = get_password_hash("Alliapusat@1")
+        conn.execute(sa.text(
+            "INSERT INTO users (email, hashed_password, full_name, role, is_active, created_at, updated_at) "
+            "VALUES ('pusat@alliago.id', :hp, 'Admin Pusat', 'admin_pusat', :active, :now, :now)"
+        ), {"hp": hashed_pw, "active": True, "now": datetime.datetime.utcnow()})
+
 
 def downgrade() -> None:
     # Remove columns and tables
