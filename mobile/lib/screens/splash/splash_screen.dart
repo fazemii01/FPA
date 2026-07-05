@@ -22,8 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
-    // Run self-hosted version update check
-    await UpdateService.checkForUpdates(context);
+    // Run self-hosted version update check silently
+    UpdateService.checkSilentUpdate();
 
     if (mounted) {
       _checkAuth();

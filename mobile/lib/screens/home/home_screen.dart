@@ -40,10 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // Refresh user profile to update remaining credits
     await authProvider.checkToken();
 
-    // Check for updates
-    if (mounted) {
-      UpdateService.checkForUpdates(context);
-    }
+    // Check for updates silently
+    UpdateService.checkSilentUpdate();
   }
 
   @override

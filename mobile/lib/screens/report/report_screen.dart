@@ -66,12 +66,18 @@ class _ReportScreenState extends State<ReportScreen> {
               const SizedBox(height: 16),
               Text(
                 'Kualitas: ${fp.qualityScore?.toStringAsFixed(1) ?? "N/A"}%',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
               ),
               const SizedBox(height: 8),
-              Text('Tipe Pola: ${fp.patternType ?? "-"}'),
+              Text(
+                'Tipe Pola: ${fp.patternType ?? "-"}',
+                style: const TextStyle(color: Colors.black87),
+              ),
               const SizedBox(height: 4),
-              Text('Jumlah Garis (Ridge): ${fp.ridgeCount ?? "-"}'),
+              Text(
+                'Jumlah Garis (Ridge): ${fp.ridgeCount ?? "-"}',
+                style: const TextStyle(color: Colors.black87),
+              ),
             ],
           ),
           actions: [
@@ -151,7 +157,7 @@ class _ReportScreenState extends State<ReportScreen> {
                         ),
                         title: Text(
                           label,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                         ),
                         subtitle: Text(
                           'Kualitas: ${fp.qualityScore?.toStringAsFixed(1) ?? "N/A"}%',

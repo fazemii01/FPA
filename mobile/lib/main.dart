@@ -5,11 +5,17 @@ import 'providers/auth_provider.dart';
 import 'providers/scan_provider.dart';
 import 'routes/app_router.dart';
 import 'theme/app_theme.dart';
+import 'services/notification_service.dart';
+import 'services/ntfy_subscription_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
+  await NotificationService.init();
+  
+  // Start ntfy subscription client
+  NtfySubscriptionService().start();
 
   runApp(const MyApp());
 }

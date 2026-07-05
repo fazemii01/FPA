@@ -5,11 +5,32 @@ from app.db.database import get_db
 from app.models.system_setting import SystemSetting
 from app.storage.minio_service import MinIOService
 from app.core.config import settings
+import requests
 
 router = APIRouter(prefix="/app", tags=["App Info"])
 
 # This constant will be updated whenever a new release is pushed
-LATEST_VERSION = "1.0.20"
+LATEST_VERSION = "1.0.21"
+
+def notify_ntfy_update(version: str):
+    """Sends a notification payload to the self-hosted ntfy server."""
+    try:
+        url = settings.NTFY_URL
+        headers = {
+            "Title": "Update Aplikasi Tersedia",
+            "Priority": "high",
+            "Tags": "loudspeaker",
+        }
+        message = f"Versi terbaru ({version}) telah dirilis. Silakan perbarui di menu Profil."
+        response = requests.post(url, data=message.encode("utf-8"), headers=headers, timeout=5)
+        response.raise_for_status()
+        print(f"Ntfy: Notification sent for version {version}")
+    except Exception as e:
+        print(f"Failed to send ntfy notification: {e}")
+
+@router.on_event("startup")
+def on_startup():
+    notify_ntfy_update(LATEST_VERSION)
 
 @router.get("/version")
 def get_app_version():

@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     MINIO_BUCKET_NAME: str = "fingerprints"
     MINIO_RELEASE_BUCKET_NAME: str = "release"
     MINIO_SECURE: bool = False
+    NTFY_URL: str = "http://localhost:8080/fpa-updates"
     
     class Config:
         env_file = ".env"

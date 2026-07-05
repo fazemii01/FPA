@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../theme/app_theme.dart';
+import '../../../services/update_service.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});
@@ -204,6 +205,38 @@ class ProfileTab extends StatelessWidget {
             const SizedBox(height: 12),
             
             BouncingWidget(
+              onTap: () => UpdateService.checkManualUpdate(context),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFE0E0E0)),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryColor.withOpacity(0.05),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.system_update_rounded, color: AppTheme.primaryColor),
+                  ),
+                  title: const Text(
+                    'Perbarui Aplikasi',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryColor, fontSize: 14),
+                  ),
+                  subtitle: Text(
+                    'Periksa pembaruan versi terbaru',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            
+            BouncingWidget(
               onTap: () => _showAppInfo(context),
               child: Container(
                 decoration: BoxDecoration(
@@ -281,7 +314,10 @@ class ProfileTab extends StatelessWidget {
           'Keluar',
           style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
         ),
-        content: const Text('Apakah Anda yakin ingin keluar?'),
+        content: const Text(
+          'Apakah Anda yakin ingin keluar?',
+          style: TextStyle(color: Colors.black87),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -346,7 +382,7 @@ class ProfileTab extends StatelessWidget {
               ),
               const Text(
                 'FPA (Fingerprint Analysis)',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87),
               ),
               const SizedBox(height: 12),
               const Text(
@@ -355,7 +391,7 @@ class ProfileTab extends StatelessWidget {
               ),
               const Text(
                 'PT. Allia Mitra Utama',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87),
               ),
               const SizedBox(height: 12),
               const Text(
@@ -364,7 +400,7 @@ class ProfileTab extends StatelessWidget {
               ),
               Text(
                 'v$version',
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87),
               ),
             ],
           ),
