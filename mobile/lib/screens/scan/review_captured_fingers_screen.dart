@@ -267,6 +267,9 @@ class _ReviewCapturedFingersScreenState extends State<ReviewCapturedFingersScree
 
     final success = await scanProvider.generateReport(widget.sessionId);
     if (context.mounted) {
+      await context.read<AuthProvider>().refreshProfile();
+    }
+    if (context.mounted) {
       setState(() => _isActionLoading = false);
       if (success) {
         AppToast.showSuccess(context, 'Laporan berhasil dibuat!');

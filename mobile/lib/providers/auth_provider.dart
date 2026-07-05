@@ -137,6 +137,17 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> refreshProfile() async {
+    if (_token == null) return;
+    try {
+      final userResponse = await _apiService.get('/auth/me');
+      _user = User.fromJson(userResponse);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Failed to refresh user profile: $e");
+    }
+  }
+
   void clearError() {
     _error = null;
     notifyListeners();

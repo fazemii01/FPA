@@ -30,7 +30,10 @@ class _DashboardTabState extends State<DashboardTab> {
       backgroundColor: const Color(0xFFFAFAFA),
       body: RefreshIndicator(
         onRefresh: () async {
-          await scanProvider.loadSessions();
+          await Future.wait([
+            scanProvider.loadSessions(),
+            context.read<AuthProvider>().refreshProfile(),
+          ]);
           if (isAdmin) {
             await scanProvider.loadReviewQueue();
           }

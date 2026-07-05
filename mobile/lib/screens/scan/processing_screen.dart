@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/scan_provider.dart';
+import '../../providers/auth_provider.dart';
 
 class ProcessingScreen extends StatefulWidget {
   final int sessionId;
@@ -42,6 +43,10 @@ class _ProcessingScreenState extends State<ProcessingScreen> {
     
     final scanProvider = context.read<ScanProvider>();
     final success = await scanProvider.generateReport(widget.sessionId);
+    
+    if (success && mounted) {
+      await context.read<AuthProvider>().refreshProfile();
+    }
     
     if (success && mounted) {
       await _updateProgress('Selesai!', 1.0);

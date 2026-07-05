@@ -260,6 +260,9 @@ class _RegenerateButtonState extends State<_RegenerateButton> {
       
       final success = await widget.scanProvider.generateReport(widget.sessionId);
       await widget.scanProvider.loadSession(widget.sessionId);
+      if (context.mounted) {
+        await context.read<AuthProvider>().refreshProfile();
+      }
       
       if (context.mounted) {
         setState(() => _isLoading = false);

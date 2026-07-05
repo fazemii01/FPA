@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../providers/scan_provider.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../models/scan_model.dart';
 import '../../../theme/app_theme.dart';
 import '../../../widgets/app_toast.dart';
@@ -451,6 +452,9 @@ class _ReviewCardState extends State<_ReviewCard> {
       setState(() => _isLoading = true);
       final success =
           await scanProvider.generateReport(widget.session.id);
+      if (context.mounted) {
+        await context.read<AuthProvider>().refreshProfile();
+      }
       if (context.mounted) {
         setState(() => _isLoading = false);
         if (success) {
