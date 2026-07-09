@@ -55,17 +55,16 @@ class ScanSessionRepository:
         )
 
     @staticmethod
-    def get_user_sessions_by_lembaga(db: Session, user_id: int, lembaga_id: int) -> List[ScanSession]:
-        return (
-            db.query(ScanSession)
-            .options(
-                selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features),
-                joinedload(ScanSession.user)
-            )
-            .filter(ScanSession.user_id == user_id, ScanSession.lembaga_id == lembaga_id)
-            .order_by(ScanSession.created_at.desc())
-            .all()
-        )
+    def get_user_sessions_by_lembaga(
+        db: Session, user_id: int, lembaga_id: int, status: Optional[SessionStatus] = None
+    ) -> List[ScanSession]:
+        q = db.query(ScanSession).options(
+            selectinload(ScanSession.fingerprints).joinedload(Fingerprint.features),
+            joinedload(ScanSession.user)
+        ).filter(ScanSession.user_id == user_id, ScanSession.lembaga_id == lembaga_id)
+        if status is not None:
+            q = q.filter(ScanSession.status == status)
+        return q.order_by(ScanSession.created_at.desc()).all()
 
     @staticmethod
     def get_all_sessions(db: Session, status: Optional[SessionStatus] = None) -> List[ScanSession]:

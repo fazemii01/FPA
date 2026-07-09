@@ -40,9 +40,11 @@ image_processor = ImageProcessingService()
 def _ensure_session_visible(session, user: User):
     if session is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
-    if user.role == UserRole.SUPER_ADMIN:
+    if user.role in (UserRole.SUPER_ADMIN, UserRole.ADMIN_PUSAT):
         return session
     if session.lembaga_id != user.lembaga_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+    if user.role == UserRole.STAFF and session.user_id != user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
     return session
 
@@ -75,9 +77,10 @@ def list_sessions(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_permission("VIEW_HISTORY")),
 ):
-    if current_user.role == UserRole.SUPER_ADMIN:
+    if current_user.role in (UserRole.SUPER_ADMIN, UserRole.ADMIN_PUSAT):
         return ScanSessionRepository.get_all_sessions(db)
-    # Both Admin and Staff/Operator share the same session history within the same institution
+    if current_user.role == UserRole.STAFF:
+        return ScanSessionRepository.get_user_sessions_by_lembaga(db, current_user.id, current_user.lembaga_id)
     return ScanSessionRepository.get_all_sessions_by_lembaga(db, current_user.lembaga_id)
 
 
@@ -89,8 +92,12 @@ def list_review_queue(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_permission("VIEW_HISTORY")),
 ):
-    if current_user.role == UserRole.SUPER_ADMIN:
+    if current_user.role in (UserRole.SUPER_ADMIN, UserRole.ADMIN_PUSAT):
         return ScanSessionRepository.get_all_sessions(db, status=SessionStatus.WAITING_FOR_REVIEW)
+    if current_user.role == UserRole.STAFF:
+        return ScanSessionRepository.get_user_sessions_by_lembaga(
+            db, current_user.id, current_user.lembaga_id, status=SessionStatus.WAITING_FOR_REVIEW
+        )
     return ScanSessionRepository.get_all_sessions_by_lembaga(db, current_user.lembaga_id, status=SessionStatus.WAITING_FOR_REVIEW)
 
 

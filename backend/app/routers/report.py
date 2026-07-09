@@ -15,9 +15,11 @@ router = APIRouter(prefix="/reports", tags=["reports"])
 def _ensure_session_visible(session, user: User):
     if session is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
-    if user.role == UserRole.SUPER_ADMIN:
+    if user.role in (UserRole.SUPER_ADMIN, UserRole.ADMIN_PUSAT):
         return session
     if session.lembaga_id != user.lembaga_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+    if user.role == UserRole.STAFF and session.user_id != user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
     return session
 
