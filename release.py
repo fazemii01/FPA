@@ -123,6 +123,41 @@ def main():
     # Push tag
     run_command(["git", "push", "origin", f"v{new_name}"])
 
+    # 6. Visual Verification Check
+    print("\n--- Visual Verification Check ---")
+    
+    def print_check(label, passed=True):
+        # Enable ANSI colors on Windows if supported
+        if os.name == 'nt':
+            os.system('color')
+        GREEN = "\033[92m"
+        RED = "\033[91m"
+        RESET = "\033[0m"
+        symbol = f"{GREEN}✔{RESET}" if passed else f"{RED}✘{RESET}"
+        print(f"  [{symbol}] {label}")
+
+    # Check 1: pubspec.yaml updated
+    with open(pubspec_path, 'r') as f:
+        pub_check = f.read()
+    has_pub_ver = f"version: {new_version}" in pub_check
+    print_check(f"Version bumped in pubspec.yaml ({new_version})", has_pub_ver)
+
+    # Check 2: app_info.py updated
+    with open(app_info_path, 'r') as f:
+        api_check = f.read()
+    has_api_ver = f'LATEST_VERSION = "{new_name}"' in api_check
+    print_check(f"LATEST_VERSION updated in app_info.py ({new_name})", has_api_ver)
+
+    # Check 3: Git tag exists locally
+    git_tags = subprocess.run(["git", "tag"], capture_output=True, text=True, encoding="utf-8").stdout
+    has_tag = f"v{new_name}" in git_tags.splitlines()
+    print_check(f"Git tag v{new_name} created locally", has_tag)
+
+    # Check 4: Git status clean (everything committed)
+    git_status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, encoding="utf-8").stdout
+    is_clean = git_status.strip() == ""
+    print_check("Working directory clean (all changes committed)", is_clean)
+
     print(f"\nSuccess! Released version {new_version} and triggered GitHub Actions build/upload.")
 
 if __name__ == "__main__":
