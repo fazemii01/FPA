@@ -59,9 +59,10 @@ fi
 # Default: Git Pull & Install Dependencies & Database Migrations
 echo "=== Starting Allia Tap finger (FPA) Backend Update ==="
 
-# 1. Pull latest code from Git (updates the whole repo)
+# 1. Pull latest code from Git (discards any local modifications to sync exactly with repo)
 echo "Pulling latest changes from Git..."
-git pull
+git fetch --all
+git reset --hard origin/main
 
 # 2. Activate virtual environment and update packages
 echo "Updating Python dependencies..."
