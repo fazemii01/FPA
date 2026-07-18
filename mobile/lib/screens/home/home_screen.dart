@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     String getTitle() {
       if (_currentIndex == 0) {
-        return user?.role == 'admin' ? 'FPA Portal - Admin' : 'Tab Allia Finger';
+        return user?.role == 'admin' ? 'FPA Portal - Admin' : 'Jaribakat';
       }
       if (_currentIndex < navItems.length) {
         final label = navItems[_currentIndex].label;
@@ -113,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (label == 'Riwayat') return 'Riwayat Laporan';
         if (label == 'Profil') return 'Profil Akun';
       }
-      return 'Allia Tap finger';
+      return 'Jaribakat';
     }
 
     return Scaffold(

@@ -63,7 +63,7 @@ class UserManualScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Tab Allia Finger',
+                    'Jaribakat',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,

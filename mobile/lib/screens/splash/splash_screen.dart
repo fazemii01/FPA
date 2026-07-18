@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Allia Tap finger',
+              'Jaribakat',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 48),

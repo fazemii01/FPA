@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ScanProvider()),
       ],
       child: MaterialApp.router(
-        title: 'Allia Tap finger',
+        title: 'Jaribakat',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,

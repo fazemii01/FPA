@@ -25,7 +25,7 @@ class AgreementScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Persetujuan Pengguna Allia Tap finger',
+                      'Persetujuan Pengguna Jaribakat',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppTheme.primaryColor,
@@ -33,7 +33,7 @@ class AgreementScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Harap baca syarat dan ketentuan berikut dengan seksama sebelum menggunakan aplikasi Allia Tap finger. Dengan melanjutkan login, Anda menyatakan menyetujui poin-poin berikut:',
+                      'Harap baca syarat dan ketentuan berikut dengan seksama sebelum menggunakan aplikasi Jaribakat. Dengan melanjutkan login, Anda menyatakan menyetujui poin-poin berikut:',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[700],
                         height: 1.5,
