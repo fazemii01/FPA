@@ -2,7 +2,7 @@ name: fingerprint_scanner
 description: "10-Finger Fingerprint Scanner Mobile Application"
 publish_to: 'none'
 
-version: 1.0.30+31
+version: 1.0.31+32
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -43,7 +43,6 @@ dependencies:
   screen_brightness: ^2.1.9
   url_launcher: ^6.1.11
   package_info_plus: ^8.0.0
-  ota_update: ^7.1.0
   flutter_local_notifications: ^17.1.2
 
 dev_dependencies:

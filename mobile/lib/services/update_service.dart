@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:ota_update/ota_update.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'api_service.dart';
 import 'package:provider/provider.dart';
@@ -114,9 +113,7 @@ class UpdateService {
                       final updateContext = navigatorKey.currentContext ?? context;
                       if (updateContext.mounted) {
                         if (Platform.isAndroid) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            _runAndroidOta(updateContext, apkUrl);
-                          });
+                          await _redirectToPlayStore();
                         } else if (Platform.isIOS) {
                           await launchUrl(Uri.parse(iosUrl), mode: LaunchMode.externalApplication);
                         }
@@ -301,9 +298,7 @@ class UpdateService {
                 onPressed: () async {
                   Navigator.of(dialogContext).pop(); // Close dialog
                   if (Platform.isAndroid) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _runAndroidOta(context, apkUrl);
-                    });
+                    await _redirectToPlayStore();
                   } else if (Platform.isIOS) {
                     await launchUrl(Uri.parse(iosUrl), mode: LaunchMode.externalApplication);
                   }
@@ -316,114 +311,19 @@ class UpdateService {
     );
   }
 
-  static Future<void> _runAndroidOta(BuildContext context, String apkUrl) async {
-    debugPrint("OTA: _runAndroidOta called, showing dialog");
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext progressContext) {
-        return OtaProgressDialog(apkUrl: apkUrl);
-      },
-    );
-  }
-}
-
-class OtaProgressDialog extends StatefulWidget {
-  final String apkUrl;
-  const OtaProgressDialog({super.key, required this.apkUrl});
-
-  @override
-  State<OtaProgressDialog> createState() => _OtaProgressDialogState();
-}
-
-class _OtaProgressDialogState extends State<OtaProgressDialog> {
-  double _progress = 0;
-  String _status = "Mengunduh...";
-  StreamSubscription<OtaEvent>? _subscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _startDownload();
-  }
-
-  void _startDownload() {
-    debugPrint("OTA: _startDownload initiated with URL: ${widget.apkUrl}");
+  static Future<void> _redirectToPlayStore() async {
     try {
-      _subscription = OtaUpdate().execute(
-        widget.apkUrl,
-        destinationFilename: 'fpa-latest.apk',
-      ).listen(
-        (OtaEvent event) {
-          debugPrint("OTA: Event status: ${event.status}, value: ${event.value}");
-          if (event.status == OtaStatus.DOWNLOADING) {
-            setState(() {
-              _progress = double.tryParse(event.value ?? '0') ?? 0;
-              _status = "Mengunduh...";
-            });
-          } else if (event.status == OtaStatus.INSTALLING) {
-            debugPrint("OTA: Installation started. Popping progress dialog.");
-            setState(() {
-              _status = "Memasang...";
-            });
-            // Auto close progress dialog when installing starts
-            if (mounted) {
-              Navigator.of(context).pop();
-            }
-          } else if (event.status == OtaStatus.ALREADY_RUNNING_ERROR ||
-                     event.status == OtaStatus.PERMISSION_NOT_GRANTED_ERROR ||
-                     event.status == OtaStatus.INTERNAL_ERROR ||
-                     event.status == OtaStatus.DOWNLOAD_ERROR ||
-                     event.status == OtaStatus.INSTALLATION_ERROR ||
-                     event.status == OtaStatus.CHECKSUM_ERROR) {
-            debugPrint("OTA: Failure status encountered: ${event.status}");
-            setState(() {
-              _status = "Gagal mengunduh: ${event.status}";
-            });
-            Future.delayed(const Duration(seconds: 3), () {
-              if (mounted) Navigator.of(context).pop();
-            });
-          }
-        },
-        onError: (error) {
-          debugPrint("OTA: Stream error: $error");
-          setState(() {
-            _status = "Gagal mengunduh: $error";
-          });
-          Future.delayed(const Duration(seconds: 3), () {
-            if (mounted) Navigator.of(context).pop();
-          });
-        },
-      );
+      final packageInfo = await PackageInfo.fromPlatform();
+      final packageName = packageInfo.packageName;
+      final playStoreUri = Uri.parse('market://details?id=$packageName');
+      if (await canLaunchUrl(playStoreUri)) {
+        await launchUrl(playStoreUri, mode: LaunchMode.externalApplication);
+      } else {
+        final webUri = Uri.parse('https://play.google.com/store/apps/details?id=$packageName');
+        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+      }
     } catch (e) {
-      debugPrint("OTA: Synchronous exception: $e");
-      setState(() {
-        _status = "Gagal menginisiasi update: $e";
-      });
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) Navigator.of(context).pop();
-      });
+      debugPrint('Failed to redirect to Play Store: $e');
     }
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(_status),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          LinearProgressIndicator(value: _progress / 100),
-          const SizedBox(height: 16),
-          Text('${_progress.toStringAsFixed(0)}%'),
-        ],
-      ),
-    );
   }
 }

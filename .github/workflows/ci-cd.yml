@@ -115,12 +115,16 @@ jobs:
       with:
         flutter-version: '3.44.2'
     
-    - name: Build APK
+    - name: Build APK and App Bundle
       working-directory: ./mobile
-      run: flutter build apk --release
+      run: |
+        flutter build apk --release
+        flutter build appbundle --release
     
-    - name: Upload APK
+    - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: app-release.apk
-        path: mobile/build/app/outputs/flutter-apk/app-release.apk
+        name: app-release-builds
+        path: |
+          mobile/build/app/outputs/flutter-apk/app-release.apk
+          mobile/build/app/outputs/bundle/release/app-release.aab
