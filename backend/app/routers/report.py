@@ -97,8 +97,25 @@ def generate_report(
         report = ReportService.generate_report(db, session_id)
         
         # Mark as completed
+        now = datetime.utcnow()
         session.status = SessionStatus.REPORT_GENERATED
-        session.completed_at = datetime.utcnow()
+        session.completed_at = now
+
+        # Read system settings for report release delay
+        from app.models.system_setting import SystemSetting
+        delay_enabled_setting = db.query(SystemSetting).filter(SystemSetting.key == "report_delay_enabled").first()
+        delay_minutes_setting = db.query(SystemSetting).filter(SystemSetting.key == "report_delay_minutes").first()
+
+        is_delay_enabled = delay_enabled_setting and delay_enabled_setting.value.lower() in ("true", "1", "yes")
+        try:
+            delay_minutes = int(delay_minutes_setting.value) if delay_minutes_setting else 15
+        except (ValueError, TypeError):
+            delay_minutes = 15
+
+        if is_delay_enabled and delay_minutes > 0:
+            session.available_at = now + timedelta(minutes=delay_minutes)
+        else:
+            session.available_at = now
         
         # Link report to the institution
         db_report = db.query(Report).filter(Report.scan_session_id == session_id).first()
@@ -138,6 +155,12 @@ def get_report(
 ):
     session = ScanSessionRepository.get_session(db, session_id)
     _ensure_session_visible(session, current_user)
+
+    if session.available_at and datetime.utcnow() < session.available_at:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Laporan masih dalam proses finalisasi dan belum dapat diakses.",
+        )
 
     report = ReportService.get_report(db, session_id)
     if not report:
@@ -196,6 +219,13 @@ def download_report(
     # 3. Check scan session and report visibility
     session = ScanSessionRepository.get_session(db, session_id)
     _ensure_session_visible(session, user)
+
+    # 4. Check if still in cooldown / delay period
+    if session.available_at and datetime.utcnow() < session.available_at:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Laporan masih dalam proses finalisasi dan belum dapat diunduh.",
+        )
     
     report = ReportService.get_report(db, session_id)
     if not report or not report.pdf_path:

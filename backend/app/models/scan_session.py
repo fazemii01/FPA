@@ -43,6 +43,7 @@ class ScanSession(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     completed_at = Column(DateTime, nullable=True)
+    available_at = Column(DateTime, nullable=True)
 
     user = relationship("User", back_populates="scan_sessions", foreign_keys=[user_id])
     lembaga = relationship("Lembaga", back_populates="scan_sessions")

@@ -247,7 +247,15 @@ class _SessionTabState extends State<SessionTab> {
       if (success) {
         final s = session.status;
         if (s == 'report_generated' || s == 'generating_report') {
-          context.push('/report/${session.id}');
+          if (s == 'report_generated' && !session.isReportAvailable) {
+            final remainingMin = session.remainingCooldown.inMinutes;
+            final msg = remainingMin > 0 
+                ? 'Laporan sedang dalam finalisasi ($remainingMin menit tersisa).'
+                : 'Laporan sedang dalam finalisasi.';
+            AppToast.showInfo(context, msg);
+          } else {
+            context.push('/report/${session.id}');
+          }
         } else {
           context.push('/scan/review/${session.id}');
         }

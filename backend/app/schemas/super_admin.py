@@ -101,4 +101,6 @@ class SystemSettingsUpdate(BaseModel):
     topup_bulk_options: str
     price_umum: int
     price_partner: int
+    report_delay_enabled: Optional[bool] = False
+    report_delay_minutes: Optional[int] = 15
 

@@ -509,6 +509,8 @@ def update_settings(payload: SystemSettingsUpdate, current_user: User = Depends(
         "topup_bulk_options": payload.topup_bulk_options,
         "price_umum": str(payload.price_umum),
         "price_partner": str(payload.price_partner),
+        "report_delay_enabled": "true" if payload.report_delay_enabled else "false",
+        "report_delay_minutes": str(payload.report_delay_minutes if payload.report_delay_minutes is not None else 15),
     }
     for key, val in settings.items():
         setting = db.query(SystemSetting).filter(SystemSetting.key == key).first()

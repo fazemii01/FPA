@@ -14,6 +14,7 @@ class ScanSession {
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? completedAt;
+  final DateTime? availableAt;
   final String? operatorName;
   final String? operatorEmail;
   final List<Fingerprint> fingerprints;
@@ -34,6 +35,7 @@ class ScanSession {
     required this.createdAt,
     required this.updatedAt,
     this.completedAt,
+    this.availableAt,
     this.operatorName,
     this.operatorEmail,
     this.fingerprints = const [],
@@ -57,6 +59,9 @@ class ScanSession {
       updatedAt: DateTime.parse(json['updated_at'] as String),
       completedAt: json['completed_at'] != null 
           ? DateTime.parse(json['completed_at'] as String)
+          : null,
+      availableAt: json['available_at'] != null
+          ? DateTime.parse(json['available_at'] as String)
           : null,
       operatorName: json['operator_name'] as String?,
       operatorEmail: json['operator_email'] as String?,
@@ -83,6 +88,7 @@ class ScanSession {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'completed_at': completedAt?.toIso8601String(),
+      'available_at': availableAt?.toIso8601String(),
       'operator_name': operatorName,
       'operator_email': operatorEmail,
       'fingerprints': fingerprints.map((e) => e.toJson()).toList(),
@@ -105,6 +111,7 @@ class ScanSession {
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? completedAt,
+    DateTime? availableAt,
     String? operatorName,
     String? operatorEmail,
     List<Fingerprint>? fingerprints,
@@ -125,6 +132,7 @@ class ScanSession {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       completedAt: completedAt ?? this.completedAt,
+      availableAt: availableAt ?? this.availableAt,
       operatorName: operatorName ?? this.operatorName,
       operatorEmail: operatorEmail ?? this.operatorEmail,
       fingerprints: fingerprints ?? this.fingerprints,
@@ -134,6 +142,27 @@ class ScanSession {
   int get completedCount => fingerprints.length;
   int get remainingCount => 10 - completedCount;
   bool get isComplete => completedCount == 10;
+
+  bool get isReportAvailable {
+    if (status != 'report_generated') return false;
+    if (availableAt == null) return true;
+    return DateTime.now().toUtc().isAfter(availableAt!) || DateTime.now().toUtc().isAtSameMomentAs(availableAt!);
+  }
+
+  Duration get remainingCooldown {
+    if (availableAt == null) return Duration.zero;
+    final diff = availableAt!.difference(DateTime.now().toUtc());
+    return diff.isNegative ? Duration.zero : diff;
+  }
+
+  double get cooldownProgress {
+    if (availableAt == null || completedAt == null) return 1.0;
+    final totalDuration = availableAt!.difference(completedAt!).inMilliseconds;
+    if (totalDuration <= 0) return 1.0;
+    final elapsed = DateTime.now().toUtc().difference(completedAt!).inMilliseconds;
+    final progress = elapsed / totalDuration;
+    return progress.clamp(0.0, 1.0);
+  }
 }
 
 class Fingerprint {

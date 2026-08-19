@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -47,25 +48,109 @@ class ReportHistoryTab extends StatelessWidget {
                 itemCount: reportSessions.length,
                 itemBuilder: (context, index) {
                   final session = reportSessions[index];
-                  return _buildReportCard(context, session, scanProvider, authProvider);
+                  return _ReportHistoryCardItem(
+                    key: ValueKey(session.id),
+                    session: session,
+                    scanProvider: scanProvider,
+                    authProvider: authProvider,
+                  );
                 },
               ),
       ),
     );
   }
+}
 
-  Widget _buildReportCard(
-    BuildContext context,
-    ScanSession session,
-    ScanProvider scanProvider,
-    AuthProvider authProvider,
-  ) {
-    final isDone = session.status == 'report_generated';
-    final canGenerateReport = authProvider.user?.hasPermission('GENERATE_REPORT') ?? false;
-    
-    final Color badgeColor = isDone ? AppTheme.successColor : AppTheme.warningColor;
-    final String badgeLabel = isDone ? 'Laporan Selesai' : 'Sedang Diproses';
- 
+class _ReportHistoryCardItem extends StatefulWidget {
+  final ScanSession session;
+  final ScanProvider scanProvider;
+  final AuthProvider authProvider;
+
+  const _ReportHistoryCardItem({
+    super.key,
+    required this.session,
+    required this.scanProvider,
+    required this.authProvider,
+  });
+
+  @override
+  State<_ReportHistoryCardItem> createState() => _ReportHistoryCardItemState();
+}
+
+class _ReportHistoryCardItemState extends State<_ReportHistoryCardItem> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimerIfNeeded();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ReportHistoryCardItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.session.availableAt != widget.session.availableAt ||
+        oldWidget.session.status != widget.session.status) {
+      _startTimerIfNeeded();
+    }
+  }
+
+  void _startTimerIfNeeded() {
+    _timer?.cancel();
+    if (widget.session.status == 'report_generated' && !widget.session.isReportAvailable) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (mounted) {
+          if (widget.session.isReportAvailable) {
+            timer.cancel();
+          }
+          setState(() {});
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String _formatDuration(Duration d) {
+    if (d.inSeconds <= 0) return '00:00';
+    final minutes = d.inMinutes;
+    final seconds = d.inSeconds % 60;
+    if (minutes >= 60) {
+      final hours = minutes ~/ 60;
+      final mins = minutes % 60;
+      return '${hours}j ${mins}m';
+    }
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDone = widget.session.status == 'report_generated';
+    final isAvailable = widget.session.isReportAvailable;
+    final canGenerateReport = widget.authProvider.user?.hasPermission('GENERATE_REPORT') ?? false;
+
+    Color badgeColor;
+    String badgeLabel;
+    if (isDone && isAvailable) {
+      badgeColor = AppTheme.successColor;
+      badgeLabel = 'Laporan Selesai';
+    } else if (isDone && !isAvailable) {
+      badgeColor = AppTheme.primaryColor;
+      badgeLabel = 'Finalisasi Laporan';
+    } else {
+      badgeColor = AppTheme.warningColor;
+      badgeLabel = 'Sedang Diproses';
+    }
+
+    final double progress = isDone && !isAvailable 
+        ? widget.session.cooldownProgress 
+        : (isDone ? 1.0 : 0.5);
+    final Duration remaining = widget.session.remainingCooldown;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -82,75 +167,138 @@ class ReportHistoryTab extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: BouncingWidget(
-                onTap: isDone ? () => context.push('/report/${session.id}') : () {},
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withOpacity(0.08),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.description_outlined, color: AppTheme.primaryColor, size: 24),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            session.participantName.isNotEmpty ? session.participantName : 'Sesi #${session.id}',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.primaryColor),
+            Row(
+              children: [
+                Expanded(
+                  child: BouncingWidget(
+                    onTap: (isDone && isAvailable)
+                        ? () => context.push('/report/${widget.session.id}')
+                        : () {
+                            if (isDone && !isAvailable) {
+                              AppToast.showInfo(
+                                context,
+                                'Laporan masih dalam proses finalisasi (${_formatDuration(remaining)} tersisa)',
+                              );
+                            }
+                          },
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: (isDone && isAvailable ? AppTheme.primaryColor : badgeColor).withOpacity(0.08),
+                            shape: BoxShape.circle,
                           ),
-                          const SizedBox(height: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: badgeColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              badgeLabel,
-                              style: TextStyle(
-                                color: badgeColor,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                          child: Icon(
+                            isDone && isAvailable ? Icons.description_outlined : Icons.hourglass_top_rounded,
+                            color: isDone && isAvailable ? AppTheme.primaryColor : badgeColor,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.session.participantName.isNotEmpty
+                                    ? widget.session.participantName
+                                    : 'Sesi #${widget.session.id}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: AppTheme.primaryColor,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: badgeColor.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      badgeLabel,
+                                      style: TextStyle(
+                                        color: badgeColor,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  if (isDone && !isAvailable) ...[
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '${_formatDuration(remaining)} tersisa',
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (canGenerateReport && isDone && isAvailable) ...[
+                  _RegenerateButton(
+                    sessionId: widget.session.id,
+                    participantName: widget.session.participantName.isNotEmpty
+                        ? widget.session.participantName
+                        : 'Sesi #${widget.session.id}',
+                    scanProvider: widget.scanProvider,
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                if (isDone && isAvailable) ...[
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.remove_red_eye_rounded, color: AppTheme.primaryColor, size: 20),
+                    onPressed: () => context.push('/report/${widget.session.id}'),
+                  ),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.download_rounded, color: AppTheme.primaryColor, size: 20),
+                    onPressed: () => _onDownloadTap(context, widget.session, widget.scanProvider, widget.authProvider),
+                  ),
+                ],
+              ],
+            ),
+            if (isDone && !isAvailable) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: progress > 0 ? progress : null,
+                  minHeight: 6,
+                  backgroundColor: Colors.grey[200],
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            if (canGenerateReport && isDone) ...[
-              _RegenerateButton(
-                sessionId: session.id,
-                participantName: session.participantName.isNotEmpty ? session.participantName : 'Sesi #${session.id}',
-                scanProvider: scanProvider,
-              ),
-              const SizedBox(width: 12),
-            ],
-            if (isDone) ...[
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                icon: const Icon(Icons.remove_red_eye_rounded, color: AppTheme.primaryColor, size: 20),
-                onPressed: () => context.push('/report/${session.id}'),
-              ),
-              const SizedBox(width: 12),
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                icon: const Icon(Icons.download_rounded, color: AppTheme.primaryColor, size: 20),
-                onPressed: () => _onDownloadTap(context, session, scanProvider, authProvider),
+            ] else if (!isDone) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  minHeight: 4,
+                  backgroundColor: Colors.grey[200],
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.warningColor),
+                ),
               ),
             ],
           ],
