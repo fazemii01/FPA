@@ -38,8 +38,8 @@ start_server() {
         source venv/bin/activate
     fi
 
-    echo "Starting FastAPI in background on port 8000..."
-    nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
+    echo "Starting FastAPI in background on port 8000 (4 workers)..."
+    nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --timeout-keep-alive 75 > uvicorn.log 2>&1 &
     echo $! > uvicorn.pid
     echo "FastAPI started with PID: $(cat uvicorn.pid)"
 }

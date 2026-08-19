@@ -240,7 +240,7 @@ def get_public_invoice(uuid_str: str, request: Request, db: Session = Depends(ge
 
 
 @router.post("/public/{uuid_str}/upload-proof", response_model=InvoiceResponse)
-async def upload_proof(uuid_str: str, request: Request, file: UploadFile = File(...), db: Session = Depends(get_db)):
+def upload_proof(uuid_str: str, request: Request, file: UploadFile = File(...), db: Session = Depends(get_db)):
     """Upload payment proof for an invoice (anyone can access)."""
     inv = db.query(Invoice).filter(Invoice.uuid == uuid_str).with_for_update().first()
     if not inv:
@@ -250,7 +250,7 @@ async def upload_proof(uuid_str: str, request: Request, file: UploadFile = File(
         raise HTTPException(status_code=400, detail="Invoice sudah lunas")
         
     # Read file data
-    file_data = await file.read()
+    file_data = file.file.read()
     
     # Upload to MinIO under receipts/ prefix
     filename = file.filename or "receipt.png"

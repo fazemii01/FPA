@@ -106,7 +106,7 @@ def list_review_queue(
     response_model=FingerprintResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def upload_fingerprint(
+def upload_fingerprint(
     session_id: int,
     finger_position: FingerPositionEnum,
     file: UploadFile = File(...),
@@ -132,7 +132,7 @@ async def upload_fingerprint(
     # Replace any existing capture for this finger position
     FingerprintRepository.delete_by_position(db, session_id, FingerPosition(finger_position.value))
 
-    file_data = await file.read()
+    file_data = file.file.read()
 
     processing_result = image_processor.process_fingerprint(file_data)
     quality_score = processing_result["quality_score"]
@@ -140,7 +140,7 @@ async def upload_fingerprint(
     features = processing_result["features"]
     
     if enhanced_file:
-        normalized_data = await enhanced_file.read()
+        normalized_data = enhanced_file.file.read()
     else:
         normalized_data = image_processor.normalize_fingerprint(file_data)
 

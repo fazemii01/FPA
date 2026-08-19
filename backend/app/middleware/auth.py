@@ -29,7 +29,7 @@ def get_permissions_for_role(db: Session, role: UserRole) -> List[str]:
     return []
 
 
-async def get_current_user(
+def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db),
 ) -> User:
@@ -71,7 +71,7 @@ async def get_current_user(
 def require_role(*allowed_roles: UserRole):
     allowed: Iterable[UserRole] = allowed_roles or (UserRole.ADMIN, UserRole.STAFF)
 
-    async def _enforcer(current_user: User = Depends(get_current_user)) -> User:
+    def _enforcer(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role not in allowed:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -83,7 +83,7 @@ def require_role(*allowed_roles: UserRole):
 
 
 def require_permission(permission_key: str):
-    async def _enforcer(current_user: User = Depends(get_current_user)) -> User:
+    def _enforcer(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role in (UserRole.SUPER_ADMIN, UserRole.ADMIN_PUSAT):
             return current_user
         if permission_key not in getattr(current_user, "permissions", []):
