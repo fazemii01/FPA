@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_theme.dart';
 
@@ -16,13 +17,31 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _rememberMe = true;
   bool _agreedToTerms = false;
   String _apkVersion = '';
 
   @override
   void initState() {
     super.initState();
+    _loadSavedPreferences();
     _loadApkVersion();
+  }
+
+  Future<void> _loadSavedPreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedEmail = prefs.getString('saved_email');
+      final rememberMe = prefs.getBool('remember_me') ?? true;
+      if (savedEmail != null && savedEmail.isNotEmpty) {
+        _emailController.text = savedEmail;
+      }
+      setState(() {
+        _rememberMe = rememberMe;
+      });
+    } catch (e) {
+      // ignore
+    }
   }
 
   Future<void> _loadApkVersion() async {
@@ -199,6 +218,40 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 24,
                               height: 24,
                               child: Checkbox(
+                                value: _rememberMe,
+                                activeColor: AppTheme.primaryColor,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _rememberMe = value ?? true;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _rememberMe = !_rememberMe;
+                                });
+                              },
+                              child: const Text(
+                                'Ingat Saya',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: Checkbox(
                                 value: _agreedToTerms,
                                 activeColor: AppTheme.primaryColor,
                                 onChanged: (value) {
@@ -355,8 +408,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (_formKey.currentState!.validate()) {
       final success = await authProvider.login(
-        email: _emailController.text,
+        email: _emailController.text.trim(),
         password: _passwordController.text,
+        rememberMe: _rememberMe,
       );
 
       if (success && context.mounted) {

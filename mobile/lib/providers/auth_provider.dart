@@ -87,6 +87,7 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> login({
     required String email,
     required String password,
+    bool rememberMe = true,
   }) async {
     _isLoading = true;
     _error = null;
@@ -98,7 +99,7 @@ class AuthProvider extends ChangeNotifier {
         data: {
           'email': email,
           'password': password,
-          'remember_me': true,
+          'remember_me': rememberMe,
         },
       );
 
@@ -107,6 +108,13 @@ class AuthProvider extends ChangeNotifier {
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', _token!);
+      if (rememberMe) {
+        await prefs.setString('saved_email', email);
+        await prefs.setBool('remember_me', true);
+      } else {
+        await prefs.remove('saved_email');
+        await prefs.setBool('remember_me', false);
+      }
 
       // Fetch user details immediately after login
       final userResponse = await _apiService.get('/auth/me');
