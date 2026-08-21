@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/update_service.dart';
+import '../../theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -48,23 +49,72 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.fingerprint,
-              size: 80,
-              color: Theme.of(context).primaryColor,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Jaribakat',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 48),
-            const CircularProgressIndicator(),
-          ],
+      backgroundColor: const Color(0xFFFAFAFA),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Image.asset(
+                  'assets/images/jaribakat.jpeg',
+                  height: 64,
+                  width: 64,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.fingerprint_rounded,
+                      size: 64,
+                      color: AppTheme.primaryColor,
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'FPA',
+                style: TextStyle(
+                  fontFamily: 'Noto Serif',
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor,
+                  letterSpacing: 2,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Fingerprint Analysis System',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  letterSpacing: 0.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 48),
+              const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -33,8 +33,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Jaribakat',
         theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
+        darkTheme: AppTheme.lightTheme,
+        themeMode: ThemeMode.light,
         routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
       ),
