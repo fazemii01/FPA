@@ -1,3 +1,4 @@
+from datetime import timedelta
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -60,8 +61,14 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
             detail="Invalid email or password",
         )
 
+    if credentials.remember_me:
+        expires_delta = timedelta(days=30)
+    else:
+        expires_delta = timedelta(days=1)
+
     access_token = create_access_token(
-        data={"sub": str(user.id), "role": user.role.value}
+        data={"sub": str(user.id), "role": user.role.value},
+        expires_delta=expires_delta,
     )
     from app.middleware.auth import get_permissions_for_role
     permissions = get_permissions_for_role(db, user.role)

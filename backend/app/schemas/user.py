@@ -23,6 +23,7 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    remember_me: Optional[bool] = False
 
 
 class UserResponse(BaseModel):

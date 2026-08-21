@@ -98,6 +98,7 @@ class AuthProvider extends ChangeNotifier {
         data: {
           'email': email,
           'password': password,
+          'remember_me': true,
         },
       );
 
